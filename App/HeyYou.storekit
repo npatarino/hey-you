@@ -1,0 +1,55 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "6F1D2C1A",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "5.99",
+      "familyShareable" : true,
+      "internalID" : "6739000001",
+      "localizations" : [
+        {
+          "description" : "Lead time 10-60 s, filters, calendars, sound, working hours and punctuality stats.",
+          "displayName" : "Hey You! Pro",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Aviso de 10 a 60 s, filtros, calendarios, sonido, horario y puntualidad.",
+          "displayName" : "Hey You! Pro",
+          "locale" : "es_ES"
+        }
+      ],
+      "productID" : "com.patarino.heyyou.pro",
+      "referenceName" : "Hey You! Pro",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6739000000",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "es_ES",
+    "_storefront" : "ESP",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

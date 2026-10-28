@@ -1,0 +1,108 @@
+{
+  "kind": "calendar#events",
+  "summary": "demo@example.com",
+  "timeZone": "Europe/Madrid",
+  "items": [
+    {
+      "id": "weekly_20261103T100000Z",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=d2Vla2x5",
+      "summary": "Weekly sync",
+      "eventType": "default",
+      "start": { "dateTime": "2026-11-03T11:00:00+01:00", "timeZone": "Europe/Madrid" },
+      "end": { "dateTime": "2026-11-03T11:30:00+01:00", "timeZone": "Europe/Madrid" },
+      "organizer": { "email": "ana@example.com", "displayName": "Ana" },
+      "attendees": [
+        { "email": "ana@example.com", "organizer": true, "responseStatus": "accepted" },
+        { "email": "demo@example.com", "self": true, "responseStatus": "accepted" },
+        { "email": "room-4@resource.calendar.google.com", "resource": true, "responseStatus": "accepted" }
+      ],
+      "hangoutLink": "https://meet.google.com/abc-defg-hij",
+      "conferenceData": {
+        "entryPoints": [
+          { "entryPointType": "video", "uri": "https://meet.google.com/abc-defg-hij", "label": "meet.google.com/abc-defg-hij" },
+          { "entryPointType": "phone", "uri": "tel:+34-900-000-000", "pin": "123" }
+        ],
+        "conferenceSolution": { "key": { "type": "hangoutsMeet" }, "name": "Google Meet" }
+      }
+    },
+    {
+      "id": "retro1",
+      "status": "confirmed",
+      "summary": "Retro",
+      "start": { "dateTime": "2026-11-03T08:00:00Z" },
+      "end": { "dateTime": "2026-11-03T09:00:00Z" },
+      "attendees": [
+        { "email": "demo@example.com", "self": true, "responseStatus": "declined" },
+        { "email": "luis@example.com", "responseStatus": "needsAction" }
+      ],
+      "conferenceData": {
+        "entryPoints": [ { "entryPointType": "video", "uri": "https://us02web.zoom.us/j/555?pwd=x" } ]
+      }
+    },
+    {
+      "id": "focus1",
+      "status": "confirmed",
+      "summary": "Foco",
+      "eventType": "focusTime",
+      "start": { "dateTime": "2026-11-03T09:30:00.000+01:00" },
+      "end": { "dateTime": "2026-11-03T11:00:00.000+01:00" }
+    },
+    {
+      "id": "demo1",
+      "status": "confirmed",
+      "summary": "Demo cliente",
+      "location": "https://zoom.us/j/91234567890?pwd=abc",
+      "description": "<p>Agenda in <a href=\"https://docs.google.com/x\">doc</a></p>",
+      "start": { "dateTime": "2026-11-03T10:00:00+01:00" },
+      "end": { "dateTime": "2026-11-03T11:00:00+01:00" },
+      "attendees": [
+        { "email": "demo@example.com", "self": true, "responseStatus": "tentative" },
+        { "email": "a@client.com" }, { "email": "b@client.com" }, { "email": "c@client.com" }
+      ]
+    },
+    {
+      "id": "teams1",
+      "summary": "Partner call",
+      "description": "Microsoft Teams meeting<br>Join: <a href=\"https://teams.microsoft.com/l/meetup-join/19%3ameeting_x%40thread.v2/0?context=%7b%7d\">here</a>",
+      "start": { "dateTime": "2026-11-03T15:00:00+01:00" },
+      "end": { "dateTime": "2026-11-03T15:30:00+01:00" },
+      "attendees": [
+        { "email": "demo@example.com", "self": true, "responseStatus": "needsAction" },
+        { "email": "x@partner.com" }
+      ]
+    },
+    {
+      "id": "birthday1",
+      "summary": "Cumpleaños de Marta",
+      "start": { "date": "2026-11-03" },
+      "end": { "date": "2026-11-04" }
+    },
+    {
+      "id": "cancelled1",
+      "status": "cancelled",
+      "summary": "Old meeting",
+      "start": { "dateTime": "2026-11-03T12:00:00+01:00" },
+      "end": { "dateTime": "2026-11-03T12:30:00+01:00" }
+    },
+    {
+      "id": "wl1",
+      "summary": "Office",
+      "eventType": "workingLocation",
+      "start": { "dateTime": "2026-11-03T09:00:00+01:00" },
+      "end": { "dateTime": "2026-11-03T17:00:00+01:00" }
+    },
+    {
+      "id": "noTitle",
+      "start": { "dateTime": "2026-11-03T18:00:00+01:00" },
+      "end": { "dateTime": "2026-11-03T18:15:00+01:00" },
+      "attendees": [ { "email": "z@example.com" }, { "email": "y@example.com" } ]
+    },
+    {
+      "id": "broken",
+      "summary": "Broken date",
+      "start": { "dateTime": "tomorrow-ish" },
+      "end": { "dateTime": "2026-11-03T18:15:00+01:00" }
+    }
+  ]
+}

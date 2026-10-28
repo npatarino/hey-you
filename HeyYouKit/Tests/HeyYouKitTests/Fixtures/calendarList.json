@@ -1,0 +1,44 @@
+{
+  "kind": "calendar#calendarList",
+  "etag": "\"p32o8b9ljiqvuc0o\"",
+  "nextSyncToken": "CPDAlvWDx70CEhRkZW1vQGV4YW1wbGUuY29t",
+  "items": [
+    {
+      "kind": "calendar#calendarListEntry",
+      "id": "demo@example.com",
+      "summary": "demo@example.com",
+      "timeZone": "Europe/Madrid",
+      "colorId": "14",
+      "backgroundColor": "#9fe1e7",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "owner",
+      "primary": true
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "id": "team123@group.calendar.google.com",
+      "summary": "Team",
+      "summaryOverride": "Equipo",
+      "timeZone": "Europe/Madrid",
+      "backgroundColor": "#7bd148",
+      "selected": true,
+      "accessRole": "reader"
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "id": "es.spain#holiday@group.v.calendar.google.com",
+      "summary": "Holidays in Spain",
+      "backgroundColor": "#16a765",
+      "accessRole": "reader"
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "id": "hidden@group.calendar.google.com",
+      "summary": "Hidden",
+      "selected": true,
+      "hidden": true,
+      "accessRole": "reader"
+    }
+  ]
+}
