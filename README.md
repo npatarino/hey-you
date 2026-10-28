@@ -21,6 +21,7 @@ A macOS menu-bar app that reads your Google Calendar and, one minute before ever
 ```bash
 ./scripts/bootstrap.sh      # installs tools, creates Config/Secrets.xcconfig, generates HeyYou.xcodeproj
 ./scripts/test.sh           # runs the HeyYouKit test suite (swift test)
+./scripts/test.sh --xcode   # everything, including StoreKit tests hosted in the app
 ./scripts/build.sh          # builds the app (Debug) into build/DerivedData
 ./scripts/lint.sh           # swiftformat + swiftlint --strict
 open HeyYou.xcodeproj       # or run from Xcode (click "Trust & Enable" for the package macros once)
@@ -79,7 +80,7 @@ docs/                PRD, QA notes, App Store checklist, screenshots
 
 ## Development notes
 
-- Architecture: TCA. `AppFeature` owns sync, scheduling and alert presentation; `AlertScheduler` is a pure function; settings always go through `EffectiveSettings` so Pro gating lives in one place.
+- Architecture: see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). In short: TCA. `AppFeature` owns sync, scheduling and alert presentation; `AlertScheduler` is a pure function; settings always go through `EffectiveSettings` so Pro gating lives in one place.
 - Debug launch arguments: `--mock-calendar` (fake account and meetings), `--print-changes` (logs every action).
 - Screens can be re-rendered to PNG: `cd HeyYouKit && HEYYOU_SNAPSHOTS=$PWD/../docs/screenshots swift test --filter SnapshotRenderTests`.
 - Strings: `HeyYouKit/Sources/HeyYouKit/Resources/Localizable.xcstrings` (en + es). After adding strings, build once and run

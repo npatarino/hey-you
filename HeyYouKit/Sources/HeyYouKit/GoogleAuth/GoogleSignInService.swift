@@ -96,7 +96,7 @@ enum GoogleSignInService {
         throw AuthError.noWindow
     }
 
-    private nonisolated static func mapError(_ error: (any Error)?) -> AuthError {
+    nonisolated static func mapError(_ error: (any Error)?) -> AuthError {
         guard let error = error as NSError? else { return .failed(code: 0) }
         guard error.domain == kGIDSignInErrorDomain else { return .failed(code: error.code) }
         switch GIDSignInError.Code(rawValue: error.code) {

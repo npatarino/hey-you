@@ -79,12 +79,8 @@ extension AppFeature {
     }
 
     func personProperties(_ state: State) -> [String: AnalyticsValue] {
-        var properties: [String: AnalyticsValue] = [
-            "is_pro": .bool(state.entitlements.isPro),
-            "lead_time": .int(state.effectiveSettings.leadTimeSeconds),
-            "launch_at_login": .bool(state.settings.launchAtLogin),
-            "locale": .string(Locale.current.identifier),
-        ]
+        var properties = state.personProperties
+        properties["locale"] = .string(Locale.current.identifier)
         if let installDate = state.installDate {
             properties["install_date"] = .string(installDate.formatted(.iso8601.year().month().day()))
         }
@@ -101,12 +97,10 @@ extension AppFeature {
             state.$settings.withLock { $0.applyProDefaults() }
             state.$entitlements.withLock { $0.proDefaultsApplied = true }
         }
-        guard wasPro != entitlements.isPro else { return .none }
-        var properties: [String: AnalyticsValue] = ["is_pro": .bool(entitlements.isPro)]
-        if let purchasedAt = state.entitlements.purchasedAt {
-            properties["pro_purchased_at"] = .string(purchasedAt.formatted(.iso8601))
-        }
-        return .run { [properties] _ in await analytics.setPersonProperties(properties) }
+        // `is_pro` itself is sent by the person-properties onChange.
+        guard !wasPro, entitlements.isPro, let purchasedAt = state.entitlements.purchasedAt else { return .none }
+        let properties: [String: AnalyticsValue] = ["pro_purchased_at": .string(purchasedAt.formatted(.iso8601))]
+        return .run { _ in await analytics.setPersonProperties(properties) }
     }
 
     // MARK: - Sync
@@ -197,6 +191,8 @@ extension AppFeature {
             for event in [scheduled.event] + scheduled.overlapping {
                 state.firedAlerts[event.dedupeKey] = event.end
             }
+            let meetings = 1 + scheduled.additionalCount
+            state.$weeklyMeetings.withLock { $0 = $0.adding(meetings, at: now, calendar: calendar) }
         }
         if let current = state.alert {
             let replaced = AnalyticsEvent.alertDismissed(

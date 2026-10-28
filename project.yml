@@ -45,6 +45,26 @@ targets:
       configs:
         Release:
           SWIFT_COMPILATION_MODE: wholemodule
+  HeyYouTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: AppTests
+    dependencies:
+      - target: HeyYou
+      - package: HeyYouKit
+        product: HeyYouKit
+        # Symbols come from the host app; linking again duplicates the dynamic Google products.
+        link: false
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID).tests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/HeyYou.app/Contents/MacOS/HeyYou
+        BUNDLE_LOADER: $(TEST_HOST)
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
 schemes:
   HeyYou:
     build:
@@ -60,6 +80,7 @@ schemes:
       gatherCoverageData: true
       targets:
         - package: HeyYouKit/HeyYouKitTests
+        - HeyYouTests
     profile:
       config: Release
     analyze:

@@ -118,7 +118,7 @@ public struct SettingsView: View {
 
             Picker(selection: Binding(get: { store.effective.sound }, set: { store.send(.setSound($0)) })) {
                 ForEach(AlertSound.allCases, id: \.self) { sound in
-                    Text(soundName(sound)).tag(sound)
+                    Text(verbatim: sound.displayName).tag(sound)
                 }
             } label: {
                 Text("Sound", bundle: .module)
@@ -248,17 +248,6 @@ public struct SettingsView: View {
             }
         }
     }
-
-    private func soundName(_ sound: AlertSound) -> String {
-        switch sound {
-        case .default: String(localized: "Default", bundle: .module)
-        case .chime: String(localized: "Chime", bundle: .module)
-        case .pulse: String(localized: "Pulse", bundle: .module)
-        case .horn: String(localized: "Horn", bundle: .module)
-        case .bell: String(localized: "Bell", bundle: .module)
-        case .none: String(localized: "None", bundle: .module)
-        }
-    }
 }
 
 private struct WorkingHoursEditor: View {
@@ -268,9 +257,9 @@ private struct WorkingHoursEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 4) {
-                ForEach(orderedWeekdays, id: \.self) { weekday in
+                ForEach(WorkingHours.orderedWeekdays(calendar: .current), id: \.self) { weekday in
                     Toggle(isOn: Binding(get: { hours.weekdays.contains(weekday) }, set: { _ in send(.toggleWorkday(weekday)) })) {
-                        Text(verbatim: symbol(weekday))
+                        Text(verbatim: WorkingHours.symbol(for: weekday, calendar: .current))
                     }
                     .toggleStyle(.button)
                 }
@@ -292,22 +281,10 @@ private struct WorkingHoursEditor: View {
         }
     }
 
-    private var orderedWeekdays: [Int] {
-        let first = Calendar.current.firstWeekday
-        return (0 ..< 7).map { (first - 1 + $0) % 7 + 1 }
-    }
-
-    private func symbol(_ weekday: Int) -> String {
-        Calendar.current.veryShortWeekdaySymbols[weekday - 1]
-    }
-
     private func binding(_ minute: Int, set: @escaping (Int) -> Void) -> Binding<Date> {
         Binding(
-            get: { Calendar.current.startOfDay(for: .now).addingTimeInterval(TimeInterval(minute * 60)) },
-            set: { date in
-                let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
-                set((parts.hour ?? 0) * 60 + (parts.minute ?? 0))
-            }
+            get: { WorkingHours.date(forMinute: minute, on: .now, calendar: .current) },
+            set: { set(WorkingHours.minute(of: $0, calendar: .current)) }
         )
     }
 }

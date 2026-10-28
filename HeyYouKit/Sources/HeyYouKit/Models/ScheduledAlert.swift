@@ -40,6 +40,35 @@ public struct ScheduledAlert: Equatable, Sendable {
     }
 }
 
+/// Meetings alerted per week (all users), reported as the `weekly_meetings_bucket` person property.
+public struct WeeklyMeetings: Equatable, Codable, Sendable {
+    public var weekStart: Date
+    public var count: Int
+
+    public init(weekStart: Date = .distantPast, count: Int = 0) {
+        self.weekStart = weekStart
+        self.count = count
+    }
+
+    /// Adds `meetings`, starting a new week when `date` is in a later week.
+    public func adding(_ meetings: Int, at date: Date, calendar: Calendar) -> WeeklyMeetings {
+        let currentWeek = calendar.dateInterval(of: .weekOfYear, for: date)?.start ?? date
+        var updated = currentWeek == weekStart ? self : WeeklyMeetings(weekStart: currentWeek)
+        updated.count += meetings
+        return updated
+    }
+
+    /// PRD §6.1 buckets: 0–2, 3–10, 11–25, 25+.
+    public var bucket: String {
+        switch count {
+        case ..<3: "0-2"
+        case 3 ... 10: "3-10"
+        case 11 ... 25: "11-25"
+        default: "25+"
+        }
+    }
+}
+
 /// Weekly punctuality (Pro): alerts that ended in Join or a dismissal ≤ 30 s after start.
 public struct PunctualityStats: Equatable, Codable, Sendable {
     public var weekStart: Date

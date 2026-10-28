@@ -51,14 +51,17 @@ public struct AlertView: View {
 
     private var content: some View {
         VStack(spacing: 24) {
-            Text(topLabel)
+            Text(verbatim: store.state.headline)
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
                 .tracking(4)
                 .foregroundStyle(.white)
                 .accessibilityAddTraits(.isHeader)
 
-            CountdownRing(phase: store.phase, progress: store.progress, reduceMotion: reduceMotion)
-                .frame(width: 300, height: 300)
+            CountdownRing(
+                phase: store.phase, progress: store.progress,
+                accessibilityText: store.state.countdownAccessibilityLabel, reduceMotion: reduceMotion
+            )
+            .frame(width: 300, height: 300)
 
             VStack(spacing: 10) {
                 Text(store.event.title)
@@ -66,19 +69,19 @@ public struct AlertView: View {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
-                if store.additionalCount > 0 {
-                    Text("+\(store.additionalCount) more", bundle: .module)
+                if let additional = store.state.additionalText {
+                    Text(verbatim: additional)
                         .font(.system(size: 20, weight: .medium, design: .rounded))
                         .foregroundStyle(.white)
                 }
-                if let hook = store.proHook {
-                    Label(hookText(hook), systemImage: "lock.fill")
+                if let hook = store.state.hookText {
+                    Label(hook, systemImage: "lock.fill")
                         .font(.system(size: 16, weight: .medium, design: .rounded))
                         .foregroundStyle(.white)
                 }
             }
 
-            Label(metaText, systemImage: "video.fill")
+            Label(store.state.metaLine(), systemImage: "video.fill")
                 .font(.system(size: 20, weight: .medium, design: .rounded))
                 .foregroundStyle(.white)
 
@@ -86,7 +89,7 @@ public struct AlertView: View {
                 store.send(.joinTapped)
             } label: {
                 Label {
-                    Text(store.hasMeetingLink ? joinTitle : openCalendarTitle)
+                    Text(verbatim: store.state.actionTitle)
                 } icon: {
                     Image(systemName: "arrow.right")
                 }
@@ -102,43 +105,13 @@ public struct AlertView: View {
                 .padding(.top, 12)
         }
     }
-
-    private var topLabel: String {
-        switch store.phase {
-        case .countingDown, .startingNow:
-            String(localized: "MEETING IN", bundle: .module)
-        case let .started(minutes):
-            String(localized: "STARTED \(minutes) MIN AGO", bundle: .module)
-        }
-    }
-
-    private var metaText: String {
-        let range = TimeText.range(store.event.start, store.event.end)
-        guard let provider = store.event.meetingLink?.provider else { return range }
-        return "\(range) · \(provider.displayName)"
-    }
-
-    private var joinTitle: String {
-        String(localized: "Join meeting", bundle: .module)
-    }
-
-    private var openCalendarTitle: String {
-        String(localized: "Open in Calendar", bundle: .module)
-    }
-
-    private func hookText(_ hook: ProHook) -> String {
-        switch hook {
-        case .declined: String(localized: "Declined · With Pro we wouldn't have alerted you", bundle: .module)
-        case .noLink: String(localized: "No link · With Pro we wouldn't have alerted you", bundle: .module)
-        case .solo: String(localized: "Just you · With Pro we wouldn't have alerted you", bundle: .module)
-        }
-    }
 }
 
 /// Big number with a progress ring; "NOW" pulses gently during the first minute.
 struct CountdownRing: View {
     let phase: AlertPhase
     let progress: Double
+    let accessibilityText: String
     let reduceMotion: Bool
     @State private var pulsing = false
 
@@ -153,7 +126,7 @@ struct CountdownRing: View {
             number
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityText)
+        .accessibilityLabel(Text(verbatim: accessibilityText))
     }
 
     @ViewBuilder private var number: some View {
@@ -186,14 +159,6 @@ struct CountdownRing: View {
                 .monospacedDigit()
                 .foregroundStyle(.white)
                 .minimumScaleFactor(0.4)
-        }
-    }
-
-    private var accessibilityText: Text {
-        switch phase {
-        case let .countingDown(seconds): Text("Meeting in \(seconds) seconds", bundle: .module)
-        case .startingNow: Text("Meeting starting now", bundle: .module)
-        case let .started(minutes): Text("Meeting started \(minutes) minutes ago", bundle: .module)
         }
     }
 }

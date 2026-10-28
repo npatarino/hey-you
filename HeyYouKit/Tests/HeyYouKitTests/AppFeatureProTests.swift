@@ -53,6 +53,7 @@ struct AppFeatureProTests: AppFeatureTesting {
         #expect(menu.status == .offline(since: date("2026-11-03 10:50")))
         await env.clock.advance(by: .seconds(8 * 60))
         await store.receive(\.alertDue) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [weeklySync.dedupeKey: weeklySync.end]
             $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59"))
             $0.nextAlert = nil
@@ -130,7 +131,8 @@ struct AppFeatureProTests: AppFeatureTesting {
         #expect(menu.punctuality == PunctualityStats(weekStart: date("2026-11-02 00:00")))
         await settle()
         #expect(env.trackedNames.contains("purchase_completed"))
-        #expect(env.analytics.people.last?["is_pro"] == true)
+        #expect(env.analytics.people.contains { $0["is_pro"] == true })
+        #expect(env.analytics.people.contains { $0["pro_purchased_at"] != nil })
     }
 
     /// Pro defaults are applied once; a later restore doesn't turn filters back on.
@@ -230,6 +232,7 @@ struct AppFeatureProTests: AppFeatureTesting {
         }
         await env.clock.advance(by: .seconds(30))
         await store.receive(\.alertDue) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [weeklySync.dedupeKey: weeklySync.end]
             $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59"))
             $0.nextAlert = nil

@@ -32,6 +32,7 @@ public enum MenuBarFeature {
     }
 
     public struct State: Equatable, Sendable {
+        public var now: Date
         public var status: Status
         public var rows: [Row]
         /// "Xm" next to the bell (Pro, < 10 min).
@@ -44,6 +45,52 @@ public enum MenuBarFeature {
 
         public var showsProEntry: Bool {
             !isPro
+        }
+
+        public enum Tone: Equatable, Sendable {
+            case normal
+            case warning
+            case error
+        }
+
+        /// Status line under the title.
+        public func statusText(locale: Locale = .current, timeZone: TimeZone = .current) -> String {
+            switch status {
+            case .loading:
+                return String(localized: "Connecting…", bundle: .module)
+            case .signedOut:
+                return String(localized: "Not connected to Google", bundle: .module)
+            case .sessionExpired:
+                return String(localized: "Disconnected from Google", bundle: .module)
+            case let .offline(since):
+                return String(localized: "Offline since \(TimeText.time(since, locale: locale, timeZone: timeZone))", bundle: .module)
+            case let .watching(calendars, nextStart):
+                guard let nextStart, nextStart > now else {
+                    return String(localized: "Watching \(calendars) calendars", bundle: .module)
+                }
+                let next = TimeText.relative(nextStart, now: now, locale: locale, timeZone: timeZone)
+                return String(localized: "Watching \(calendars) calendars · next in \(next)", bundle: .module)
+            }
+        }
+
+        public var statusTone: Tone {
+            switch status {
+            case .sessionExpired: .error
+            case .offline: .warning
+            default: .normal
+            }
+        }
+
+        /// "Sign in again" after losing the session, otherwise "Connect Google Calendar".
+        public var connectTitle: String {
+            status == .sessionExpired
+                ? String(localized: "Sign in again", bundle: .module)
+                : String(localized: "Connect Google Calendar", bundle: .module)
+        }
+
+        /// "On time 11 of 12 this week" (Pro only).
+        public var punctualityText: String? {
+            punctuality.map { String(localized: "On time \($0.onTime) of \($0.alerts) this week", bundle: .module) }
         }
     }
 
@@ -96,6 +143,7 @@ public enum MenuBarFeature {
         }
 
         return State(
+            now: now,
             status: status,
             rows: Array(rows),
             countdown: countdown,

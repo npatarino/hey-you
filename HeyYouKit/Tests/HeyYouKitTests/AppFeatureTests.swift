@@ -39,6 +39,7 @@ struct AppFeatureTests: AppFeatureTesting {
         #expect(store.state.alert == nil)
         await env.clock.advance(by: .seconds(1))
         await store.receive(\.alertDue) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [weeklySync.dedupeKey: weeklySync.end]
             $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59:00"))
             $0.nextAlert = nil
@@ -205,6 +206,7 @@ struct AppFeatureTests: AppFeatureTesting {
         let store = makeStore(env, state: signedIn(env, events: [Self.ana]))
 
         await store.send(.systemWoke) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.nextAlert = ScheduledAlert(event: Self.ana, fireAt: date("2026-11-03 12:29:00"))
         }
         await store.receive(\.alertDue) {
@@ -223,6 +225,7 @@ struct AppFeatureTests: AppFeatureTesting {
         let env = TestEnvironment(now: "2026-11-03 12:34:10", events: [Self.ana])
         let store = makeStore(env, state: signedIn(env, events: [Self.ana]))
         await store.send(.systemWoke) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.nextAlert = ScheduledAlert(event: Self.ana, fireAt: date("2026-11-03 12:29:00"))
         }
         await store.receive(\.alertDue) {
@@ -268,6 +271,7 @@ struct AppFeatureTests: AppFeatureTesting {
         }
         await env.clock.advance(by: .seconds(59 * 60))
         await store.receive(\.alertDue) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [Self.b8Events[1].dedupeKey: Self.b8Events[1].end]
             $0.alert = AlertFeature.State(event: Self.b8Events[1], proHook: .declined, now: date("2026-11-03 08:59"))
             $0.nextAlert = ScheduledAlert(event: Self.b8Events[2], fireAt: date("2026-11-03 09:29"), proHook: .solo)
@@ -301,6 +305,7 @@ struct AppFeatureTests: AppFeatureTesting {
         }
         await env.clock.advance(by: .seconds(59 * 60 + 40))
         await store.receive(\.alertDue) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [Self.b8Events[1].dedupeKey: Self.b8Events[1].end]
             $0.alert = AlertFeature.State(event: Self.b8Events[1], leadTimeSeconds: 20, now: date("2026-11-03 08:59:40"))
             $0.nextAlert = ScheduledAlert(event: demo, fireAt: date("2026-11-03 09:59:40"))
@@ -334,6 +339,7 @@ struct AppFeatureTests: AppFeatureTesting {
         }
         await env.clock.advance(by: .seconds(30))
         await store.receive(\.alertDue) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 2) }
             $0.firedAlerts = [roadmap.dedupeKey: roadmap.end, weeklySync.dedupeKey: weeklySync.end]
             $0.alert = AlertFeature.State(event: roadmap, additionalCount: 1, now: date("2026-11-03 10:59"))
             $0.nextAlert = nil
@@ -349,6 +355,7 @@ struct AppFeatureTests: AppFeatureTesting {
         state.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59"))
         let store = makeStore(env, state: state)
         await store.send(.alertDue(ScheduledAlert(event: next, fireAt: env.now), .scheduled)) {
+            $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [next.dedupeKey: next.end]
             $0.alert = AlertFeature.State(event: next, now: date("2026-11-03 11:00"))
         }

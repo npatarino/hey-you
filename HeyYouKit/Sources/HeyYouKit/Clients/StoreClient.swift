@@ -54,7 +54,8 @@ extension StoreClient: DependencyKey {
             case let .success(verification):
                 let transaction = try verified(verification)
                 await transaction.finish()
-                return await .success(LiveStore.currentEntitlements())
+                // Use the verified transaction itself: `currentEntitlements` can lag right after a purchase.
+                return .success(LiveStore.entitlements(from: transaction))
             case .pending:
                 return .pending
             case .userCancelled:
@@ -72,10 +73,12 @@ extension StoreClient: DependencyKey {
             AsyncStream { continuation in
                 let task = Task {
                     for await update in Transaction.updates {
-                        if let transaction = try? verified(update) {
+                        if let transaction = try? verified(update), transaction.productID == AppConfig.proProductID {
                             await transaction.finish()
+                            continuation.yield(LiveStore.entitlements(from: transaction))
+                        } else {
+                            await continuation.yield(LiveStore.currentEntitlements())
                         }
-                        await continuation.yield(LiveStore.currentEntitlements())
                     }
                     continuation.finish()
                 }
@@ -110,16 +113,25 @@ extension StoreClient: DependencyKey {
     }
 }
 
-private enum LiveStore {
+enum LiveStore {
+    /// Pro from `Transaction.currentEntitlements`, falling back to the latest Pro transaction
+    /// (the entitlement list can lag right after a purchase or restore).
     static func currentEntitlements() async -> Entitlements {
         for await result in Transaction.currentEntitlements {
-            if case let .verified(transaction) = result,
-               transaction.productID == AppConfig.proProductID,
-               transaction.revocationDate == nil {
-                return Entitlements(isPro: true, purchasedAt: transaction.purchaseDate)
+            if case let .verified(transaction) = result, transaction.productID == AppConfig.proProductID {
+                return entitlements(from: transaction)
             }
         }
+        if case let .verified(transaction)? = await Transaction.latest(for: AppConfig.proProductID) {
+            return entitlements(from: transaction)
+        }
         return Entitlements(isPro: false)
+    }
+
+    /// Pro unless the transaction was refunded or revoked.
+    static func entitlements(from transaction: Transaction) -> Entitlements {
+        guard transaction.revocationDate == nil else { return Entitlements(isPro: false) }
+        return Entitlements(isPro: true, purchasedAt: transaction.purchaseDate)
     }
 }
 

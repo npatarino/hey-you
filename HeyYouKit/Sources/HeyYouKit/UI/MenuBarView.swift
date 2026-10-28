@@ -35,7 +35,7 @@ public struct MenuBarView: View {
     public var body: some View {
         let menu = MenuBarFeature.state(from: store.state, now: store.now, calendar: .current)
         VStack(alignment: .leading, spacing: 0) {
-            header(menu, now: store.now)
+            header(menu)
             Divider().padding(.vertical, 6)
             if menu.rows.isEmpty {
                 Text("No more meetings today", bundle: .module)
@@ -55,34 +55,17 @@ public struct MenuBarView: View {
         .frame(width: 320)
     }
 
-    private func header(_ menu: MenuBarFeature.State, now: Date) -> some View {
+    private func header(_ menu: MenuBarFeature.State) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: "Hey You!").font(.headline)
-            Group {
-                switch menu.status {
-                case .loading:
-                    Text("Connecting…", bundle: .module)
-                case .signedOut:
-                    Text("Not connected to Google", bundle: .module)
-                case .sessionExpired:
-                    Text("Disconnected from Google", bundle: .module).foregroundStyle(.red)
-                case let .offline(since):
-                    Text("Offline since \(TimeText.time(since))", bundle: .module).foregroundStyle(.orange)
-                case let .watching(calendars, nextStart):
-                    if let nextStart, nextStart > now {
-                        Text("Watching \(calendars) calendars · next in \(relative(nextStart, now: now))", bundle: .module)
-                    } else {
-                        Text("Watching \(calendars) calendars", bundle: .module)
-                    }
-                }
-            }
-            .font(.callout)
-            .foregroundStyle(.secondary)
+            Text(verbatim: menu.statusText())
+                .font(.callout)
+                .foregroundStyle(color(menu.statusTone))
             if menu.canConnect {
                 Button {
                     store.send(.menuBar(.connectGoogle))
                 } label: {
-                    Text(menu.status == .sessionExpired ? "Sign in again" : "Connect Google Calendar", bundle: .module)
+                    Text(verbatim: menu.connectTitle)
                 }
                 .padding(.top, 4)
             }
@@ -92,8 +75,8 @@ public struct MenuBarView: View {
 
     @ViewBuilder
     private func punctuality(_ menu: MenuBarFeature.State) -> some View {
-        if let stats = menu.punctuality {
-            Text("On time \(stats.onTime) of \(stats.alerts) this week", bundle: .module)
+        if let punctuality = menu.punctualityText {
+            Text(verbatim: punctuality)
                 .font(.callout)
                 .padding(.horizontal, 12)
                 .padding(.bottom, 6)
@@ -127,12 +110,12 @@ public struct MenuBarView: View {
         }
     }
 
-    private func relative(_ date: Date, now: Date) -> String {
-        let minutes = Int((date.timeIntervalSince(now) / 60).rounded(.up))
-        if minutes < 60 {
-            return String(localized: "\(minutes) min", bundle: .module)
+    private func color(_ tone: MenuBarFeature.State.Tone) -> Color {
+        switch tone {
+        case .normal: .secondary
+        case .warning: .orange
+        case .error: .red
         }
-        return TimeText.time(date)
     }
 }
 

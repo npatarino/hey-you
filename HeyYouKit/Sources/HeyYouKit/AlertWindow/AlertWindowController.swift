@@ -15,7 +15,6 @@ public final class AlertWindowController: NSObject {
     private var monitor: Any?
     private var tokens: [ObserveToken] = []
     private var screenObserver: (any NSObjectProtocol)?
-    private var generation = 0
 
     public private(set) var isShowing = false
 
@@ -40,7 +39,6 @@ public final class AlertWindowController: NSObject {
 
     private func show(animated: Bool) {
         guard let alertStore = store.scope(state: \.alert, action: \.alert.presented) else { return }
-        generation += 1
         closePanels()
         isShowing = true
         let mouseScreen = NSScreen.screens.first { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) }
@@ -55,7 +53,7 @@ public final class AlertWindowController: NSObject {
                 panel.orderFrontRegardless()
             }
         }
-        NSApp.activate()
+        NSApplication.shared.activate()
         if animated {
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.2
@@ -72,7 +70,6 @@ public final class AlertWindowController: NSObject {
         removeMonitor()
         let closing = panels
         panels = []
-        let current = generation
         NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.25
             for panel in closing {
@@ -84,7 +81,6 @@ public final class AlertWindowController: NSObject {
                     panel.orderOut(nil)
                     panel.contentView = nil
                 }
-                _ = current
             }
         }
     }
@@ -116,6 +112,11 @@ public final class AlertWindowController: NSObject {
         }
     }
 
+    /// Panels currently on screen (one per display).
+    var visiblePanels: [NSPanel] {
+        panels
+    }
+
     private func consume(_ input: AlertInput) -> Bool {
         guard isShowing else { return false }
         handle(input)
@@ -129,7 +130,7 @@ public final class AlertWindowController: NSObject {
         monitor = nil
     }
 
-    private func handle(_ input: AlertInput) {
+    func handle(_ input: AlertInput) {
         switch input {
         case .join:
             store.send(.alert(.presented(.joinTapped)))

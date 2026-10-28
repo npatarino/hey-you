@@ -31,7 +31,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return Store(initialState: AppFeature.State()) { AppFeature() }
     }
 
+    /// When the app only hosts the HeyYouTests bundle, nothing should start.
+    private static var isHostingTests: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+
     func applicationDidFinishLaunching(_: Notification) {
+        guard !Self.isHostingTests else { return }
         let store = store
         alertWindows = AlertWindowController(store: store)
         onboardingWindow = PresentedWindowController(

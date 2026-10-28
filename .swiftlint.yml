@@ -2,6 +2,7 @@ included:
   - App
   - HeyYouKit/Sources
   - HeyYouKit/Tests
+  - AppTests
 excluded:
   - HeyYouKit/.build
   - build

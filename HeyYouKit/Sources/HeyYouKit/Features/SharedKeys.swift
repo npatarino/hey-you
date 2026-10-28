@@ -25,6 +25,12 @@ public extension SharedKey where Self == AppStorageKey<PunctualityStats>.Default
     }
 }
 
+public extension SharedKey where Self == AppStorageKey<WeeklyMeetings>.Default {
+    static var weeklyMeetings: Self {
+        Self[.appStorage("weeklyMeetings"), default: WeeklyMeetings()]
+    }
+}
+
 public extension SharedKey where Self == AppStorageKey<Bool>.Default {
     static var onboardingCompleted: Self {
         Self[.appStorage("onboardingCompleted"), default: false]
