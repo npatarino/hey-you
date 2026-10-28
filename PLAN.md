@@ -2,7 +2,7 @@
 
 App de macOS (menu bar, siempre en background) que se conecta a Google Calendar y, cuando falta **1 minuto** para una reunión, toma **toda la pantalla** (todas las pantallas) con una alerta roja, bonita e imposible de ignorar, con botón para unirse a la reunión. Se publicará en la **Mac App Store**.
 
-Este documento es el plan completo para que un agente lo ejecute **de forma autónoma y en orden**. Cada hito termina con criterios de aceptación verificables y un commit. No saltes hitos. Si algo del plan no compila con las versiones reales de las librerías, adapta la implementación pero mantén la arquitectura y los criterios de aceptación.
+El *qué* y el *porqué* del producto están en [docs/PRD.md](docs/PRD.md) (nota de prensa, FAQ, decisiones, métricas, casos de prueba del anexo B). Léelo antes que esto. Este documento es el plan completo para que un agente lo ejecute **de forma autónoma y en orden**. Cada hito termina con criterios de aceptación verificables y un commit. No saltes hitos. Si algo del plan no compila con las versiones reales de las librerías, adapta la implementación pero mantén la arquitectura y los criterios de aceptación.
 
 ---
 
@@ -171,8 +171,8 @@ struct ScheduledAlert: Equatable, Sendable { let event: CalendarEvent; let fireA
 
 ### `MenuBarFeature`
 - State derivado: próximos 5 eventos del día, estado de conexión, countdown al próximo.
-- Actions: `openSettings`, `connectGoogle`, `refreshNow`, `previewAlert` (**solo DEBUG**: dispara una alerta de prueba en 5 s con un evento ficticio; útil para desarrollo y capturas), `quit`.
-- Icono del status item: SF Symbol `bell.badge` / `bell` con el minuto restante como texto opcional cuando quedan <10 min.
+- Actions: `openSettings`, `connectGoogle`, `refreshNow`, `previewAlert` (dispara en 5 s una alerta con el evento ficticio "Hey You! test" enlazando a la web del proyecto; disponible también en Release, PRD caso B.15), `quit`.
+- Icono del status item: SF Symbol `bell` con el texto "Xm" cuando quedan <10 min; `bell.slash` cuando la sesión de Google se ha perdido. Menú muestra "Sin conexión desde hh:mm" si el último refresco falló por red (PRD §5.10; casos B.13, B.14).
 
 ### `SettingsFeature`
 - Form SwiftUI con: cuenta (email, Disconnect), lead time (Picker), calendarios (lista con toggles, cargada de `calendarClient.calendars()`), Launch at login (Toggle → `launchAtLoginClient.set(_:)`; reflejar `SMAppService.status`), sonido, filtros (declined, all-day, solo con enlace), botón "Test alert" (dispara `previewAlert` también en Release: es una feature de usuario legítima), versión, enlaces privacidad.
@@ -242,7 +242,7 @@ Formato de commit: `feat(scope): …` / `chore: …` / `test: …`. Antes de cad
 
 ### Hito 2 — Modelos, parser de enlaces y scheduler (lógica pura, 100 % testeada)
 - `CalendarEvent`, `MeetingLink`, `MeetingLinkParser`, `AppSettings`, `LeadTime`, `ScheduledAlert`.
-- `AlertScheduler.next(events:now:leadTime:fired:settings:) -> ScheduledAlert?` (pura): aplica filtros (all-day, declined, sin link si procede, calendarios), descarta eventos ya empezados hace >0 s, elige el de `fireAt` mínimo no disparado. Dos eventos a la misma hora → uno solo (el primero alfabético) y marca ambos como fired al disparar (o muestra el título "2 meetings"; elegir lo simple: muestra el primero, el segundo se marca como fired).
+- `AlertScheduler.next(events:now:leadTime:fired:settings:) -> ScheduledAlert?` (pura): aplica filtros (all-day, declined, sin link si procede, calendarios), descarta eventos ya empezados hace >0 s, elige el de `fireAt` mínimo no disparado. Dos eventos a la misma hora → una sola alerta con el primero por orden alfabético, subtítulo "+1 more" (`ScheduledAlert.additionalCount`), y ambos se marcan como fired al disparar (PRD §5.3, caso B.9).
 - Tests (Swift Testing): parser (Meet/Zoom/Teams/Webex/sin link/location vs description), scheduler (lead time, dedupe, filtros, evento pasado, orden, cambio de leadTime).
 - **Aceptación**: `swift test` verde (si Xcode está instalado; si no, deja los tests escritos y compila con `swift build`). Commit.
 
@@ -255,7 +255,7 @@ Formato de commit: `feat(scope): …` / `chore: …` / `test: …`. Antes de cad
 
 ### Hito 4 — Features TCA (reducers) con tests
 - `AppFeature`, `AlertFeature`, `MenuBarFeature`, `SettingsFeature`, `OnboardingFeature` según §4, con `Reducer` macros, `@ObservableState`, `@Dependency`.
-- Tests `TestStore` con `TestClock`: arranque → refresh → scheduleNext → avanzar reloj → `alertDue` → alert presentada; dedupe tras segundo refresh; wake recalcula; cambiar leadTime reprograma; alert join/dismiss cierra; token caducado → signedOut.
+- Tests `TestStore` con `TestClock` que cubran los casos B.1–B.9 del PRD (anexo B) con sus fechas exactas, además de: arranque → refresh → scheduleNext → avanzar reloj → `alertDue` → alert presentada; dedupe tras segundo refresh; wake recalcula; cambiar leadTime reprograma; alert join/dismiss cierra; token caducado → signedOut.
 - **Aceptación**: tests verdes. Commit.
 
 ### Hito 5 — UI SwiftUI + ventana de alerta AppKit
@@ -273,6 +273,7 @@ Formato de commit: `feat(scope): …` / `chore: …` / `test: …`. Antes de cad
 - **Aceptación**: `xcodegen generate && xcodebuild -scheme HeyYou -configuration Debug build` OK (requiere Xcode). Si no hay Xcode: dejar todo preparado y `swift build` del paquete verde. Commit.
 
 ### Hito 7 — Verificación manual end-to-end (requiere Xcode)
+- Ejecutar a mano los casos B.10–B.15 del PRD y anotar el resultado en `docs/QA.md`.
 - Lanzar la app con `--mock-calendar`: aparece en menu bar, el evento mock en 90 s dispara la alerta a los 30 s (leadTime 60 s) en **todas** las pantallas, sobre apps full-screen; Enter abre el link; Esc, cualquier tecla, clic en cualquier punto, Cmd+Q y Cmd+W descartan la alerta **sin cerrar la app**; sin interacción la alerta sigue visible pasados 5 min y muestra "Empezó hace 5 min"; sonido suena; el status item muestra el countdown. Cmd+Q sin alerta visible cierra la app.
 - Onboarding: el botón "Sign in with Google" sigue el branding de Google y al pulsarlo (con `Secrets.xcconfig` configurado) abre la ventana de consentimiento de Google.
 - Probar Settings → Launch at login (ver estado en System Settings → General → Login Items).

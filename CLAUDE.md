@@ -2,7 +2,7 @@
 
 macOS menu-bar app (Swift 6, SwiftUI + AppKit, **TCA**) that takes over every screen with a red alert one minute before a Google Calendar meeting. Target: Mac App Store.
 
-**The full specification and milestone list is in [PLAN.md](PLAN.md). Read it entirely before doing anything, then execute the milestones in order, autonomously.** Do not reopen architecture decisions from PLAN.md §1.
+**Product spec (what and why): [docs/PRD.md](docs/PRD.md). Technical plan and milestones (how): [PLAN.md](PLAN.md). Read both entirely before doing anything, then execute the milestones in order, autonomously.** Do not reopen architecture decisions from PLAN.md §1.
 
 ## Environment facts (checked 2026-10-28)
 - Swift 6.3.3 via Command Line Tools. **Xcode.app is NOT installed**: `swift build` works, `swift test`/`xcodebuild` do not. Check again at start (`ls /Applications | grep Xcode`); if still missing, do everything possible with `swift build` and tell the user plainly which milestones (7–9) are blocked and how to unblock (install Xcode, `sudo xcode-select -s /Applications/Xcode.app`).
