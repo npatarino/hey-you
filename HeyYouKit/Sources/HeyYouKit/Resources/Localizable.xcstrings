@@ -1,0 +1,11 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Video call" : {
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Videollamada" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
