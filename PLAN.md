@@ -50,9 +50,11 @@ El agente desarrolla con un `GoogleOAuthConfig` de placeholder y con un `Calenda
 | Background | App de **menu bar** (`LSUIElement = YES`, sin Dock). Launch at login con `SMAppService.mainApp` (opt-in en Settings) | "Siempre corriendo" compatible con App Store |
 | Alerta | Una `NSWindow` **por pantalla** (`NSScreen.screens`), `level = .screenSaver`, `collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]`, `NSApp.activate(ignoringOtherApps: true)`, contenido SwiftUI | Cubre apps en pantalla completa y todos los Spaces |
 | Salida de la alerta | **Cualquier interacción la descarta**: clic en cualquier punto, cualquier tecla (Esc, Espacio, Enter…), Cmd+Q, Cmd+W, Cmd+. (mientras la alerta está visible, Cmd+Q **no** cierra la app: solo descarta la alerta). Botón **Unirse** (abre el enlace y descarta). **Sin auto-cierre**: permanece hasta que el usuario la descarte; cuando la reunión ya ha empezado muestra "Empezó hace X min" | No bloquear al usuario, pero que no pueda ignorar la notificación |
-| Tiempo de aviso | Por defecto **60 s** antes del evento, configurable (30 s / 1 / 2 / 5 min) | Requisito + flexibilidad |
+| Tiempo de aviso | **60 s** fijo en gratis; con Pro, deslizador **10–60 s** en pasos de 5 s. Nunca más de 60 | Requisito del PRD §5.1 |
+| Monetización | **Freemium con compra única** (StoreKit 2, producto no consumible `com.patarino.heyyou.pro`, 5,99 €). Estado Pro desde `Transaction.currentEntitlements`, cacheado en `@Shared`. Tabla gratis/Pro en PRD §5.2.1 | PRD §5.6.2 |
+| Analítica | **PostHog** (SDK `posthog-ios`, soporta macOS) alojado en la UE, encapsulado en `AnalyticsClient`, con consentimiento en onboarding. Taxonomía cerrada en PRD §6.1. **Nunca** títulos, enlaces, asistentes ni nombres de calendario | PRD §5.6.1 |
 | Scheduling | Efecto de larga duración en `AppFeature`: refresco de eventos cada 60 s (ventana próximas 24 h), cálculo del siguiente disparo, `clock.sleep` hasta `start - leadTime`, dedupe por `eventID+start`. Recalcular en `NSWorkspace.didWakeNotification` y al cambiar settings | Preciso y barato |
-| Persistencia | `@Shared(.appStorage)` para settings; nada más | Simple |
+| Persistencia | `@Shared(.appStorage)` para settings, consentimiento, estado Pro cacheado y contadores de puntualidad; nada más | Simple |
 | Idiomas | **Inglés (base) + Español**, String Catalog `Localizable.xcstrings` | App Store global, usuario hispanohablante |
 | Tests | **Swift Testing** (`import Testing`) + `TestStore` de TCA. Cobertura: scheduler, parsing de eventos/enlaces, refresh de tokens, reducers | Buenas prácticas |
 | Lint/format | SwiftLint + SwiftFormat con configs versionadas; `swiftformat .` antes de cada commit | Buenas prácticas |
@@ -81,20 +83,22 @@ hey-you/
 │   ├── AppDelegate.swift        # NSApplicationDelegate: wake notifications, URL handling
 │   ├── Info.plist               # LSUIElement, CFBundleURLTypes (scheme OAuth), NSHumanReadableCopyright…
 │   ├── HeyYou.entitlements      # app-sandbox, network.client
-│   └── Assets.xcassets          # AppIcon, AccentColor, colores de la alerta
+│   ├── HeyYou.storekit          # configuración StoreKit local para probar la compra sin App Store Connect
+│   └── Assets.xcassets          # AppIcon, AccentColor, colores de la alerta, google_g
 ├── HeyYouKit/                   # Swift Package local
 │   ├── Package.swift
 │   ├── Sources/
 │   │   ├── Models/              # CalendarEvent, MeetingLink, AppSettings, LeadTime
 │   │   ├── GoogleAuth/          # Wrapper de GoogleSignIn (GIDSignIn), GoogleAccount
 │   │   ├── GoogleCalendar/      # GoogleCalendarAPI (URLSession), DTOs, mapeo a CalendarEvent
-│   │   ├── Clients/             # Dependencias TCA: CalendarClient, AuthClient,
+│   │   ├── Clients/             # Dependencias TCA: CalendarClient, AuthClient, StoreClient, AnalyticsClient,
 │   │   │                        #   LaunchAtLoginClient, AlertPresenterClient, WorkspaceClient, SoundClient
 │   │   ├── Scheduling/          # AlertScheduler (función pura: eventos + now + leadTime + fired → próximo disparo)
 │   │   ├── Features/            # Reducers TCA: AppFeature, MenuBarFeature, SettingsFeature,
-│   │   │                        #   OnboardingFeature, AlertFeature
+│   │   │                        #   OnboardingFeature, AlertFeature, PaywallFeature
+│   │   ├── Analytics/           # AnalyticsEvent (enum tipado con la taxonomía PRD §6.1)
 │   │   ├── UI/                  # Vistas SwiftUI: MenuBarView, SettingsView, OnboardingView, AlertView,
-│   │   │                        #   DesignSystem (colores, tipografías, componentes)
+│   │   │                        #   PaywallView, DesignSystem (colores, tipografías, componentes)
 │   │   └── AlertWindow/         # AppKit: AlertWindowController (ventanas por pantalla)
 │   ├── Resources/Localizable.xcstrings
 │   └── Tests/HeyYouKitTests/
@@ -104,7 +108,7 @@ hey-you/
     └── test.sh                  # swift test / xcodebuild test
 ```
 
-`Package.swift`: un único target de librería `HeyYouKit` (con sub-carpetas como organización; si el agente prefiere, targets separados `Models`, `Scheduling` para tests puros sin AppKit). Dependencias: `pointfreeco/swift-composable-architecture` (from: última 1.x; ya trae `swift-dependencies`, `swift-sharing`, `swift-clocks`, `swift-identified-collections`) y `google/GoogleSignIn-iOS` (producto `GoogleSignIn`).
+`Package.swift`: un único target de librería `HeyYouKit` (con sub-carpetas como organización; si el agente prefiere, targets separados `Models`, `Scheduling` para tests puros sin AppKit). Dependencias: `pointfreeco/swift-composable-architecture` (from: última 1.x; ya trae `swift-dependencies`, `swift-sharing`, `swift-clocks`, `swift-identified-collections`), `google/GoogleSignIn-iOS` (producto `GoogleSignIn`) y `PostHog/posthog-ios` (producto `PostHog`, soporta macOS 10.15+).
 
 Nota para el usuario: un "Swift Package local" es simplemente una carpeta con `Package.swift` dentro del repo que contiene todo el código como librería; el proyecto Xcode de la app la importa. Ventaja: se compila y testea desde terminal sin abrir Xcode y queda bien separada la lógica de la app.
 
@@ -134,17 +138,38 @@ struct MeetingLink: Equatable, Sendable, Codable {
 }
 
 struct AppSettings: Equatable, Codable, Sendable {
-    var leadTime: LeadTime = .oneMinute      // enum: 30s, 1m, 2m, 5m
+    var leadTimeSeconds: Int = 60             // 10...60 en pasos de 5; validar con LeadTime.clamp
     var launchAtLogin = false
-    var playSound = true
-    var ignoreDeclined = true
-    var ignoreAllDay = true
+    // --- Pro ---
+    var ignoreDeclined = false                // se pone a true al comprar Pro
+    var ignoreWithoutOtherAttendees = false   // "bloques de foco"; true al comprar Pro
     var onlyEventsWithMeetingLink = false
     var selectedCalendarIDs: Set<String>? = nil   // nil = todos
+    var sound: AlertSound = .default          // enum: default, chime, pulse, horn, bell, none
+    var workingHours: WorkingHours? = nil     // nil = siempre; struct { weekdays: Set<Int>, start: Minutes, end: Minutes }
+    var showCountdownInMenuBar = true
 }
 
-struct ScheduledAlert: Equatable, Sendable { let event: CalendarEvent; let fireAt: Date }
+enum LeadTime { static let range = 10...60; static let step = 5; static func clamp(_ s: Int) -> Int }
+
+struct Consent: Equatable, Codable, Sendable { var usageAnalytics = true; var emailContact = false }
+
+struct Entitlements: Equatable, Codable, Sendable { var isPro = false; var purchasedAt: Date? }
+
+/// Aplica los settings respetando Pro: si `!isPro`, devuelve los defaults gratuitos (60 s, sin filtros, todos los calendarios, sonido por defecto, sin horario).
+struct EffectiveSettings { init(_ settings: AppSettings, isPro: Bool) }
+
+struct ScheduledAlert: Equatable, Sendable {
+    let event: CalendarEvent
+    let fireAt: Date
+    let additionalCount: Int                 // solapes ("+1 more")
+    let proHook: ProHook?                    // .declined | .noLink | .solo — solo si !isPro y el filtro lo habría quitado
+}
+
+struct PunctualityStats: Equatable, Codable, Sendable { var weekStart: Date; var alerts: Int; var onTime: Int }  // Pro
 ```
+
+**Regla de oro:** los reducers y el scheduler reciben siempre `EffectiveSettings`, nunca `AppSettings` crudo. Así el gating de Pro vive en un único sitio y los tests de B.8 son triviales.
 
 **Extracción de `MeetingLink`** (`MeetingLinkParser`): orden de prioridad: `hangoutLink` → `conferenceData.entryPoints[type == "video"].uri` → URLs en `location` → URLs en `description`. Regex de dominios: `meet.google.com`, `*.zoom.us/j/`, `teams.microsoft.com/l/meetup-join`, `*.webex.com`. Primera coincidencia gana. Tests con fixtures.
 
@@ -153,17 +178,19 @@ struct ScheduledAlert: Equatable, Sendable { let event: CalendarEvent; let fireA
 ## 4. Features TCA
 
 ### `AppFeature` (raíz)
-- State: `auth: AuthState` (`.signedOut | .signedIn(email)`), `events: IdentifiedArrayOf<CalendarEvent>`, `nextAlert: ScheduledAlert?`, `@Shared(.appStorage("settings")) settings`, `firedAlerts: Set<String>` (en memoria), `@Presents alert: AlertFeature.State?`, `menuBar: MenuBarFeature.State`, `settingsWindow: SettingsFeature.State?`, `onboarding: OnboardingFeature.State?`, `lastSyncError: String?`.
+- State: `auth: AuthState` (`.signedOut | .signedIn(email)`), `events: IdentifiedArrayOf<CalendarEvent>`, `nextAlert: ScheduledAlert?`, `@Shared(.appStorage("settings")) settings`, `@Shared(.appStorage("consent")) consent`, `@Shared(.appStorage("entitlements")) entitlements`, `@Shared(.appStorage("punctuality")) stats`, `firedAlerts: Set<String>` (en memoria), `@Presents alert: AlertFeature.State?`, `@Presents paywall: PaywallFeature.State?`, `menuBar: MenuBarFeature.State`, `settingsWindow: SettingsFeature.State?`, `onboarding: OnboardingFeature.State?`, `lastSyncError: String?`, `isOffline: Bool`.
 - Actions: `task` (arranque), `authChanged`, `refreshTick`, `eventsResponse(Result)`, `scheduleNext`, `alertDue(CalendarEvent)`, `systemWoke`, `settingsChanged`, hijos.
 - Efectos:
-  - `.task`: `authClient.restorePreviousSignIn()`; si signed in → `refreshEvents`; suscribirse a `workspaceClient.wakeNotifications()`; loop `for await _ in clock.timer(interval: .seconds(60)) { send(.refreshTick) }`.
-  - `refreshEvents`: `calendarClient.upcomingEvents(window: 24h)` → filtra según settings → `scheduleNext`.
+  - `.task`: `analyticsClient.configure(consent)`; `storeClient.currentEntitlements()` → actualizar `entitlements` y suscribirse a `storeClient.updates()`; `authClient.restorePreviousSignIn()`; si signed in → `refreshEvents`; suscribirse a `workspaceClient.wakeNotifications()`; loop `for await _ in clock.timer(interval: .seconds(60)) { send(.refreshTick) }`; `track(.appLaunched)`.
+  - `refreshEvents`: `calendarClient.upcomingEvents(window: 24h)` → `scheduleNext` con `EffectiveSettings(settings, isPro:)` → `track(.calendarSynced)`.
   - `scheduleNext`: `AlertScheduler.next(events:, now:, leadTime:, fired:)` → cancela efecto anterior (`cancellable(id: CancelID.alertTimer)`) → `clock.sleep(until fireAt)` → `send(.alertDue(event))`. Tolerancia: si `fireAt` ya pasó pero `event.start > now`, dispara inmediatamente.
-  - `alertDue`: marca `firedAlerts`, `soundClient.play()` si procede, `alert = AlertFeature.State(event:, startsAt:)`, `alertPresenterClient.show()`, luego `scheduleNext`.
+  - `alertDue`: marca `firedAlerts`, `soundClient.play(settings.sound)` si procede, `alert = AlertFeature.State(event:, startsAt:, proHook:)` (si ya hay una visible, se reemplaza y se trackea `alert_dismissed(reason: replaced)`), `alertPresenterClient.show()`, `track(.alertShown)`, luego `scheduleNext`.
+  - `alert(.presented(.delegate(.dismissed(reason, secondsToStart))))`: `track(.alertDismissed)`; si `isPro`, actualizar `stats` (onTime si reason == join o secondsToStart ≥ −30).
+  - Pro: cuando `entitlements.isPro` pasa a true por primera vez, poner `ignoreDeclined = true` e `ignoreWithoutOtherAttendees = true`, y `analyticsClient.identify(isPro: true)`.
   - Dedupe: clave `"\(event.id)|\(event.start.timeIntervalSince1970)"`. Purgar claves de eventos ya terminados en cada refresh.
 
 ### `AlertFeature`
-- State: `event`, `secondsRemaining: Int` (puede ser negativo), `phase: .countingDown | .startingNow (0…59 s tras el inicio) | .started(minutesAgo)`, `reduceMotion`.
+- State: `event`, `secondsRemaining: Int` (puede ser negativo), `phase: .countingDown | .startingNow (0…59 s tras el inicio) | .started(minutesAgo)`, `additionalCount`, `proHook: ProHook?` (línea de gancho bajo el título, solo texto), `reduceMotion`.
 - Actions: `task` (timer 1 s con `clock`), `tick`, `joinTapped`, `dismissed(DismissReason)` (`.click | .key | .quitShortcut | .button`), `delegate(.joined | .dismissed)`.
 - `joinTapped`: `openURL(meetingLink.url)` (si no hay link, abre `htmlLink`), luego dismiss.
 - **Sin auto-cierre.** La alerta permanece hasta que el usuario interactúa. La captura de clics y teclas la hace `AlertWindowController` (AppKit) y la traduce en `.dismissed(reason)` al store.
@@ -171,14 +198,21 @@ struct ScheduledAlert: Equatable, Sendable { let event: CalendarEvent; let fireA
 
 ### `MenuBarFeature`
 - State derivado: próximos 5 eventos del día, estado de conexión, countdown al próximo.
-- Actions: `openSettings`, `connectGoogle`, `refreshNow`, `previewAlert` (dispara en 5 s una alerta con el evento ficticio "Hey You! test" enlazando a la web del proyecto; disponible también en Release, PRD caso B.15), `quit`.
+- Muestra la línea de puntualidad semanal ("On time 11 of 12 this week") si Pro; si no, "Punctuality stats · Pro" que abre el paywall (`source: stats`). Entrada "Hey You! Pro…" oculta si ya es Pro. Countdown "Xm" en el icono solo si Pro y `showCountdownInMenuBar`.
+- Actions: `openSettings`, `openPaywall(source)`, `connectGoogle`, `refreshNow`, `previewAlert` (dispara en 5 s una alerta con el evento ficticio "Hey You! test" enlazando a la web del proyecto; disponible también en Release, PRD caso B.15), `quit`.
 - Icono del status item: SF Symbol `bell` con el texto "Xm" cuando quedan <10 min; `bell.slash` cuando la sesión de Google se ha perdido. Menú muestra "Sin conexión desde hh:mm" si el último refresco falló por red (PRD §5.10; casos B.13, B.14).
 
 ### `SettingsFeature`
-- Form SwiftUI con: cuenta (email, Disconnect), lead time (Picker), calendarios (lista con toggles, cargada de `calendarClient.calendars()`), Launch at login (Toggle → `launchAtLoginClient.set(_:)`; reflejar `SMAppService.status`), sonido, filtros (declined, all-day, solo con enlace), botón "Test alert" (dispara `previewAlert` también en Release: es una feature de usuario legítima), versión, enlaces privacidad.
+- Form SwiftUI con secciones: **Cuenta** (email, Disconnect); **General**: Launch at login (Toggle → `launchAtLoginClient.set(_:)`; reflejar `SMAppService.status`), botón "Test alert"; **Alerta** (Pro): lead time (Slider 10–60 paso 5, con etiqueta "60 s" fija y candado si no Pro), sonido (Picker), countdown en barra; **Filtros** (Pro): ignorar rechazadas, ignorar sin otros asistentes, solo con enlace, horario laboral (días + hora inicio/fin); **Calendarios** (Pro): lista con toggles cargada de `calendarClient.calendars()`; **Privacidad**: toggle "Compartir estadísticas de uso", toggle "Avisarme de novedades por email", enlace a política; **Hey You! Pro**: estado (gratis/Pro), botón "Desbloquear Pro…" o "Restaurar compra"; versión.
+- Cada control Pro se envuelve en un `ProGated { }` view modifier: si no Pro, se muestra deshabilitado con un candado; clic en el candado → `delegate(.openPaywall(source: .settingsLock))`. Cambios de settings Pro se trackean con `setting_changed`.
+
+### `PaywallFeature`
+- State: `products: [StoreProduct]` (cargados de `storeClient.products()`), `isPurchasing`, `error`, `source: PaywallSource`, `priceVariant` (de `analyticsClient.featureFlag("pro_price")`, default "5.99").
+- Actions: `task` (cargar productos, `track(.paywallViewed)`), `purchaseTapped`, `restoreTapped`, `purchaseResponse(Result)`, `dismiss`, `delegate(.purchased)`.
+- Hoja (`.sheet`) de 420×560 con la lista de beneficios de PRD §4, precio localizado desde StoreKit, botón comprar, "Restaurar compra", enlaces a términos y privacidad. Se cierra sola al comprar.
 
 ### `OnboardingFeature`
-- Pantalla única de bienvenida (ventana normal 480×560): explica qué hace la app, botón "Connect Google Calendar" → `authClient.signIn()` → al éxito cierra y arranca sync. Muestra errores.
+- Pantalla única de bienvenida (ventana normal 480×620): explica qué hace la app, botón "Sign in with Google" → `authClient.signIn()`, dos toggles de consentimiento (uso: on por defecto; email: off) que escriben en `@Shared consent` y llaman a `analyticsClient.configure`; tras el sign-in muestra toggle "Abrir al iniciar sesión" y botón "Probar la alerta"; al éxito cierra y arranca sync. Muestra errores. No menciona Pro.
 - La ventana de onboarding/Settings sirve de `ASPresentationAnchor` para `ASWebAuthenticationSession`.
 
 ---
@@ -199,9 +233,11 @@ Cada cliente: `struct XClient { var op: @Sendable (...) async throws -> ... }`, 
 - **`AlertPresenterClient`**: `show(store: StoreOf<AlertFeature>)`, `dismiss()`, `isShowing() -> Bool`. Live: `AlertWindowController` (MainActor) que crea una `NSWindow` (subclase `AlertWindow` con `canBecomeKey = true`) por `NSScreen` con `NSHostingView(rootView: AlertView(store:))`, estilo `.borderless`, `isOpaque`, `backgroundColor = .clear`, `level = .screenSaver`, `collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]`, `hidesOnDeactivate = false`, `makeKeyAndOrderFront`, `NSApp.activate(ignoringOtherApps: true)`. Escucha `NSApplication.didChangeScreenParametersNotification` para rehacer ventanas si cambian pantallas. `dismiss()` cierra todas con fade-out (0.25 s).
   - **Descartar con cualquier interacción**: `AlertWindow` sobreescribe `mouseDown`/`rightMouseDown` (clic en cualquier punto que no sea el botón Unirse → `.dismissed(.click)`), `keyDown` (cualquier tecla → `.dismissed(.key)`; Enter → `joinTapped`), `cancelOperation` (Esc). Para Cmd+Q / Cmd+W / Cmd+.: un `NSEvent.addLocalMonitorForEvents(matching: .keyDown)` activo solo mientras la alerta está visible intercepta `q`, `w`, `.` con `.command` y envía `.dismissed(.quitShortcut)` devolviendo `nil` (consume el evento). Además `AppDelegate.applicationShouldTerminate` devuelve `.terminateCancel` y descarta la alerta si `isShowing()`; cuando no hay alerta, Cmd+Q desde el menú sale normalmente.
   - Si el usuario cambia de app con Cmd+Tab o clic en otra pantalla, la alerta sigue encima (nivel screenSaver); no se descarta por perder el foco, pero cualquier clic sobre ella sí.
+- **`StoreClient`** (StoreKit 2): `products() async throws -> [StoreProduct]`, `purchase(productID) async throws -> PurchaseResult` (`.success | .pending | .cancelled`), `restore() async throws`, `currentEntitlements() async -> Entitlements`, `updates() -> AsyncStream<Entitlements>` (sobre `Transaction.updates`). Live verifica `VerificationResult` y hace `finish()`. Mock: `isPro` configurable; `purchase` devuelve success tras 0,5 s. Fichero `App/HeyYou.storekit` con el producto para pruebas locales (el scheme lo referencia en Debug).
+- **`AnalyticsClient`** (PostHog): `configure(Consent)`, `track(AnalyticsEvent)`, `identify(email:emailHash:properties:)`, `setPersonProperties([String: Sendable])`, `featureFlag(String) async -> String?`, `reset()`. `AnalyticsEvent` es un enum con casos tipados y propiedades exactas de PRD §6.1 (`var name: String`, `var properties: [String: Any]`); está **prohibido** `track("string", [...])` libre. Si `consent.usageAnalytics == false`, `track` no hace nada (ni encola). Host `https://eu.i.posthog.com`, API key desde `Secrets.xcconfig` (`POSTHOG_API_KEY`) → `Info.plist`. Mock: acumula eventos en un array para los tests (`B.19`). Opt-out total con `PostHogSDK.shared.optOut()`.
 - **`LaunchAtLoginClient`**: `status() -> Bool`, `set(Bool) throws` sobre `SMAppService.mainApp`.
 - **`WorkspaceClient`**: `wakeNotifications() -> AsyncStream<Void>` (`NSWorkspace.shared.notificationCenter`, `didWakeNotification` y `screensDidWakeNotification`).
-- **`SoundClient`**: `play()` → `NSSound(named: .init("Funk"))` o un `.caf` propio en Assets. Respeta `settings.playSound`.
+- **`SoundClient`**: `play(AlertSound)` → sonidos del sistema (`NSSound(named:)`: "Funk", "Glass", "Ping", "Sosumi", "Submarine") o `.none`. En gratis siempre `.default`.
 - **`OpenURLClient`**: `NSWorkspace.shared.open`.
 - Usar `@Dependency(\.continuousClock)`, `@Dependency(\.date)`, `@Dependency(\.uuid)` siempre; nunca `Date()` directo en reducers.
 
@@ -216,7 +252,7 @@ Objetivo: bonita, premium, imposible de no ver. Tema único (siempre rojo), inde
   1. Etiqueta superior en caps, tracking 4, 14 pt, blanco 80 %: `"MEETING IN"` / `"REUNIÓN EN"`.
   2. **Countdown**: número gigante `secondsRemaining` (SF Pro Rounded, black, 180 pt, monospaced digits) con sufijo `s`. Al llegar a 0: `"NOW"` / `"AHORA"` con escala 1.0→1.08 en loop suave durante el primer minuto; después, la etiqueta superior cambia a `"STARTED 3 MIN AGO"` / `"EMPEZÓ HACE 3 MIN"` y el número muestra los minutos transcurridos.
   3. **Anillo de progreso** alrededor del número (stroke 10 pt, blanco 90 %, `trim` de `secondsRemaining / leadTimeSeconds`, cap redondeado).
-  4. **Título del evento**: 44 pt, bold, blanco, 2 líneas máx, centrado.
+  4. **Título del evento**: 44 pt, bold, blanco, 2 líneas máx, centrado. Debajo, si `additionalCount > 0`: "+1 more" 20 pt blanco 70 %. Debajo, si `proHook != nil`: línea 16 pt blanco 65 % con icono `lock.fill`: "Declined · With Pro we wouldn't have alerted you" / "No link · …" / "Just you · …". Solo texto, sin botón (PRD §5.6.2).
   5. Línea de meta: `"10:00 – 10:30 · Google Meet"` 20 pt blanco 85 %, icono del proveedor (SF Symbols: `video.fill`).
   6. **Botón** primario **"Join meeting"** pill blanca 56 pt alto, texto rojo bold 20 pt, icono `arrow.right`, `keyboardShortcut(.defaultAction)`. Si no hay enlace: pasa a ser "Open in Calendar". No hay botón "Dismiss": lo sustituye el pie.
   7. Pie: `"Click anywhere or press any key to dismiss"` / `"Haz clic o pulsa cualquier tecla para descartar"` 16 pt blanco 60 %.
@@ -246,27 +282,31 @@ Formato de commit: `feat(scope): …` / `chore: …` / `test: …`. Antes de cad
 - Tests (Swift Testing): parser (Meet/Zoom/Teams/Webex/sin link/location vs description), scheduler (lead time, dedupe, filtros, evento pasado, orden, cambio de leadTime).
 - **Aceptación**: `swift test` verde (si Xcode está instalado; si no, deja los tests escritos y compila con `swift build`). Commit.
 
-### Hito 3 — Clientes de Google (auth + calendar)
+### Hito 3 — Clientes externos (Google auth + calendar, StoreKit, PostHog)
 - Añadir `GoogleSignIn-iOS` a `Package.swift` (producto `GoogleSignIn`). Verificar que compila para macOS con `swift build`.
 - `AuthClient.live` sobre `GIDSignIn` (ver §5); `AuthClient.mock`. `GIDClientID` leído de `Info.plist` (inyectado desde `Secrets.xcconfig`); si es `REPLACE_ME`, `AuthError.notConfigured`.
 - `GoogleCalendarAPI` con `URLSession` inyectable (`URLProtocol` stub en tests), DTOs `Decodable`, mapeo a `CalendarEvent` (parsear `dateTime` con offset y `date` all-day). Token obtenido vía `authClient.accessToken()` en cada petición.
-- Tests: decodificación de fixtures JSON reales de la API (incluir fixtures en `Tests/Fixtures`), 401 → signOut, mapeo de `responseStatus`.
+- Tests: decodificación de fixtures JSON reales de la API (incluir fixtures en `Tests/Fixtures`), 401 → signOut, mapeo de `responseStatus` y de `attendees` (para `hasOtherAttendees`).
+- `StoreClient.live` (StoreKit 2) + `.mock`; `App/HeyYou.storekit` con `com.patarino.heyyou.pro` a 5,99 €.
+- Añadir `posthog-ios` a `Package.swift`; `AnalyticsEvent` enum completo según PRD §6.1; `AnalyticsClient.live` + `.mock`. Test: cada caso del enum produce el nombre y las claves exactas de la tabla del PRD; ningún evento acepta `String` libre en propiedades sensibles.
 - **Aceptación**: tests verdes, `swift build` OK. Commit.
 
 ### Hito 4 — Features TCA (reducers) con tests
-- `AppFeature`, `AlertFeature`, `MenuBarFeature`, `SettingsFeature`, `OnboardingFeature` según §4, con `Reducer` macros, `@ObservableState`, `@Dependency`.
-- Tests `TestStore` con `TestClock` que cubran los casos B.1–B.9 del PRD (anexo B) con sus fechas exactas, además de: arranque → refresh → scheduleNext → avanzar reloj → `alertDue` → alert presentada; dedupe tras segundo refresh; wake recalcula; cambiar leadTime reprograma; alert join/dismiss cierra; token caducado → signedOut.
+- `AppFeature`, `AlertFeature`, `MenuBarFeature`, `SettingsFeature`, `OnboardingFeature`, `PaywallFeature` según §4, con `Reducer` macros, `@ObservableState`, `@Dependency`. `EffectiveSettings` y el gating de Pro.
+- Tests `TestStore` con `TestClock` que cubran los casos B.1–B.9 y B.16–B.19 del PRD (anexo B) con sus fechas exactas, además de: compra → settings Pro por defecto activados; consentimiento off → cero eventos en el mock de analítica; arranque → refresh → scheduleNext → avanzar reloj → `alertDue` → alert presentada; dedupe tras segundo refresh; wake recalcula; cambiar leadTime reprograma; alert join/dismiss cierra; token caducado → signedOut.
 - **Aceptación**: tests verdes. Commit.
 
 ### Hito 5 — UI SwiftUI + ventana de alerta AppKit
-- `DesignSystem` (colores en Assets + `Color` extensions, estilos de botón), `AlertView` según §6, `MenuBarView` (`MenuBarExtra` con `.window` style: lista de próximos eventos, countdown, botones), `SettingsView`, `OnboardingView`.
+- `DesignSystem` (colores en Assets + `Color` extensions, estilos de botón, `GoogleSignInButton`, `ProGated` modifier), `AlertView` según §6, `MenuBarView` (`MenuBarExtra` con `.window` style: lista de próximos eventos, countdown, puntualidad, botones), `SettingsView`, `OnboardingView`, `PaywallView`.
 - `AlertWindowController` (`AlertPresenterClient.live`).
 - Previews de SwiftUI con `previewValue`s.
 - **Aceptación**: compila; previews declaradas. Commit.
 
 ### Hito 6 — Target de app, Info.plist, entitlements, XcodeGen
 - `project.yml`: target `HeyYou` (macOS app, deployment 14.0, `SWIFT_STRICT_CONCURRENCY = complete`, `ENABLE_HARDENED_RUNTIME = YES`, `CODE_SIGN_ENTITLEMENTS`, xcconfigs), dependencia del paquete local, schemes `HeyYou` (build/run/test) con test target `HeyYouKitTests`.
-- `Info.plist`: `LSUIElement = YES`, `CFBundleURLTypes` con scheme `$(GOOGLE_REVERSED_CLIENT_ID)`, `GoogleClientID = $(GOOGLE_CLIENT_ID)`, `NSHumanReadableCopyright`, `LSApplicationCategoryType = public.app-category.productivity`, `ITSAppUsesNonExemptEncryption = NO`.
+- `Info.plist`: `LSUIElement = YES`, `CFBundleURLTypes` con scheme `$(GOOGLE_REVERSED_CLIENT_ID)`, `GIDClientID = $(GOOGLE_CLIENT_ID)`, `PostHogAPIKey = $(POSTHOG_API_KEY)`, `NSHumanReadableCopyright`, `LSApplicationCategoryType = public.app-category.productivity`, `ITSAppUsesNonExemptEncryption = NO`.
+- `Config/Secrets.example.xcconfig`: `GOOGLE_CLIENT_ID`, `GOOGLE_REVERSED_CLIENT_ID`, `POSTHOG_API_KEY`, `TEAM_ID`, todos `REPLACE_ME`. Si `POSTHOG_API_KEY` es `REPLACE_ME`, `AnalyticsClient.live` se comporta como no-op con un `os_log` de aviso.
+- `App/HeyYou.storekit` referenciado en el scheme de Debug (`StoreKitConfiguration`).
 - `HeyYou.entitlements`: `com.apple.security.app-sandbox = YES`, `com.apple.security.network.client = YES`.
 - `HeyYouApp.swift`: `@main struct HeyYouApp: App` con `@NSApplicationDelegateAdaptor`, `let store = Store(initialState: AppFeature.State()) { AppFeature() }`, `MenuBarExtra`, `Settings { SettingsView }`, `Window("Onboarding")`. En `DEBUG`, si `ProcessInfo.processInfo.arguments.contains("--mock-calendar")`, usar `withDependencies { $0.calendarClient = .mock; $0.authClient = .mock }`.
 - AppIcon: generar un icono simple (campana blanca sobre fondo rojo) como PNGs 16…1024 con un script (`swift` o `sips`/CoreGraphics) en `scripts/make-icon.swift`.
@@ -277,6 +317,8 @@ Formato de commit: `feat(scope): …` / `chore: …` / `test: …`. Antes de cad
 - Lanzar la app con `--mock-calendar`: aparece en menu bar, el evento mock en 90 s dispara la alerta a los 30 s (leadTime 60 s) en **todas** las pantallas, sobre apps full-screen; Enter abre el link; Esc, cualquier tecla, clic en cualquier punto, Cmd+Q y Cmd+W descartan la alerta **sin cerrar la app**; sin interacción la alerta sigue visible pasados 5 min y muestra "Empezó hace 5 min"; sonido suena; el status item muestra el countdown. Cmd+Q sin alerta visible cierra la app.
 - Onboarding: el botón "Sign in with Google" sigue el branding de Google y al pulsarlo (con `Secrets.xcconfig` configurado) abre la ventana de consentimiento de Google.
 - Probar Settings → Launch at login (ver estado en System Settings → General → Login Items).
+- Probar la compra con el fichero `.storekit` (B.17, B.18): candados desaparecen, settings Pro por defecto, countdown en la barra; "Restaurar compra" funciona.
+- Verificar con `Charles`/`mitmproxy` o con el modo debug del SDK de PostHog que los eventos llegan con las propiedades del PRD §6.1 y que **ninguna** petición contiene títulos ni enlaces (B.19). Con el consentimiento apagado, cero peticiones a `posthog.com`.
 - Probar el flujo real de OAuth si el usuario ya ha rellenado `Secrets.xcconfig`; si no, documentar en README exactamente cómo hacerlo.
 - Hacer capturas de pantalla (`screencapture`) de la alerta y del menú y guardarlas en `docs/screenshots/`.
 - Corregir lo que falle. Commit `fix:`/`polish:`.
@@ -285,12 +327,13 @@ Formato de commit: `feat(scope): …` / `chore: …` / `test: …`. Antes de cad
 - SwiftLint 0 warnings, SwiftFormat aplicado, Swift 6 strict concurrency sin warnings.
 - Localización completa es/en (revisar que no haya strings hardcodeados: `swiftlint` regla `nslocalizedstring`? → usar `String(localized:)`).
 - Accesibilidad: labels en botones, `reduceMotion`, contraste AA (blanco sobre `#B5121F` ≥ 4.5:1).
+- Gating de Pro revisado: ningún ajuste Pro tiene efecto si `!isPro` (buscar usos de `AppSettings` fuera de `EffectiveSettings`).
 - README final con GIF/capturas, FAQ (¿por qué pide Google? ¿qué datos guarda? solo lectura, tokens en Keychain, nada sale del Mac salvo a Google).
-- `PRIVACY.md` (política de privacidad en en/es, necesaria para App Store y para la verificación OAuth de Google).
+- `PRIVACY.md` (política de privacidad en en/es, necesaria para App Store y para la verificación OAuth de Google): qué lee de Google y que no sale del Mac; qué envía a PostHog (lista de eventos de PRD §6.1 en lenguaje llano), lista explícita de lo que **no** se envía, alojamiento UE, cómo desactivarlo, email solo con consentimiento, compras gestionadas por Apple.
 - Commit.
 
 ### Hito 9 — Preparación App Store (documentar; ejecutar lo que no requiera credenciales)
-- `docs/APP_STORE.md` con checklist: cuenta Apple Developer, App ID = bundle id, certificado *Apple Distribution* + *Mac App Store* provisioning (Xcode automatic signing con el Team), Archive → Distribute → App Store Connect, metadatos (nombre "Hey You!", subtítulo "Never be late to a meeting again", categoría Productivity, keywords, descripción en/es, capturas 1280×800/2560×1600, privacy nutrition labels: datos no recogidos; solo acceso a calendario vía Google con consentimiento), URL privacidad, notas para el revisor (cómo probar: usar botón "Test alert" en Settings, explicar que `LSUIElement` y launch-at-login son opt-in).
+- `docs/APP_STORE.md` con checklist: cuenta Apple Developer, App ID = bundle id, certificado *Apple Distribution* + *Mac App Store* provisioning (Xcode automatic signing con el Team), **producto in-app `com.patarino.heyyou.pro` (no consumible, 5,99 €, Family Sharing) creado en App Store Connect y enviado con el primer build**, Archive → Distribute → App Store Connect, metadatos (nombre "Hey You!", subtítulo "Never be late to a meeting again", categoría Productivity, keywords, descripción en/es con la lista de Pro, capturas 1280×800/2560×1600 incluyendo el paywall, **privacy nutrition labels honestas**: Identifiers (User ID), Usage Data (Product Interaction), Contact Info (Email, solo con consentimiento) — *linked to user*, used for Analytics y App Functionality; no tracking across apps), URL privacidad, notas para el revisor (cómo probar: botón "Test alert"; cuenta de prueba de Google; que la compra se puede probar en sandbox; explicar que `LSUIElement` y launch-at-login son opt-in; que Cmd+Q con alerta visible solo la descarta; citar la excepción de la regla 4.8 para el login de Google; que el gancho Pro en la alerta es informativo y no un botón).
 - `project.yml` ya con `DEVELOPMENT_TEAM = $(TEAM_ID)` desde `Secrets.xcconfig`.
 - Comando documentado: `xcodebuild -scheme HeyYou -configuration Release archive -archivePath build/HeyYou.xcarchive` y `xcodebuild -exportArchive -exportOptionsPlist Config/ExportOptions.plist` (method `app-store-connect`).
 - **Aceptación**: documentación completa; archive verde si hay Team configurado. Commit final y `git push origin main`.
