@@ -5,4 +5,4 @@ cd "$(dirname "$0")/.."
 source scripts/env.sh
 [ -f Config/Secrets.xcconfig ] || cp Config/Secrets.example.xcconfig Config/Secrets.xcconfig
 xcodegen generate
-xcodebuild -project HeyYou.xcodeproj -scheme HeyYou -configuration Debug -derivedDataPath build/DerivedData build "$@"
+xcodebuild -project HeyYou.xcodeproj -scheme HeyYou -configuration Debug -derivedDataPath build/DerivedData -skipMacroValidation -skipPackagePluginValidation build "$@"

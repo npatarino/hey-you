@@ -1,0 +1,68 @@
+name: HeyYou
+options:
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
+settings:
+  base:
+    # The only place the bundle identifier is defined.
+    BUNDLE_ID: com.patarino.heyyou
+packages:
+  HeyYouKit:
+    path: HeyYouKit
+targets:
+  HeyYou:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: App
+        excludes:
+          - "*.storekit"
+    dependencies:
+      - package: HeyYouKit
+        product: HeyYouKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID)
+        PRODUCT_NAME: HeyYou
+        INFOPLIST_FILE: App/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_ENTITLEMENTS: App/HeyYou.entitlements
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_VERSION: "6.0"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+        DEAD_CODE_STRIPPING: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+      configs:
+        Release:
+          SWIFT_COMPILATION_MODE: wholemodule
+schemes:
+  HeyYou:
+    build:
+      targets:
+        HeyYou: all
+    run:
+      config: Debug
+      storeKitConfiguration: App/HeyYou.storekit
+      commandLineArguments:
+        "--mock-calendar": false
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - package: HeyYouKit/HeyYouKitTests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

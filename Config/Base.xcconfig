@@ -1,0 +1,21 @@
+// Shared build settings for the HeyYou app target.
+// Secrets (Google client ID, PostHog key, Team ID) live in Secrets.xcconfig, which is gitignored.
+
+MACOSX_DEPLOYMENT_TARGET = 14.0
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1
+
+// Defaults so the project builds before Secrets.xcconfig is filled in.
+GOOGLE_CLIENT_ID = REPLACE_ME
+GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.REPLACE_ME
+POSTHOG_API_KEY = REPLACE_ME
+TEAM_ID =
+// "-" signs to run locally. Set to "Apple Development" together with TEAM_ID in Secrets.xcconfig.
+HEYYOU_SIGN_IDENTITY = -
+
+#include? "Secrets.xcconfig"
+
+DEVELOPMENT_TEAM = $(TEAM_ID)
+CODE_SIGN_IDENTITY = $(HEYYOU_SIGN_IDENTITY)
