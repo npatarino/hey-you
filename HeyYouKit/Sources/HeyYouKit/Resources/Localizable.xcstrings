@@ -1,11 +1,1156 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "Video call" : {
-      "localizations" : {
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Videollamada" } }
+  "sourceLanguage": "en",
+  "strings": {
+    "%lld min": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        }
+      }
+    },
+    "(No title)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(Sin título)"
+          }
+        }
+      }
+    },
+    "+%lld more": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%lld más"
+          }
+        }
+      }
+    },
+    "Account": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta"
+          }
+        }
+      }
+    },
+    "Alert": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerta"
+          }
+        }
+      }
+    },
+    "Alert before the meeting": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avisar antes de la reunión"
+          }
+        }
+      }
+    },
+    "Alert from 10 to 60 seconds before": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aviso de 10 a 60 segundos antes"
+          }
+        }
+      }
+    },
+    "Allow Hey You! in System Settings → General → Login Items.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permite Hey You! en Ajustes del Sistema → General → Ítems de inicio."
+          }
+        }
+      }
+    },
+    "Bell": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Campana"
+          }
+        }
+      }
+    },
+    "Buy": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comprar"
+          }
+        }
+      }
+    },
+    "Buy for %@ · one time": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comprar por %@ · una sola vez"
+          }
+        }
+      }
+    },
+    "Calendars": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendarios"
+          }
+        }
+      }
+    },
+    "Calendars appear here once you're connected.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los calendarios aparecen aquí cuando te conectas."
+          }
+        }
+      }
+    },
+    "Chime": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carillón"
+          }
+        }
+      }
+    },
+    "Choose calendars · working hours": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige calendarios · horario laboral"
+          }
+        }
+      }
+    },
+    "Click anywhere or press any key to dismiss": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haz clic o pulsa cualquier tecla para descartar"
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerrar"
+          }
+        }
+      }
+    },
+    "Connect Google Calendar": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conectar Google Calendar"
+          }
+        }
+      }
+    },
+    "Connected as %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conectado como %@"
+          }
+        }
+      }
+    },
+    "Connecting…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conectando…"
+          }
+        }
+      }
+    },
+    "Couldn't open the Google sign-in window. Try again.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo abrir la ventana de inicio de sesión de Google. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Couldn't reach the App Store. Try again.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo conectar con la App Store. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Couldn't sign in with Google. Try again.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo iniciar sesión con Google. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Countdown in the menu bar": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta atrás en la barra de menús"
+          }
+        }
+      }
+    },
+    "Declined · With Pro we wouldn't have alerted you": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechazada · Con Pro no te habríamos avisado"
+          }
+        }
+      }
+    },
+    "Default": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Predeterminado"
+          }
+        }
+      }
+    },
+    "Disconnect": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desconectar"
+          }
+        }
+      }
+    },
+    "Disconnected from Google": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desconectado de Google"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listo"
+          }
+        }
+      }
+    },
+    "Email me about new features": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avisarme de novedades por email"
+          }
+        }
+      }
+    },
+    "Filters": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filtros"
+          }
+        }
+      }
+    },
+    "Focus blocks and reminders you created for yourself.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloques de foco y recordatorios que creaste para ti."
+          }
+        }
+      }
+    },
+    "Free version": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión gratuita"
+          }
+        }
+      }
+    },
+    "From": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desde"
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
+          }
+        }
+      }
+    },
+    "Google sign-in isn't set up in this build. Add your OAuth client ID to Config/Secrets.xcconfig.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El inicio de sesión con Google no está configurado en esta versión. Añade tu client ID de OAuth en Config/Secrets.xcconfig."
+          }
+        }
+      }
+    },
+    "Hey You! Pro is active. Thank you!": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hey You! Pro está activo. ¡Gracias!"
+          }
+        }
+      }
+    },
+    "Hey You! Pro…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hey You! Pro…"
+          }
+        }
+      }
+    },
+    "Hey You! can only alert you while it's running.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hey You! solo puede avisarte mientras está abierta."
+          }
+        }
+      }
+    },
+    "Hey You! needs read access to your calendar. Please allow it on Google's screen.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hey You! necesita acceso de lectura a tu calendario. Permítelo en la pantalla de Google."
+          }
+        }
+      }
+    },
+    "Hey You! test": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba de Hey You!"
+          }
+        }
+      }
+    },
+    "Horn": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bocina"
+          }
+        }
+      }
+    },
+    "Ignore events with no other attendees": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ignorar eventos sin otros asistentes"
+          }
+        }
+      }
+    },
+    "Ignore meetings I declined": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ignorar reuniones que he rechazado"
+          }
+        }
+      }
+    },
+    "It doesn't lock you out. It just can't be ignored.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No te bloquea. Solo no te deja ignorarlo."
+          }
+        }
+      }
+    },
+    "Join meeting": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unirse a la reunión"
+          }
+        }
+      }
+    },
+    "Just you · With Pro we wouldn't have alerted you": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo tú · Con Pro no te habríamos avisado"
+          }
+        }
+      }
+    },
+    "MEETING IN": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REUNIÓN EN"
+          }
+        }
+      }
+    },
+    "Meeting in %lld seconds": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Meeting in %lld second"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Meeting in %lld seconds"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Reunión en %lld segundo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Reunión en %lld segundos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Meeting started %lld minutes ago": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Meeting started %lld minute ago"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Meeting started %lld minutes ago"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "La reunión empezó hace %lld minuto"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "La reunión empezó hace %lld minutos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Meeting starting now": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La reunión empieza ahora"
+          }
+        }
+      }
+    },
+    "NOW": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AHORA"
+          }
+        }
+      }
+    },
+    "Never the content of your calendar.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nunca el contenido de tu calendario."
+          }
+        }
+      }
+    },
+    "Never your meeting titles, links, attendees or calendar names.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nunca los títulos, enlaces, asistentes ni nombres de tus calendarios."
+          }
+        }
+      }
+    },
+    "No link": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin enlace"
+          }
+        }
+      }
+    },
+    "No link · With Pro we wouldn't have alerted you": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin enlace · Con Pro no te habríamos avisado"
+          }
+        }
+      }
+    },
+    "No more meetings today": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay más reuniones hoy"
+          }
+        }
+      }
+    },
+    "No previous purchase found for this Apple ID.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay compras anteriores con este Apple ID."
+          }
+        }
+      }
+    },
+    "None": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguno"
+          }
+        }
+      }
+    },
+    "Not connected": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No conectado"
+          }
+        }
+      }
+    },
+    "Not connected to Google": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No conectado a Google"
+          }
+        }
+      }
+    },
+    "Offline since %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin conexión desde las %@"
+          }
+        }
+      }
+    },
+    "On time %lld of %lld this week": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta semana: a tiempo %lld de %lld"
+          }
+        }
+      }
+    },
+    "One minute before every meeting, your whole screen turns red.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un minuto antes de cada reunión, toda tu pantalla se pone roja."
+          }
+        }
+      }
+    },
+    "Only during working hours": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo en horario laboral"
+          }
+        }
+      }
+    },
+    "Only meetings with a video link": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo reuniones con enlace de videollamada"
+          }
+        }
+      }
+    },
+    "Open Login Items": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Ítems de inicio"
+          }
+        }
+      }
+    },
+    "Open at login": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir al iniciar sesión"
+          }
+        }
+      }
+    },
+    "Open at login (recommended)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir al iniciar sesión (recomendado)"
+          }
+        }
+      }
+    },
+    "Open in Calendar": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir en Calendar"
+          }
+        }
+      }
+    },
+    "Outside hours": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fuera de horario"
+          }
+        }
+      }
+    },
+    "Outside working hours: no alert": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fuera de horario: sin alerta"
+          }
+        }
+      }
+    },
+    "Privacy": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacidad"
+          }
+        }
+      }
+    },
+    "Privacy policy": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Política de privacidad"
+          }
+        }
+      }
+    },
+    "Pulse": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulso"
+          }
+        }
+      }
+    },
+    "Punctuality stats · Pro": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estadística de puntualidad · Pro"
+          }
+        }
+      }
+    },
+    "Purchase restored. Thanks for supporting Hey You!": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compra restaurada. ¡Gracias por apoyar Hey You!"
+          }
+        }
+      }
+    },
+    "Quit Hey You!": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salir de Hey You!"
+          }
+        }
+      }
+    },
+    "Read-only · your calendar never leaves your Mac": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo lectura · tu calendario no sale de tu Mac"
+          }
+        }
+      }
+    },
+    "Refresh now": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar ahora"
+          }
+        }
+      }
+    },
+    "Restore purchase": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurar compra"
+          }
+        }
+      }
+    },
+    "STARTED %lld MIN AGO": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EMPEZÓ HACE %lld MIN"
+          }
+        }
+      }
+    },
+    "See what the alert looks like (in 5 seconds).": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mira cómo es la alerta (en 5 segundos)."
+          }
+        }
+      }
+    },
+    "Settings…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes…"
+          }
+        }
+      }
+    },
+    "Share anonymous usage statistics": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir estadísticas de uso anónimas"
+          }
+        }
+      }
+    },
+    "Shows “8m” next to the bell when a meeting is less than 10 minutes away.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muestra «8m» junto a la campana cuando falta menos de 10 minutos para una reunión."
+          }
+        }
+      }
+    },
+    "Sign in again": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver a iniciar sesión"
+          }
+        }
+      }
+    },
+    "Sign in with Google": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar sesión con Google"
+          }
+        }
+      }
+    },
+    "Skip focus blocks (just you)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin bloques de foco (solo tú)"
+          }
+        }
+      }
+    },
+    "Skip meetings you declined": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin reuniones rechazadas"
+          }
+        }
+      }
+    },
+    "Sound": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonido"
+          }
+        }
+      }
+    },
+    "Sound · weekly punctuality stats": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonido · estadística semanal de puntualidad"
+          }
+        }
+      }
+    },
+    "Terms": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Términos"
+          }
+        }
+      }
+    },
+    "Test alert": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probar alerta"
+          }
+        }
+      }
+    },
+    "Test the alert": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probar la alerta"
+          }
+        }
+      }
+    },
+    "The App Store is not available right now.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La App Store no está disponible ahora mismo."
+          }
+        }
+      }
+    },
+    "The purchase couldn't be completed. Try again.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo completar la compra. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "To": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hasta"
+          }
+        }
+      }
+    },
+    "Unlock Pro…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desbloquear Pro…"
+          }
+        }
+      }
+    },
+    "Unlock with Hey You! Pro": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desbloquear con Hey You! Pro"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión"
+          }
+        }
+      }
+    },
+    "Video call": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videollamada"
+          }
+        }
+      }
+    },
+    "Watching %lld calendars": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Watching %lld calendar"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Watching %lld calendars"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Vigilando %lld calendario"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Vigilando %lld calendarios"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Watching %lld calendars · next in %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vigilando %lld calendarios · próxima en %@"
+          }
+        }
+      }
+    },
+    "You decide when and for what we alert you.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tú decides cuándo y de qué te avisamos."
+          }
+        }
+      }
+    },
+    "Your purchase is waiting for approval.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu compra está pendiente de aprobación."
+          }
+        }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

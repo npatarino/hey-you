@@ -1,0 +1,240 @@
+import ComposableArchitecture
+import SwiftUI
+
+/// The red full-screen alert (PLAN §6). Shown on every screen by `AlertWindowController`.
+public struct AlertView: View {
+    let store: StoreOf<AlertFeature>
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var appeared = false
+
+    public init(store: StoreOf<AlertFeature>) {
+        self.store = store
+    }
+
+    public var body: some View {
+        ZStack {
+            background
+                .contentShape(Rectangle())
+                .onTapGesture { store.send(.dismissed(.click)) }
+            content
+                .frame(maxWidth: 720)
+                .padding(48)
+                .scaleEffect(appeared || reduceMotion ? 1 : 0.96)
+                .opacity(appeared || reduceMotion ? 1 : 0)
+        }
+        .ignoresSafeArea()
+        .task { await store.send(.task).finish() }
+        .onAppear {
+            withAnimation(.spring(duration: 0.35)) { appeared = true }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityAddTraits(.isModal)
+    }
+
+    private var background: some View {
+        GeometryReader { proxy in
+            let radius = max(proxy.size.width, proxy.size.height) * 0.75
+            ZStack {
+                RadialGradient(colors: [.alertRed, .alertDeep], center: .center, startRadius: 0, endRadius: radius)
+                if !reduceMotion {
+                    PulseRing(diameter: min(proxy.size.width, proxy.size.height) * 0.9)
+                }
+            }
+        }
+    }
+
+    private var content: some View {
+        VStack(spacing: 24) {
+            Text(topLabel)
+                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                .tracking(4)
+                .foregroundStyle(.white.opacity(0.85))
+                .accessibilityAddTraits(.isHeader)
+
+            CountdownRing(phase: store.phase, progress: store.progress, reduceMotion: reduceMotion)
+                .frame(width: 300, height: 300)
+
+            VStack(spacing: 10) {
+                Text(store.event.title)
+                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                if store.additionalCount > 0 {
+                    Text("+\(store.additionalCount) more", bundle: .module)
+                        .font(.system(size: 20, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+                if let hook = store.proHook {
+                    Label(hookText(hook), systemImage: "lock.fill")
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+            }
+
+            Label(metaText, systemImage: "video.fill")
+                .font(.system(size: 20, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.9))
+
+            Button {
+                store.send(.joinTapped)
+            } label: {
+                Label {
+                    Text(store.hasMeetingLink ? joinTitle : openCalendarTitle)
+                } icon: {
+                    Image(systemName: "arrow.right")
+                }
+                .labelStyle(TrailingIconLabelStyle())
+            }
+            .buttonStyle(PillButtonStyle())
+            .keyboardShortcut(.defaultAction)
+            .padding(.top, 8)
+
+            Text("Click anywhere or press any key to dismiss", bundle: .module)
+                .font(.system(size: 16, weight: .regular, design: .rounded))
+                .foregroundStyle(.white.opacity(0.75))
+                .padding(.top, 12)
+        }
+    }
+
+    private var topLabel: String {
+        switch store.phase {
+        case .countingDown, .startingNow:
+            String(localized: "MEETING IN", bundle: .module)
+        case let .started(minutes):
+            String(localized: "STARTED \(minutes) MIN AGO", bundle: .module)
+        }
+    }
+
+    private var metaText: String {
+        let range = TimeText.range(store.event.start, store.event.end)
+        guard let provider = store.event.meetingLink?.provider else { return range }
+        return "\(range) · \(provider.displayName)"
+    }
+
+    private var joinTitle: String {
+        String(localized: "Join meeting", bundle: .module)
+    }
+
+    private var openCalendarTitle: String {
+        String(localized: "Open in Calendar", bundle: .module)
+    }
+
+    private func hookText(_ hook: ProHook) -> String {
+        switch hook {
+        case .declined: String(localized: "Declined · With Pro we wouldn't have alerted you", bundle: .module)
+        case .noLink: String(localized: "No link · With Pro we wouldn't have alerted you", bundle: .module)
+        case .solo: String(localized: "Just you · With Pro we wouldn't have alerted you", bundle: .module)
+        }
+    }
+}
+
+/// Big number with a progress ring; "NOW" pulses gently during the first minute.
+struct CountdownRing: View {
+    let phase: AlertPhase
+    let progress: Double
+    let reduceMotion: Bool
+    @State private var pulsing = false
+
+    var body: some View {
+        ZStack {
+            Circle().stroke(.white.opacity(0.2), lineWidth: 10)
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(.white.opacity(0.9), style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .animation(reduceMotion ? nil : .linear(duration: 1), value: progress)
+            number
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    @ViewBuilder private var number: some View {
+        switch phase {
+        case let .countingDown(seconds):
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(verbatim: "\(seconds)")
+                    .font(.system(size: 180, weight: .black, design: .rounded))
+                    .monospacedDigit()
+                    .contentTransition(.numericText(countsDown: true))
+                Text(verbatim: "s").font(.system(size: 60, weight: .heavy, design: .rounded))
+            }
+            .foregroundStyle(.white)
+            .minimumScaleFactor(0.4)
+            .lineLimit(1)
+        case .startingNow:
+            Text("NOW", bundle: .module)
+                .font(.system(size: 120, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .minimumScaleFactor(0.4)
+                .scaleEffect(pulsing ? 1.08 : 1)
+                .onAppear {
+                    guard !reduceMotion else { return }
+                    withAnimation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true)) { pulsing = true }
+                }
+        case let .started(minutes):
+            Text(verbatim: "\(minutes)")
+                .font(.system(size: 180, weight: .black, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(.white)
+                .minimumScaleFactor(0.4)
+        }
+    }
+
+    private var accessibilityText: Text {
+        switch phase {
+        case let .countingDown(seconds): Text("Meeting in \(seconds) seconds", bundle: .module)
+        case .startingNow: Text("Meeting starting now", bundle: .module)
+        case let .started(minutes): Text("Meeting started \(minutes) minutes ago", bundle: .module)
+        }
+    }
+}
+
+/// Concentric circle that grows and fades every 1.2 s.
+struct PulseRing: View {
+    let diameter: CGFloat
+    @State private var expanded = false
+
+    var body: some View {
+        Circle()
+            .stroke(.white, lineWidth: 2)
+            .frame(width: diameter * 0.35, height: diameter * 0.35)
+            .scaleEffect(expanded ? 2.6 : 1)
+            .opacity(expanded ? 0 : 0.25)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .allowsHitTesting(false)
+            .onAppear {
+                withAnimation(.easeOut(duration: 1.2).repeatForever(autoreverses: false)) { expanded = true }
+            }
+            .accessibilityHidden(true)
+    }
+}
+
+struct TrailingIconLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 10) {
+            configuration.title
+            configuration.icon
+        }
+    }
+}
+
+#Preview("Counting down") {
+    AlertView(store: Store(initialState: AlertFeature.State(
+        event: MockCalendar.events(relativeTo: .now)[0], now: .now.addingTimeInterval(43)
+    )) {
+        AlertFeature()
+    })
+    .frame(width: 1280, height: 800)
+}
+
+#Preview("Started, with hook") {
+    AlertView(store: Store(initialState: AlertFeature.State(
+        event: MockCalendar.events(relativeTo: .now)[3], additionalCount: 1, proHook: .declined,
+        now: .now.addingTimeInterval(3 * 3600 + 200)
+    )) {
+        AlertFeature()
+    })
+    .frame(width: 1280, height: 800)
+}
