@@ -10,6 +10,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.17.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.0"),
         .package(url: "https://github.com/google/GoogleSignIn-iOS", from: "8.0.0"),
         .package(url: "https://github.com/PostHog/posthog-ios", from: "3.0.0"),
     ],
@@ -25,7 +26,10 @@ let package = Package(
         ),
         .testTarget(
             name: "HeyYouKitTests",
-            dependencies: ["HeyYouKit"],
+            dependencies: [
+                "HeyYouKit",
+                .product(name: "DependenciesTestSupport", package: "swift-dependencies"),
+            ],
             resources: [.copy("Fixtures")]
         ),
     ]
