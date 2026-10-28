@@ -1,0 +1,35 @@
+included:
+  - App
+  - HeyYouKit/Sources
+  - HeyYouKit/Tests
+excluded:
+  - HeyYouKit/.build
+  - build
+  - DerivedData
+disabled_rules:
+  - trailing_comma
+  - todo
+  - opening_brace
+opt_in_rules:
+  - force_unwrapping
+  - empty_count
+  - implicitly_unwrapped_optional
+line_length:
+  warning: 140
+  error: 200
+  ignores_comments: true
+  ignores_urls: true
+type_body_length:
+  warning: 400
+file_length:
+  warning: 600
+function_body_length:
+  warning: 80
+cyclomatic_complexity:
+  warning: 15
+identifier_name:
+  excluded: [id, at, to, on, ok, url, x, y]
+nesting:
+  type_level: 2
+large_tuple:
+  warning: 4
