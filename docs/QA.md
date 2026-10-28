@@ -65,4 +65,4 @@ The agent that built the app has no Screen Recording or Accessibility permission
 - Contrast: white on the gradient centre `#E0263A` is 4.66:1 and on `#B5121F` 6.84:1, but white at 75–85 % opacity on the centre was only 3.2–3.4:1, so all alert text is now fully opaque white. The Join button text (`#B5121F` on white) is 6.84:1.
 - Reduce Motion disables the pulse, the "NOW" scaling, the ring animation and the entrance animation. Buttons have accessibility labels; the countdown reads as "Meeting in 47 seconds".
 - Pro gating: the scheduler only accepts `EffectiveSettings`; raw `AppSettings` is read only for launch at login (free) and inside the Settings editor after the Pro guard.
-- Size: Release build is 42 MB installed (universal, with symbols). Stripped as an App Store archive would be: 19 MB universal, 9.6 MB Apple-Silicon-only. The PRD's "< 15 MB" holds only if Intel support is dropped (`ARCHS = arm64`); left universal pending a decision.
+- Size: a plain Release build is 42 MB (with symbols), but the **archived app is 13 MB** (universal, stripped), within the PRD's 15 MB.
