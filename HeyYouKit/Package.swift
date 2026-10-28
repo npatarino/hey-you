@@ -16,7 +16,8 @@ let package = Package(
             name: "HeyYouKit",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ]
+            ],
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "HeyYouKitTests",
