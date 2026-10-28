@@ -47,11 +47,7 @@ public struct PaywallView: View {
                     if store.isPurchasing {
                         ProgressView().controlSize(.small)
                     }
-                    if let product = store.product {
-                        Text("Buy for \(product.displayPrice) · one time", bundle: .module)
-                    } else {
-                        Text("Buy", bundle: .module)
-                    }
+                    Text(verbatim: store.state.buyTitle)
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 32)

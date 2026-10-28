@@ -54,7 +54,7 @@ public final class PresentedWindowController: NSObject, NSWindowDelegate {
         window.level = .floating
         self.window = window
         window.makeKeyAndOrderFront(nil)
-        NSApp.activate()
+        NSApplication.shared.activate()
     }
 
     private func close() {

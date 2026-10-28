@@ -66,3 +66,12 @@ The agent that built the app has no Screen Recording or Accessibility permission
 - Reduce Motion disables the pulse, the "NOW" scaling, the ring animation and the entrance animation. Buttons have accessibility labels; the countdown reads as "Meeting in 47 seconds".
 - Pro gating: the scheduler only accepts `EffectiveSettings`; raw `AppSettings` is read only for launch at login (free) and inside the Settings editor after the Pro guard.
 - Size: a plain Release build is 42 MB (with symbols), but the **archived app is 13 MB** (universal, stripped), within the PRD's 15 MB.
+
+## Review pass (2026-10-29)
+
+- Presentation logic moved out of the views into `Presentation/` and unit-tested (alert texts, menu status lines, time formatting, working-hours pickers).
+- New tests: AppKit window controllers (panels per screen, Return joins, any key dismisses, ⌘Q only dismisses while visible, onboarding window follows state), live clients (wake notifications, Google sign-in without a client ID, error mapping, mocks), StoreKit 2 against `App/HeyYou.storekit` in an app-hosted test target.
+- **Bug fixed:** after a successful purchase the live store client re-read `Transaction.currentEntitlements`, which can lag, so the app could stay "free" until relaunch. It now uses the verified transaction. Same for `Transaction.updates`.
+- **Not verifiable here:** under StoreKitTest on macOS 26, `currentEntitlements`, `Transaction.latest` and `SKTestSession.buyProduct` don't see test purchases, so "Pro survives a relaunch" and "Restore purchase" still need the manual check (run from Xcode with the StoreKit configuration).
+- Person properties from PRD §6.1 now complete: `calendars_count`, `weekly_meetings_bucket` (new weekly counter), and `lead_time` / `launch_at_login` / `is_pro` are re-sent when they change.
+- Tests: 160 package tests + 2 app-hosted, all green (`./scripts/test.sh --xcode`).

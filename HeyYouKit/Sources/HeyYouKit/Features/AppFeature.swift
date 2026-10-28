@@ -46,6 +46,7 @@ public struct AppFeature: Sendable {
         @Shared(.consent) public var consent
         @Shared(.entitlements) public var entitlements
         @Shared(.punctuality) public var stats
+        @Shared(.weeklyMeetings) public var weeklyMeetings
         @Shared(.installDate) public var installDate
         @Shared(.onboardingCompleted) public var onboardingCompleted
         @Presents public var alert: AlertFeature.State?
@@ -61,6 +62,22 @@ public struct AppFeature: Sendable {
 
         public var isAlertVisible: Bool {
             alert != nil
+        }
+
+        /// PostHog person properties derived from state (PRD §6.1). Sent when they change.
+        public var personProperties: [String: AnalyticsValue] {
+            let effective = effectiveSettings
+            var properties: [String: AnalyticsValue] = [
+                "is_pro": .bool(effective.isPro),
+                "lead_time": .int(effective.leadTimeSeconds),
+                "launch_at_login": .bool(settings.launchAtLogin),
+                "weekly_meetings_bucket": .string(weeklyMeetings.bucket),
+            ]
+            let calendarsCount = effective.selectedCalendarIDs?.count ?? calendars.count
+            if calendarsCount > 0 {
+                properties["calendars_count"] = .int(calendarsCount)
+            }
+            return properties
         }
     }
 
@@ -123,6 +140,12 @@ public struct AppFeature: Sendable {
             let reschedule = scheduleNext(&state, includeInProgress: false)
             guard old.selectedCalendarIDs != state.effectiveSettings.selectedCalendarIDs else { return reschedule }
             return .merge(reschedule, .send(.refresh))
+        }
+        // Keep PostHog person properties current, sending only what changed.
+        .onChange(of: \.personProperties) { old, state in
+            let changed = state.personProperties.filter { old[$0.key] != $0.value }
+            guard !changed.isEmpty, state.auth.account != nil else { return .none }
+            return .run { _ in await analytics.setPersonProperties(changed) }
         }
     }
 

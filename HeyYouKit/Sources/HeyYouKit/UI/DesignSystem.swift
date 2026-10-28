@@ -122,14 +122,3 @@ public extension View {
         modifier(ProGated(isPro: isPro, onLockTap: onLockTap))
     }
 }
-
-/// Time formatting shared by the alert and the menu.
-enum TimeText {
-    static func time(_ date: Date) -> String {
-        date.formatted(date: .omitted, time: .shortened)
-    }
-
-    static func range(_ start: Date, _ end: Date) -> String {
-        "\(time(start)) – \(time(end))"
-    }
-}
