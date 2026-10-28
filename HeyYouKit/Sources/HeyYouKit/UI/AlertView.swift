@@ -5,10 +5,16 @@ import SwiftUI
 public struct AlertView: View {
     let store: StoreOf<AlertFeature>
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var appeared = false
+    @State private var appeared: Bool
 
     public init(store: StoreOf<AlertFeature>) {
+        self.init(store: store, animateEntrance: true)
+    }
+
+    /// `animateEntrance: false` renders the final state directly (snapshots).
+    init(store: StoreOf<AlertFeature>, animateEntrance: Bool) {
         self.store = store
+        _appeared = State(initialValue: !animateEntrance)
     }
 
     public var body: some View {
@@ -155,14 +161,15 @@ struct CountdownRing: View {
         case let .countingDown(seconds):
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(verbatim: "\(seconds)")
-                    .font(.system(size: 180, weight: .black, design: .rounded))
+                    .font(.system(size: 150, weight: .black, design: .rounded))
                     .monospacedDigit()
                     .contentTransition(.numericText(countsDown: true))
-                Text(verbatim: "s").font(.system(size: 60, weight: .heavy, design: .rounded))
+                Text(verbatim: "s").font(.system(size: 48, weight: .heavy, design: .rounded))
             }
             .foregroundStyle(.white)
             .minimumScaleFactor(0.4)
             .lineLimit(1)
+            .padding(.horizontal, 36)
         case .startingNow:
             Text("NOW", bundle: .module)
                 .font(.system(size: 120, weight: .black, design: .rounded))

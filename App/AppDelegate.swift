@@ -13,13 +13,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private static func makeStore() -> StoreOf<AppFeature> {
         #if DEBUG
+            let arguments = ProcessInfo.processInfo.arguments
+            // `--print-changes`: log every action and state diff to stdout.
+            let printChanges = arguments.contains("--print-changes")
             // `--mock-calendar`: fake Google account and calendar (a meeting 90 s after launch).
-            if ProcessInfo.processInfo.arguments.contains("--mock-calendar") {
+            if arguments.contains("--mock-calendar") || printChanges {
                 return Store(initialState: AppFeature.State()) {
-                    AppFeature()
+                    AppFeature()._printChanges(printChanges ? .actionLabels : nil)
                 } withDependencies: {
-                    $0.calendarClient = .mock()
-                    $0.authClient = .mock
+                    if arguments.contains("--mock-calendar") {
+                        $0.calendarClient = .mock()
+                        $0.authClient = .mock
+                    }
                 }
             }
         #endif

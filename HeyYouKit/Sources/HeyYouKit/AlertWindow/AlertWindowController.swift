@@ -156,6 +156,8 @@ final class AlertPanel: NSPanel {
             defer: false
         )
         setFrame(screen.frame, display: false)
+        // Must come before `level`: setting isFloatingPanel resets the level to .floating.
+        isFloatingPanel = true
         level = .screenSaver
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
         isOpaque = false
@@ -165,7 +167,6 @@ final class AlertPanel: NSPanel {
         isMovable = false
         isReleasedWhenClosed = false
         becomesKeyOnlyIfNeeded = false
-        isFloatingPanel = true
         animationBehavior = .none
     }
 

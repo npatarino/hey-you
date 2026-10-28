@@ -6,6 +6,8 @@ import Foundation
 /// Test clock plus a `date` that moves with it, and recorders for side effects.
 final class TestEnvironment: Sendable {
     let clock = TestClock()
+    /// Drives only the 15 s menu-bar tick; most tests never advance it.
+    let uiClock = TestClock()
     let start: Date
     let analytics = RecordingAnalyticsBackend(flags: [:])
     let pipeline: AnalyticsPipeline
@@ -39,6 +41,7 @@ final class TestEnvironment: Sendable {
 
     func apply(_ values: inout DependencyValues, isPro: Bool = false) {
         values.continuousClock = clock
+        values.menuBarClock = uiClock
         values.date = DateGenerator { self.now }
         values.calendar = madridCalendar
         values.analyticsClient = .pipeline(pipeline)

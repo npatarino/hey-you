@@ -10,16 +10,16 @@ public struct MenuBarLabel: View {
     }
 
     public var body: some View {
-        TimelineView(.periodic(from: .now, by: 15)) { context in
-            let menu = MenuBarFeature.state(from: store.state, now: context.date, calendar: .current)
-            HStack(spacing: 3) {
-                Image(systemName: menu.iconName)
-                if let countdown = menu.countdown {
-                    Text(verbatim: countdown).monospacedDigit()
-                }
+        // No TimelineView here: inside a MenuBarExtra label it makes SwiftUI re-render in a loop.
+        // `store.now` is refreshed every 15 s by AppFeature instead.
+        let menu = MenuBarFeature.state(from: store.state, now: store.now, calendar: .current)
+        HStack(spacing: 3) {
+            Image(systemName: menu.iconName)
+            if let countdown = menu.countdown {
+                Text(verbatim: countdown).monospacedDigit()
             }
-            .accessibilityLabel(Text(verbatim: "Hey You!"))
         }
+        .accessibilityLabel(Text(verbatim: "Hey You!"))
     }
 }
 
@@ -33,28 +33,26 @@ public struct MenuBarView: View {
     }
 
     public var body: some View {
-        TimelineView(.periodic(from: .now, by: 30)) { context in
-            let menu = MenuBarFeature.state(from: store.state, now: context.date, calendar: .current)
-            VStack(alignment: .leading, spacing: 0) {
-                header(menu, now: context.date)
-                Divider().padding(.vertical, 6)
-                if menu.rows.isEmpty {
-                    Text("No more meetings today", bundle: .module)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                } else {
-                    ForEach(menu.rows) { row in
-                        EventRow(row: row)
-                    }
+        let menu = MenuBarFeature.state(from: store.state, now: store.now, calendar: .current)
+        VStack(alignment: .leading, spacing: 0) {
+            header(menu, now: store.now)
+            Divider().padding(.vertical, 6)
+            if menu.rows.isEmpty {
+                Text("No more meetings today", bundle: .module)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+            } else {
+                ForEach(menu.rows) { row in
+                    EventRow(row: row)
                 }
-                Divider().padding(.vertical, 6)
-                punctuality(menu)
-                actions(menu)
             }
-            .padding(.vertical, 8)
-            .frame(width: 320)
+            Divider().padding(.vertical, 6)
+            punctuality(menu)
+            actions(menu)
         }
+        .padding(.vertical, 8)
+        .frame(width: 320)
     }
 
     private func header(_ menu: MenuBarFeature.State, now: Date) -> some View {

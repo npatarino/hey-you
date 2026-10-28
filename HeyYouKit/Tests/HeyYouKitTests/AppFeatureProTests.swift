@@ -176,7 +176,7 @@ struct AppFeatureProTests: AppFeatureTesting {
             $0.authClient.restorePreviousSignIn = { nil }
             $0.storeClient.updates = { AsyncStream { $0.yield(Entitlements(isPro: true)); $0.finish() } }
         }
-        let task = await store.send(.task)
+        let task = await store.send(.task) { $0.now = date("2026-11-03 10:00") }
         await store.receive(\.entitlementsUpdated) {
             $0.$entitlements.withLock { $0 = Entitlements(isPro: true, proDefaultsApplied: true) }
             $0.$settings.withLock { $0.applyProDefaults() }
@@ -294,7 +294,10 @@ struct AppFeatureProTests: AppFeatureTesting {
             env.apply(&$0)
             $0.authClient.restorePreviousSignIn = { nil }
         }
-        let task = await store.send(.task) { $0.$settings.withLock { $0.launchAtLogin = false } }
+        let task = await store.send(.task) {
+            $0.now = date("2026-11-03 10:00")
+            $0.$settings.withLock { $0.launchAtLogin = false }
+        }
         await store.receive(\.entitlementsUpdated)
         await store.receive(\.accountRestored) { $0.auth = .signedOut }
         await task.cancel()
