@@ -4,8 +4,11 @@ import AppKit
 public enum AlertInput: Equatable, Sendable {
     case join
     case dismiss(DismissReason)
+    /// Not a deliberate "close this" key (letters, space, arrows, other shortcuts): swallowed, alert stays.
+    case ignore
 
-    /// Return/Enter join; Esc dismisses as `escape`; ⌘Q, ⌘W and ⌘. as `quit_shortcut`; anything else as `key`.
+    /// Only deliberate keys act: Return/Enter join, Esc dismisses, ⌘Q / ⌘W / ⌘. dismiss as `quit_shortcut`.
+    /// Everything else is ignored, so typing that was already in progress can't make the alert vanish unseen.
     public static func forKey(keyCode: UInt16, modifiers: NSEvent.ModifierFlags, characters: String?) -> AlertInput {
         let returnKey: UInt16 = 36
         let keypadEnter: UInt16 = 76
@@ -16,11 +19,11 @@ public enum AlertInput: Equatable, Sendable {
         }
         switch keyCode {
         case returnKey, keypadEnter:
-            return flags.isDisjoint(with: [.command, .option, .control]) ? .join : .dismiss(.key)
+            return flags.isDisjoint(with: [.command, .option, .control]) ? .join : .ignore
         case escape:
             return .dismiss(.escape)
         default:
-            return .dismiss(.key)
+            return .ignore
         }
     }
 }

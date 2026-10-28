@@ -72,6 +72,7 @@ struct AlertFeatureTests {
             AlertFeature()
         } withDependencies: { env.apply(&$0) }
 
+        await env.clock.advance(by: .seconds(1))
         await store.send(.joinTapped)
         await store.receive(\.delegate.finished)
         #expect(env.openedURLs.value == [meetLink.url])
@@ -83,22 +84,47 @@ struct AlertFeatureTests {
         let store = TestStore(initialState: AlertFeature.State(event: event, now: env.now)) {
             AlertFeature()
         } withDependencies: { env.apply(&$0) }
+        await env.clock.advance(by: .seconds(1))
         await store.send(.joinTapped)
         await store.receive(\.delegate.finished)
         #expect(env.openedURLs.value.isEmpty)
     }
 
-    /// PRD B.3: every other interaction dismisses without opening anything.
-    @Test(arguments: [DismissReason.click, .key, .escape, .quitShortcut])
-    func anyInteractionDismisses(reason: DismissReason) async {
+    /// PRD B.3: a click, Esc or ⌘Q / ⌘W / ⌘. dismiss without opening anything.
+    @Test(arguments: [DismissReason.click, .escape, .quitShortcut])
+    func deliberateInputDismisses(reason: DismissReason) async {
         let env = TestEnvironment(now: "2026-11-03 10:59:12")
         let store = TestStore(initialState: AlertFeature.State(event: weeklySync, now: env.now)) {
             AlertFeature()
         } withDependencies: { env.apply(&$0) }
         let task = await store.send(.task)
+        await env.clock.advance(by: .seconds(1))
+        await store.receive(\.tick) { $0.now = date("2026-11-03 10:59:13") }
         await store.send(.dismissed(reason))
         await store.receive(.delegate(.finished(reason)))
         await task.finish()
         #expect(env.openedURLs.value.isEmpty)
+    }
+
+    /// Input that arrives in the first second (typing or clicking already in progress) is ignored.
+    @Test func gracePeriodIgnoresInput() async {
+        let env = TestEnvironment(now: "2026-11-03 10:59:00")
+        let store = TestStore(initialState: AlertFeature.State(event: weeklySync, now: env.now)) {
+            AlertFeature()
+        } withDependencies: { env.apply(&$0) }
+
+        #expect(store.state.isInGracePeriod(at: date("2026-11-03 10:59:00")))
+        #expect(!store.state.isInGracePeriod(at: date("2026-11-03 10:59:01")))
+        await store.send(.dismissed(.click))
+        await store.send(.dismissed(.escape))
+        await store.send(.dismissed(.quitShortcut))
+        await store.send(.joinTapped)
+        await env.clock.advance(by: .milliseconds(999))
+        await store.send(.dismissed(.click))
+        #expect(env.openedURLs.value.isEmpty)
+
+        await env.clock.advance(by: .milliseconds(1))
+        await store.send(.dismissed(.escape))
+        await store.receive(.delegate(.finished(.escape)))
     }
 }

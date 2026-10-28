@@ -7,7 +7,8 @@ import SwiftUI
 /// Each screen gets a borderless, non-activating panel at screen-saver level that joins all Spaces and
 /// sits above full-screen apps. Non-activating panels can take keyboard focus without activating the app,
 /// so keys reach the alert even when another app is frontmost. While visible, a local event monitor
-/// turns every key and secondary click into a dismissal (Return joins) and swallows ⌘Q / ⌘W / ⌘.
+/// swallows every key: Return joins, Esc and ⌘Q / ⌘W / ⌘. dismiss, other keys do nothing.
+/// Secondary clicks dismiss. The first second after appearing ignores all input (see `AlertFeature`).
 @MainActor
 public final class AlertWindowController: NSObject {
     private let store: StoreOf<AppFeature>
@@ -136,6 +137,8 @@ public final class AlertWindowController: NSObject {
             store.send(.alert(.presented(.joinTapped)))
         case let .dismiss(reason):
             store.send(.alert(.presented(.dismissed(reason))))
+        case .ignore:
+            break
         }
     }
 

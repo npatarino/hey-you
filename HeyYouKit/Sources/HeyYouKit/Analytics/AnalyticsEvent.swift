@@ -46,7 +46,6 @@ public enum AlertTrigger: String, Sendable, Equatable {
 public enum DismissReason: String, Sendable, Equatable {
     case join
     case click
-    case key
     case escape
     case quitShortcut = "quit_shortcut"
     case replaced

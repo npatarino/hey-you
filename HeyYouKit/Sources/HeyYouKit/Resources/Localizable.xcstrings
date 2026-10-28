@@ -151,12 +151,12 @@
         }
       }
     },
-    "Click anywhere or press any key to dismiss": {
+    "Click anywhere or press Esc to dismiss": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Haz clic o pulsa cualquier tecla para descartar"
+            "value": "Haz clic o pulsa Esc para descartar"
           }
         }
       }

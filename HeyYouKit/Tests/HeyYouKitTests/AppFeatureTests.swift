@@ -153,7 +153,7 @@ struct AppFeatureTests: AppFeatureTesting {
         #expect(store.state.firedAlerts.keys.contains(weeklySync.dedupeKey))
     }
 
-    @Test(arguments: [DismissReason.click, .key, .escape, .quitShortcut])
+    @Test(arguments: [DismissReason.click, .escape, .quitShortcut])
     func anyInteractionDismissesAndAppKeepsRunning(reason: DismissReason) async {
         let env = TestEnvironment(now: "2026-11-03 10:59:12")
         var state = signedIn(env)
@@ -389,6 +389,9 @@ struct AppFeatureTests: AppFeatureTesting {
             $0.alert = AlertFeature.State(event: event, trigger: .test, now: date("2026-11-03 10:00:05"))
         }
         #expect(store.state.alert?.secondsRemaining == 60)
+        // Within the first second the Join button is ignored.
+        await store.send(.alert(.presented(.joinTapped)))
+        await env.clock.advance(by: .seconds(1))
         await store.send(.alert(.presented(.joinTapped)))
         await store.receive(\.alert.presented.delegate.finished) { $0.alert = nil }
         await store.finish()

@@ -11,7 +11,7 @@ Documento de producto de **Hey You!**, una app de macOS que vive en la barra de 
 Si solo lees esto, ya sabes qué es Hey You!.
 
 1. **Un solo trabajo**: que no llegues tarde a una reunión por haber perdido la noción del tiempo. Nada más. Ni agenda, ni notas, ni "hub de reuniones".
-2. **Intrusiva pero no coercitiva**: la alerta ocupa todas las pantallas y no se va sola, pero cualquier clic o tecla la quita. Nunca bloqueamos al usuario; solo hacemos imposible no verla.
+2. **Intrusiva pero no coercitiva**: la alerta ocupa todas las pantallas y no se va sola, pero un clic, Esc o Cmd+Q la quitan. Nunca bloqueamos al usuario; solo hacemos imposible no verla.
 3. **Un minuto antes**: el momento en que ya no hay nada que terminar y solo queda unirse. Con Pro se puede acortar hasta 10 s; nunca más de un minuto. El aviso temprano se pospone; el tardío no.
 4. **Google Calendar primero y solo** en v1, con el botón "Sign in with Google" de siempre. Sin cuenta propia, sin backend, sin servidores nuestros.
 5. **Sin backend propio, con analítica de producto**: el calendario se lee en el Mac y los tokens viven en el llavero; los datos de uso (nunca el contenido del calendario) van a PostHog con consentimiento, para saber cómo se usa la app y poder hablar con los usuarios más adelante.
@@ -27,7 +27,7 @@ Si solo lees esto, ya sabes qué es Hey You!.
 
 **Hey You! llega a la Mac App Store: la app que no te deja llegar tarde a una reunión**
 
-*Madrid, 2 de diciembre de 2026.* Hoy se publica Hey You!, una pequeña app para Mac con una única función: un minuto antes de cada reunión de tu Google Calendar, pinta todas tus pantallas de rojo con el nombre de la reunión, una cuenta atrás y un botón para unirte. La alerta no desaparece sola. Un clic, una tecla o Cmd+Q y se va, pero nadie puede decir que no la vio.
+*Madrid, 2 de diciembre de 2026.* Hoy se publica Hey You!, una pequeña app para Mac con una única función: un minuto antes de cada reunión de tu Google Calendar, pinta todas tus pantallas de rojo con el nombre de la reunión, una cuenta atrás y un botón para unirte. La alerta no desaparece sola. Un clic, Esc o Cmd+Q y se va, pero nadie puede decir que no la vio.
 
 "Sabía que tenía reunión a las once. Miré el reloj a las 10:55 y, cuando volví a mirar, eran las 11:07", cuenta Nico Patarino, su creador. "No es un problema de organización. Es que cuando estás concentrado el tiempo se diluye. Las notificaciones normales son un rectángulo gris en la esquina, exactamente lo que tu cerebro ha aprendido a ignorar. Quería algo que no se pudiera ignorar sin que me tratara como a un niño".
 
@@ -43,7 +43,7 @@ Hey You! está disponible en la Mac App Store para macOS 14 o posterior. La vers
 Calendario y Google envían una notificación en la esquina superior derecha. Es exactamente el tipo de aviso que, cuando estás concentrado, desaparece de tu campo visual en dos segundos. Hey You! ocupa toda la pantalla y no se va hasta que tú lo decides.
 
 **¿Me bloquea el ordenador?**
-No. Cualquier clic en la pantalla, cualquier tecla, Esc o Cmd+Q descartan la alerta al instante. Puedes seguir trabajando en cuanto quieras. Lo único que no puedes hacer es no enterarte.
+No. Un clic en cualquier punto de la pantalla, Esc o Cmd+Q descartan la alerta al instante. Puedes seguir trabajando en cuanto quieras. Lo único que no puedes hacer es no enterarte.
 
 **¿Qué pasa si estoy compartiendo pantalla o presentando?**
 La alerta aparece igual, y si compartes la pantalla completa, la verán. Es deliberado: si estás presentando y tienes otra reunión en un minuto, tienes un problema de verdad y es mejor que lo sepas. No hay modo "no molestar" ni silencio durante reuniones: la alerta se descarta en un clic.
@@ -278,7 +278,7 @@ Alerta (todas las pantallas, rojo, sin ventana):
   │                                                 │
   │             [ Join meeting → ]                  │
   │                                                 │
-  │   Click anywhere or press any key to dismiss    │
+  │     Click anywhere or press Esc to dismiss      │
   └─────────────────────────────────────────────────┘
 ```
 
@@ -355,8 +355,8 @@ Ideas Pro para v2 (no en v1): tema de color de la alerta, atajo global para unir
 **Por qué:** dos alertas simultáneas se pisan. El usuario ya sabe que tiene solape; nuestro trabajo es que mire la pantalla.
 
 ### 5.4 Comportamiento de la alerta
-**Decisión:** una ventana sin borde por pantalla, nivel screenSaver, sobre todos los Spaces y apps a pantalla completa, sin auto-cierre. Descarta: clic en cualquier punto, cualquier tecla, Esc, Cmd+Q, Cmd+W, Cmd+punto. Enter o clic en "Unirse" abre el enlace y descarta. Mientras hay alerta, Cmd+Q no cierra la app. Si llega otra alerta mientras hay una visible, la reemplaza. Al pasar la hora de inicio, "AHORA" durante 60 s y luego "EMPEZÓ HACE X MIN".
-**Por qué:** la intrusión está en la *aparición*, no en la *permanencia obligada*. Cualquier fricción para descartar sería castigo, y el castigo hace que se desinstale (decisión 2 de la página 0). Interceptamos Cmd+Q porque es el reflejo de "quítame esto" y queremos que ese reflejo funcione sin matar al vigilante.
+**Decisión:** una ventana sin borde por pantalla, nivel screenSaver, sobre todos los Spaces y apps a pantalla completa, sin auto-cierre. Descarta: clic en cualquier punto (también clic derecho), Esc, Cmd+Q, Cmd+W, Cmd+punto. Enter o clic en "Unirse" abre el enlace y descarta. El resto de teclas (letras, espacio, flechas, otros atajos) no hacen nada. Durante el primer segundo tras aparecer se ignora cualquier clic o tecla. Mientras hay alerta, Cmd+Q no cierra la app. Si llega otra alerta mientras hay una visible, la reemplaza. Al pasar la hora de inicio, "AHORA" durante 60 s y luego "EMPEZÓ HACE X MIN".
+**Por qué:** la intrusión está en la *aparición*, no en la *permanencia obligada*. Cualquier fricción para descartar sería castigo, y el castigo hace que se desinstale (decisión 2 de la página 0). Interceptamos Cmd+Q porque es el reflejo de "quítame esto" y queremos que ese reflejo funcione sin matar al vigilante. *Revisado el 2026-10-29:* en la primera prueba real la alerta apareció mientras el fundador escribía y una pulsación que ya estaba en marcha la quitó sin que la viera. Por eso solo descartan las teclas que se pulsan a propósito para cerrar (Esc y los atajos de cerrar/salir), y el primer segundo ignora toda entrada.
 
 ### 5.5 Sonido
 **Decisión:** un sonido corto del sistema al aparecer, activado por defecto, desactivable. No se repite.
@@ -416,7 +416,7 @@ Reglas: nombres en `snake_case`, pasado; nunca títulos, enlaces, asistentes, de
 | `calendar_synced` | `calendars_count`, `events_24h_count`, `events_with_link_count`, `duration_ms`, `error_type?` | Salud |
 | `alert_scheduled` | `seconds_until_fire` | Sanidad del scheduler |
 | `alert_shown` | `lead_time`, `provider: meet\|zoom\|teams\|webex\|other\|none`, `screens_count`, `is_declined`, `has_other_attendees`, `overlapping_count`, `trigger: scheduled\|wake\|test`, `pro_hook_shown: declined\|no_link\|solo\|none` | North Star, ganchos |
-| `alert_dismissed` | `reason: join\|click\|key\|escape\|quit_shortcut\|replaced`, `seconds_shown`, `seconds_to_start` (negativo si ya empezó), `provider` | North Star, guardarraíles |
+| `alert_dismissed` | `reason: join\|click\|escape\|quit_shortcut\|replaced`, `seconds_shown`, `seconds_to_start` (negativo si ya empezó), `provider` | North Star, guardarraíles |
 | `test_alert_triggered` | `source: menu\|onboarding\|settings` | Onboarding |
 | `setting_changed` | `key`, `value` (solo claves no sensibles: lead_time, filtros, sonido, launch_at_login, horario) | Uso de Pro |
 | `paywall_viewed` | `source: menu\|settings_lock\|alert_hook\|stats`, `price_variant` | Conversión |
@@ -466,7 +466,7 @@ Si a las 8 semanas del lanzamiento la retención a 4 semanas es < 15 % **y** la 
 
 | # | Causa del fracaso | Prob. | Impacto | Mitigación |
 |---|---|---|---|---|
-| 1 | **La gente la desinstala a la semana porque le molesta.** La alerta funcionaba, pero la sensación de "me gritan" ganó. | Alta | Fatal | Descarte instantáneo con cualquier interacción; filtros por defecto sensatos; "Probar alerta" en onboarding para que nadie se sorprenda; medir descartes < 2 s como guardarraíl. |
+| 1 | **La gente la desinstala a la semana porque le molesta.** La alerta funcionaba, pero la sensación de "me gritan" ganó. | Alta | Fatal | Descarte instantáneo con un clic, Esc o Cmd+Q; filtros por defecto sensatos; "Probar alerta" en onboarding para que nadie se sorprenda; medir descartes < 2 s como guardarraíl. |
 | 2 | **Google tardó dos meses en verificar la app** y no pudimos publicar a nadie fuera de 100 testers. | Media | Alto | Solicitar verificación en la semana 2 con un build estable; tener web y política de privacidad listas antes; plan B: EventKit en v1.1 si la verificación se eterniza. |
 | 3 | **Apple rechazó la app** por interceptar Cmd+Q, por ser "solo una notificación" (regla 4.2, funcionalidad mínima) o por el login de terceros. | Media | Alto | Notas al revisor citando la excepción de 4.8; Cmd+Q interceptado documentado como "descartar"; onboarding y ajustes visibles; fallback: no interceptar Cmd+Q. Sobre 4.2: In Your Face está publicada, hay precedente. |
 | 4 | **La alerta no aparece** sobre ciertas apps (pantalla completa, juegos, pantallas compartidas de Zoom) y el usuario llega tarde *con la app instalada*. | Media | Fatal | Probar explícitamente sobre Safari fullscreen, Zoom compartiendo, Keynote presentando, VS Code fullscreen (casos B.9–B.12). Documentar lo que no cubra. |
@@ -505,7 +505,7 @@ Reach: usuarios afectados de cada 100 activos al mes. Impact: 3 masivo, 2 alto, 
 
 | # | Feature | R | I | C | E | Score | v1 |
 |---|---|---|---|---|---|---|---|
-| 1 | Alerta a pantalla completa en todas las pantallas, sin auto-cierre, descarte con cualquier interacción | 100 | 3 | 80 % | 3 | 80 | ✅ núcleo |
+| 1 | Alerta a pantalla completa en todas las pantallas, sin auto-cierre, descarte con clic, Esc o Cmd+Q | 100 | 3 | 80 % | 3 | 80 | ✅ núcleo |
 | 2 | Scheduler: polling, cálculo del siguiente disparo, dedupe, wake | 100 | 3 | 100 % | 2 | 150 | ✅ núcleo |
 | 3 | Sign in with Google + lectura de calendarios | 100 | 3 | 80 % | 3 | 80 | ✅ núcleo |
 | 4 | Botón Unirse con detección de Meet/Zoom/Teams/Webex | 85 | 2 | 100 % | 1 | 170 | ✅ núcleo |
@@ -576,10 +576,12 @@ Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given 
 - When: el usuario pulsa Enter.
 - Then: se abre `https://meet.google.com/abc-defg-hij` en el navegador por defecto, la alerta desaparece con fade de 0,25 s, el evento queda marcado como disparado.
 
-**B.3 Cualquier interacción descarta**
+**B.3 Descarte deliberado**
 - Given: alerta visible.
-- When: (a) clic en una zona vacía del fondo, (b) tecla `j`, (c) Esc, (d) Cmd+Q, (e) Cmd+W, (f) clic derecho.
-- Then: en los seis casos la alerta desaparece y **la app sigue ejecutándose** (icono en la barra presente). No se abre ningún enlace.
+- When: (a) clic en una zona vacía del fondo, (b) Esc, (c) Cmd+Q, (d) Cmd+W, (e) clic derecho.
+- Then: en los cinco casos la alerta desaparece y **la app sigue ejecutándose** (icono en la barra presente). No se abre ningún enlace.
+- When: tecla `j`, espacio o una flecha. Then: no pasa nada; la alerta sigue visible.
+- When: cualquier clic o tecla (también Enter) en el primer segundo tras aparecer. Then: se ignora; la alerta sigue visible.
 
 **B.4 Sin interacción, no se cierra**
 - Given: alerta de B.1 visible, nadie toca nada.

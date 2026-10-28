@@ -1,6 +1,6 @@
 # Hey You!
 
-A macOS menu-bar app that reads your Google Calendar and, one minute before every meeting, turns **every screen** red with the meeting name, a countdown and a **Join meeting** button. The alert never closes by itself; any click or key dismisses it.
+A macOS menu-bar app that reads your Google Calendar and, one minute before every meeting, turns **every screen** red with the meeting name, a countdown and a **Join meeting** button. The alert never closes by itself; a click, Esc or ⌘Q dismisses it.
 
 ![The alert](docs/screenshots/alert-countdown.png)
 
@@ -74,7 +74,7 @@ docs/                PRD, QA notes, App Store checklist, screenshots
 
 **Does anything leave my Mac?** Calendar data only travels between your Mac and Google. If you allow it, anonymous usage events (never titles, links, attendees or calendar names) go to PostHog in the EU. See [PRIVACY.md](PRIVACY.md).
 
-**Can I close the alert?** Yes: any click or key closes it, Enter joins the call. ⌘Q while an alert is visible only closes the alert; from the menu, Quit closes the app.
+**Can I close the alert?** Yes: a click anywhere, Esc, ⌘W or ⌘Q closes it, Enter joins the call. Other keys do nothing, and input in the first second is ignored so you can't dismiss it by accident while typing. ⌘Q while an alert is visible only closes the alert; from the menu, Quit closes the app.
 
 **Free vs Pro?** Free alerts 60 s before every timed meeting. Pro (one-time purchase) adds lead time 10–60 s, filters (declined, no link, just you), calendar choice, working hours, sound, menu-bar countdown and weekly punctuality.
 

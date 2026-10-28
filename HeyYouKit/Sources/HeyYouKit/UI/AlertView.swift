@@ -99,7 +99,7 @@ public struct AlertView: View {
             .keyboardShortcut(.defaultAction)
             .padding(.top, 8)
 
-            Text("Click anywhere or press any key to dismiss", bundle: .module)
+            Text("Click anywhere or press Esc to dismiss", bundle: .module)
                 .font(.system(size: 16, weight: .regular, design: .rounded))
                 .foregroundStyle(.white)
                 .padding(.top, 12)

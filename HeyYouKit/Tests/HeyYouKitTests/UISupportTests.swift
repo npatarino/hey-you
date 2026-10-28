@@ -12,14 +12,16 @@ struct AlertInputTests {
         (UInt16(36), UInt(0), "\r", AlertInput.join),
         (76, 0, "\u{3}", .join),
         (53, 0, "\u{1b}", .dismiss(.escape)),
-        (38, 0, "j", .dismiss(.key)),
-        (49, 0, " ", .dismiss(.key)),
+        (38, 0, "j", .ignore),
+        (49, 0, " ", .ignore),
+        (123, 0, "\u{F702}", .ignore),
+        (12, NSEvent.ModifierFlags.option.rawValue, "q", .ignore),
         (12, command, "q", .dismiss(.quitShortcut)),
         (12, command | shift, "Q", .dismiss(.quitShortcut)),
         (13, command, "w", .dismiss(.quitShortcut)),
         (47, command, ".", .dismiss(.quitShortcut)),
-        (8, command, "c", .dismiss(.key)),
-        (36, command, "\r", .dismiss(.key)),
+        (8, command, "c", .ignore),
+        (36, command, "\r", .ignore),
         (36, shift, "\r", .join),
     ])
     func mapping(keyCode: UInt16, modifiers: UInt, characters: String, expected: AlertInput) {
@@ -28,7 +30,7 @@ struct AlertInputTests {
     }
 
     @Test func missingCharacters() {
-        #expect(AlertInput.forKey(keyCode: 12, modifiers: [.command], characters: nil) == .dismiss(.key))
+        #expect(AlertInput.forKey(keyCode: 12, modifiers: [.command], characters: nil) == .ignore)
     }
 }
 
@@ -56,7 +58,7 @@ struct LocalizationTests {
     @Test(arguments: [
         ("MEETING IN", "REUNIÓN EN"),
         ("NOW", "AHORA"),
-        ("Click anywhere or press any key to dismiss", "Haz clic o pulsa cualquier tecla para descartar"),
+        ("Click anywhere or press Esc to dismiss", "Haz clic o pulsa Esc para descartar"),
         ("Join meeting", "Unirse a la reunión"),
         ("Declined · With Pro we wouldn't have alerted you", "Rechazada · Con Pro no te habríamos avisado"),
     ])
