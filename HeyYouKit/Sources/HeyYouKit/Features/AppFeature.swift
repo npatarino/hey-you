@@ -40,6 +40,8 @@ public struct AppFeature: Sendable {
         public var offlineSince: Date?
         /// When the last alert with a Pro hook was dismissed: a paywall opened soon after counts as `alert_hook`.
         public var lastProHookAt: Date?
+        /// Wall-clock time for the menu bar (countdown, "next in"), refreshed every 15 s.
+        public var now = Date.distantPast
         @Shared(.appSettings) public var settings
         @Shared(.consent) public var consent
         @Shared(.entitlements) public var entitlements
@@ -72,6 +74,7 @@ public struct AppFeature: Sendable {
         case calendarsResponse([CalendarSummary])
         case alertDue(ScheduledAlert, AlertTrigger)
         case systemWoke
+        case clockTick
         case menuBar(MenuBarFeature.Action)
         case alert(PresentationAction<AlertFeature.Action>)
         case paywall(PresentationAction<PaywallFeature.Action>)
@@ -102,6 +105,7 @@ public struct AppFeature: Sendable {
     @Dependency(\.applicationClient) var applicationClient
     @Dependency(\.launchAtLoginClient) var launchAtLoginClient
     @Dependency(\.continuousClock) var clock
+    @Dependency(\.menuBarClock) var menuBarClock
     @Dependency(\.date.now) var now
     @Dependency(\.calendar) var calendar
 
@@ -171,6 +175,10 @@ public struct AppFeature: Sendable {
 
             case let .alertDue(scheduled, trigger):
                 return presentAlert(&state, scheduled, trigger: trigger)
+
+            case .clockTick:
+                state.now = now
+                return .none
 
             case .systemWoke:
                 // Fire right away with what we have (network may not be back yet), then refresh.

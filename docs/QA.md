@@ -1,0 +1,59 @@
+# QA — Milestone 7
+
+Date: 2026-10-29 · Machine: macOS 26.6.2, Apple Silicon, one built-in display (1728×1117 pt) · Xcode 27.1 · Debug build with `--mock-calendar`.
+
+Legend: ✅ verified · 🧪 verified by automated test only · ⏳ not verified yet (needs a person at the keyboard or credentials) · ⚠️ verified with a limitation.
+
+## How it was checked
+
+The agent that built the app has no Screen Recording or Accessibility permission on this Mac, so it could not take real screenshots or send key presses / clicks to the app. What it could do:
+
+- Run the real app and read the **window server** (`CGWindowListCopyWindowInfo`): which windows the app owns, their level and bounds.
+- Sample the process (`sample HeyYou`) to see what the main thread is doing.
+- Render every screen off-screen with `ImageRenderer` (`docs/screenshots/*.png`, regenerate with
+  `cd HeyYouKit && HEYYOU_SNAPSHOTS=$PWD/../docs/screenshots swift test --filter SnapshotRenderTests`).
+  Native AppKit controls (checkboxes, link buttons) show as yellow placeholders in those renders; that is a renderer limitation, not the app.
+- Everything in reducers is covered by `TestStore` tests (B.1–B.9, B.13–B.19, see `HeyYouKit/Tests`).
+
+## Bugs found and fixed while doing this
+
+1. **App froze on launch** (main thread at 100 %, no alert ever fired). A `TimelineView` inside the `MenuBarExtra` label makes SwiftUI re-render the status item in an endless loop on macOS 26. Fixed: the store now carries a `now` value refreshed every 15 s and the label reads it.
+2. **Alert at the wrong window level.** Setting `NSPanel.isFloatingPanel` after `level` reset the level to *floating* (3) instead of *screen saver* (1000), so it would not have covered full-screen apps. Fixed and covered by `AlertPanelTests`.
+3. The "s" after the countdown touched the progress ring. Number shrunk from 180 to 150 pt.
+
+## Results
+
+| Case | Result | Notes |
+|---|---|---|
+| App starts as menu-bar app (no Dock icon) | ✅ | `LSUIElement = YES`; process runs with no regular window. |
+| Mock meeting at +90 s fires the alert at +30 s | ✅ | Launched 00:02:00, alert window appeared 00:02:32. |
+| Alert covers the whole screen, above everything | ✅ | Window level 1000 (screen saver), bounds = full screen. Only one display available, so multi-display not checked. |
+| B.1 alert content ("MEETING IN", "60s", title, time · provider, Join) | 🧪 + render | `alert-countdown.png`; `AppFeatureTests.launchToAlert`. |
+| B.2 Enter / Join opens the link and closes | 🧪 | Key mapping (`AlertInputTests`) and reducer tested. ⏳ real key press. |
+| B.3 click, `j`, Esc, ⌘Q, ⌘W, right-click dismiss; app keeps running | 🧪 | ⏳ Real input not sent (no Accessibility permission). |
+| B.4 no auto-close; NOW; STARTED 3 MIN AGO | 🧪 + render | `alert-started-hook.png`. |
+| B.5–B.9, B.16–B.19 | 🧪 | All in `AppFeatureTests` / `AppFeatureProTests`. |
+| B.10 above full-screen Safari, two monitors | ⏳ | Level and collection behaviour are correct (`.screenSaver`, `.fullScreenAuxiliary`, `.canJoinAllSpaces`); needs a person with two monitors. |
+| B.11 Zoom screen sharing | ⏳ | Expected to show (documented behaviour). |
+| B.12 Keynote presenting | ⏳ | If it doesn't show, document as known limitation. |
+| B.13 Google session lost → `bell.slash`, "Disconnected" | 🧪 | `sessionExpiredKeepsAlerting`. ⏳ with a real revoked token. |
+| B.14 offline → alert still fires, "Offline since" | 🧪 | `offlineKeepsAlerting`. |
+| B.15 Test alert in 5 s | 🧪 | `testAlertFromMenu`. ⏳ clicking the real menu. |
+| B.20 working hours | 🧪 | Scheduler and menu-row tests. |
+| Sound plays | ⏳ | `NSSound(named: "Funk")` call is tested via the mock; audio not heard. |
+| Status item countdown "Xm" | 🧪 | `MenuBarFeatureTests`. |
+| Onboarding "Sign in with Google" branding | ✅ render | `onboarding.png`: white, grey border, official G from the SDK. |
+| Real Google OAuth | ⏳ | Needs `Config/Secrets.xcconfig` (client ID) and a signed build (Team ID). Without a client ID the onboarding shows a clear "not set up" message. |
+| Launch at login | ⏳ | `SMAppService` needs a signed app in /Applications to be meaningful. |
+| StoreKit purchase / restore with `HeyYou.storekit` | 🧪 | Reducer flows tested with the mock store. ⏳ in Xcode with the StoreKit configuration (Run from Xcode; the scheme already points at it). |
+| PostHog traffic has no titles/links (B.19) | 🧪 | Typed taxonomy makes it impossible to send free text; consent-off sends nothing. ⏳ traffic inspection needs a PostHog key. |
+
+## Manual checklist for you (≈10 minutes)
+
+1. `open HeyYou.xcodeproj`, click **Trust & Enable** for the package macros if asked, edit the scheme → Run → Arguments → tick `--mock-calendar`, Run.
+2. Wait ~30 s: red alert on every screen. Try Esc, a letter, a click, right-click, ⌘Q, ⌘W (each time relaunch or use **Test alert** from the menu): the alert closes and the bell stays in the menu bar.
+3. **Test alert** again and press Enter: the project page opens.
+4. Leave one alert alone for 5 minutes: it should say "STARTED 4 MIN AGO" and stay.
+5. Put Safari in full screen, then **Test alert**: the alert must appear over it.
+6. Menu → **Hey You! Pro…** → Buy (StoreKit test purchase) → padlocks disappear in Settings.
+7. With `Config/Secrets.xcconfig` filled in: quit, relaunch without `--mock-calendar`, sign in with Google.

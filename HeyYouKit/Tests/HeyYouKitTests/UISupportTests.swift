@@ -71,3 +71,20 @@ struct LocalizationTests {
 }
 
 private final class BundleToken {}
+
+@MainActor
+struct AlertPanelTests {
+    /// Regression: `isFloatingPanel` used to reset the level to floating (3) after it was set.
+    @Test func panelSitsAboveEverything() throws {
+        let screen = try #require(NSScreen.screens.first)
+        let panel = AlertPanel(screen: screen)
+        #expect(panel.level == .screenSaver)
+        #expect(panel.collectionBehavior.contains(.canJoinAllSpaces))
+        #expect(panel.collectionBehavior.contains(.fullScreenAuxiliary))
+        #expect(panel.collectionBehavior.contains(.stationary))
+        #expect(panel.styleMask.contains(.nonactivatingPanel))
+        #expect(panel.canBecomeKey)
+        #expect(!panel.hidesOnDeactivate)
+        #expect(panel.frame == screen.frame)
+    }
+}

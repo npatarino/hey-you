@@ -6,6 +6,7 @@ extension AppFeature {
 
     func start(_ state: inout State) -> Effect<Action> {
         let now = now
+        state.now = now
         if state.installDate == nil {
             state.$installDate.withLock { $0 = now }
         }
@@ -35,6 +36,11 @@ extension AppFeature {
             .run { send in
                 for await _ in clock.timer(interval: .seconds(60)) {
                     await send(.refreshTick)
+                }
+            },
+            .run { send in
+                for await _ in menuBarClock.timer(interval: .seconds(15)) {
+                    await send(.clockTick)
                 }
             }
         )

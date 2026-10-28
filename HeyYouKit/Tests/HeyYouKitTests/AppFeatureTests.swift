@@ -17,6 +17,7 @@ struct AppFeatureTests: AppFeatureTesting {
         let store = makeStore(env, state: state)
 
         let task = await store.send(.task) {
+            $0.now = date("2026-11-03 10:58:30")
             $0.$installDate.withLock { $0 = date("2026-11-03 10:58:30") }
         }
         await store.receive(\.entitlementsUpdated)
@@ -44,6 +45,10 @@ struct AppFeatureTests: AppFeatureTesting {
         }
         #expect(store.state.alert?.secondsRemaining == 60)
         #expect(store.state.isAlertVisible)
+
+        // The menu-bar clock ticks every 15 s on its own clock.
+        await env.uiClock.advance(by: .seconds(15))
+        await store.receive(\.clockTick) { $0.now = date("2026-11-03 10:59:00") }
 
         // The 60 s refresh loop keeps running.
         await env.clock.advance(by: .seconds(30))
@@ -73,7 +78,10 @@ struct AppFeatureTests: AppFeatureTesting {
             env.apply(&$0)
             $0.authClient.restorePreviousSignIn = { nil }
         }
-        let task = await store.send(.task) { $0.$installDate.withLock { $0 = date("2026-11-03 10:00") } }
+        let task = await store.send(.task) {
+            $0.now = date("2026-11-03 10:00")
+            $0.$installDate.withLock { $0 = date("2026-11-03 10:00") }
+        }
         await store.receive(\.entitlementsUpdated)
         await store.receive(\.accountRestored) {
             $0.auth = .signedOut

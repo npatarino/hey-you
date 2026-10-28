@@ -152,3 +152,19 @@ public extension DependencyValues {
         set { self[ApplicationClient.self] = newValue }
     }
 }
+
+// MARK: - Menu bar clock
+
+/// Drives the menu-bar countdown. Separate from `continuousClock` so the alert timers and the
+/// 15 s UI tick can be controlled independently in tests.
+private enum MenuBarClockKey: DependencyKey {
+    static let liveValue: any Clock<Duration> = ContinuousClock()
+    static let testValue: any Clock<Duration> = UnimplementedClock(name: "menuBarClock")
+}
+
+public extension DependencyValues {
+    var menuBarClock: any Clock<Duration> {
+        get { self[MenuBarClockKey.self] }
+        set { self[MenuBarClockKey.self] = newValue }
+    }
+}
