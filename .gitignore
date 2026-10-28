@@ -1,0 +1,16 @@
+# Xcode / SPM
+*.xcodeproj
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+xcuserdata/
+DerivedData/
+build/
+.build/
+.swiftpm/
+*.xcarchive
+
+# Secrets
+Config/Secrets.xcconfig
+
+# macOS
+.DS_Store
