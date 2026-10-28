@@ -48,20 +48,33 @@ struct WindowControllerTests {
         #expect(controller.visiblePanels.count == NSScreen.screens.count)
         #expect(controller.visiblePanels.allSatisfy { $0.level == .screenSaver && $0.contentView != nil })
 
+        // Input in the first second is ignored.
+        controller.handle(.join)
+        controller.handle(.dismiss(.escape))
+        #expect(store.alert != nil)
+
         // Return joins: the link opens and the alert goes away.
+        await env.clock.advance(by: .seconds(1))
         controller.handle(.join)
         #expect(await eventually { store.alert == nil && !controller.isShowing })
         #expect(env.openedURLs.value == [meetLink.url])
         #expect(controller.visiblePanels.isEmpty)
     }
 
-    @Test func anyKeyDismisses() async {
+    @Test func onlyDeliberateKeysDismiss() async {
         let env = TestEnvironment(now: "2026-11-03 10:59")
         let store = makeStore(env)
         let controller = AlertWindowController(store: store)
         showAlert(store, env: env)
         #expect(await eventually { controller.isShowing })
-        controller.handle(.dismiss(.key))
+        await env.clock.advance(by: .seconds(1))
+
+        // A letter, space or other shortcut does nothing.
+        controller.handle(.ignore)
+        try? await Task.sleep(for: .milliseconds(50))
+        #expect(store.alert != nil && controller.isShowing)
+
+        controller.handle(.dismiss(.escape))
         #expect(await eventually { store.alert == nil && !controller.isShowing })
         #expect(env.openedURLs.value.isEmpty)
     }
@@ -75,6 +88,7 @@ struct WindowControllerTests {
 
         showAlert(store, env: env)
         #expect(await eventually { controller.isShowing })
+        await env.clock.advance(by: .seconds(1))
         #expect(controller.interceptQuit())
         #expect(await eventually { store.alert == nil })
         #expect(!controller.interceptQuit())

@@ -54,7 +54,16 @@ public struct AlertFeature: Sendable {
         public var hasMeetingLink: Bool {
             event.meetingLink != nil
         }
+
+        /// True during the first `inputGracePeriod` after appearing, when clicks and keys are ignored.
+        public func isInGracePeriod(at date: Date) -> Bool {
+            date.timeIntervalSince(shownAt) < AlertFeature.inputGracePeriod
+        }
     }
+
+    /// Input is ignored for this long after the alert appears, so a click or keystroke that was already
+    /// on its way (the user was typing or clicking) can't dismiss it before it's seen.
+    public static let inputGracePeriod: TimeInterval = 1
 
     public enum Action: Sendable, Equatable {
         case task
@@ -95,6 +104,7 @@ public struct AlertFeature: Sendable {
                 return .none
 
             case .joinTapped:
+                guard !state.isInGracePeriod(at: now) else { return .none }
                 guard let url = state.joinURL else {
                     return .send(.delegate(.finished(.join)))
                 }
@@ -104,6 +114,7 @@ public struct AlertFeature: Sendable {
                 }
 
             case let .dismissed(reason):
+                guard !state.isInGracePeriod(at: now) else { return .none }
                 return .merge(.cancel(id: CancelID.timer), .send(.delegate(.finished(reason))))
 
             case .delegate:

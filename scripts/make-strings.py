@@ -25,7 +25,7 @@ ES = {
     "Calendars appear here once you're connected.": "Los calendarios aparecen aquí cuando te conectas.",
     "Chime": "Carillón",
     "Choose calendars · working hours": "Elige calendarios · horario laboral",
-    "Click anywhere or press any key to dismiss": "Haz clic o pulsa cualquier tecla para descartar",
+    "Click anywhere or press Esc to dismiss": "Haz clic o pulsa Esc para descartar",
     "Close": "Cerrar",
     "Connect Google Calendar": "Conectar Google Calendar",
     "Connected as %@": "Conectado como %@",

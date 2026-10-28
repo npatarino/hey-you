@@ -30,7 +30,7 @@ The agent that built the app has no Screen Recording or Accessibility permission
 | Alert covers the whole screen, above everything | ✅ | Window level 1000 (screen saver), bounds = full screen. Only one display available, so multi-display not checked. |
 | B.1 alert content ("MEETING IN", "60s", title, time · provider, Join) | 🧪 + render | `alert-countdown.png`; `AppFeatureTests.launchToAlert`. |
 | B.2 Enter / Join opens the link and closes | 🧪 | Key mapping (`AlertInputTests`) and reducer tested. ⏳ real key press. |
-| B.3 click, `j`, Esc, ⌘Q, ⌘W, right-click dismiss; app keeps running | 🧪 | ⏳ Real input not sent (no Accessibility permission). |
+| B.3 click, Esc, ⌘Q, ⌘W, right-click dismiss; `j`/space ignored; first second ignored; app keeps running | 🧪 | ⏳ Real input not sent (no Accessibility permission). |
 | B.4 no auto-close; NOW; STARTED 3 MIN AGO | 🧪 + render | `alert-started-hook.png`. |
 | B.5–B.9, B.16–B.19 | 🧪 | All in `AppFeatureTests` / `AppFeatureProTests`. |
 | B.10 above full-screen Safari, two monitors | ⏳ | Level and collection behaviour are correct (`.screenSaver`, `.fullScreenAuxiliary`, `.canJoinAllSpaces`); needs a person with two monitors. |
@@ -51,7 +51,7 @@ The agent that built the app has no Screen Recording or Accessibility permission
 ## Manual checklist for you (≈10 minutes)
 
 1. `open HeyYou.xcodeproj`, click **Trust & Enable** for the package macros if asked, edit the scheme → Run → Arguments → tick `--mock-calendar`, Run.
-2. Wait ~30 s: red alert on every screen. Try Esc, a letter, a click, right-click, ⌘Q, ⌘W (each time relaunch or use **Test alert** from the menu): the alert closes and the bell stays in the menu bar.
+2. Wait ~30 s: red alert on every screen. Type a letter or Space: nothing happens. Then try Esc, a click, right-click, ⌘Q, ⌘W (each time use **Test alert** from the menu): the alert closes and the bell stays in the menu bar. Input in the first second after it appears is ignored.
 3. **Test alert** again and press Enter: the project page opens.
 4. Leave one alert alone for 5 minutes: it should say "STARTED 4 MIN AGO" and stay.
 5. Put Safari in full screen, then **Test alert**: the alert must appear over it.
@@ -70,8 +70,12 @@ The agent that built the app has no Screen Recording or Accessibility permission
 ## Review pass (2026-10-29)
 
 - Presentation logic moved out of the views into `Presentation/` and unit-tested (alert texts, menu status lines, time formatting, working-hours pickers).
-- New tests: AppKit window controllers (panels per screen, Return joins, any key dismisses, ⌘Q only dismisses while visible, onboarding window follows state), live clients (wake notifications, Google sign-in without a client ID, error mapping, mocks), StoreKit 2 against `App/HeyYou.storekit` in an app-hosted test target.
+- New tests: AppKit window controllers (panels per screen, Return joins, only deliberate keys dismiss, first-second grace, ⌘Q only dismisses while visible, onboarding window follows state), live clients (wake notifications, Google sign-in without a client ID, error mapping, mocks), StoreKit 2 against `App/HeyYou.storekit` in an app-hosted test target.
 - **Bug fixed:** after a successful purchase the live store client re-read `Transaction.currentEntitlements`, which can lag, so the app could stay "free" until relaunch. It now uses the verified transaction. Same for `Transaction.updates`.
 - **Not verifiable here:** under StoreKitTest on macOS 26, `currentEntitlements`, `Transaction.latest` and `SKTestSession.buyProduct` don't see test purchases, so "Pro survives a relaunch" and "Restore purchase" still need the manual check (run from Xcode with the StoreKit configuration).
 - Person properties from PRD §6.1 now complete: `calendars_count`, `weekly_meetings_bucket` (new weekly counter), and `lead_time` / `launch_at_login` / `is_pro` are re-sent when they change.
 - Tests: 160 package tests + 2 app-hosted, all green (`./scripts/test.sh --xcode`).
+
+## Change 2026-10-29: deliberate dismissal
+
+In the first real run the alert appeared while the user was typing and a keystroke already in flight dismissed it unseen. Now only Esc, ⌘Q, ⌘W, ⌘. and clicks dismiss; other keys are swallowed; and all input is ignored for 1 s after the alert appears (`AlertFeature.inputGracePeriod`). PRD §5.4 and B.3 updated. Tests: key mapping table, `gracePeriodIgnoresInput`, `onlyDeliberateKeysDismiss`.

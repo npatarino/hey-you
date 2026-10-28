@@ -205,7 +205,7 @@ struct AppFeatureProTests: AppFeatureTesting {
         var state = signedIn(env)
         state.alert = AlertFeature.State(event: AppFeatureTests.b8Events[1], proHook: .declined, now: date("2026-11-03 08:59"))
         let store = makeStore(env, state: state)
-        await store.send(.alert(.presented(.dismissed(.key))))
+        await store.send(.alert(.presented(.dismissed(.escape))))
         await store.receive(\.alert.presented.delegate.finished) {
             $0.alert = nil
             $0.lastProHookAt = date("2026-11-03 08:59:10")
@@ -237,6 +237,7 @@ struct AppFeatureProTests: AppFeatureTesting {
             $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59"))
             $0.nextAlert = nil
         }
+        await env.clock.advance(by: .seconds(1))
         await store.send(.alert(.presented(.joinTapped)))
         await store.receive(\.alert.presented.delegate.finished) { $0.alert = nil }
         await store.finish()
