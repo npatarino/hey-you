@@ -2,9 +2,12 @@
 
 A macOS menu-bar app that reads your Google Calendar and, one minute before every meeting, turns **every screen** red with the meeting name, a countdown and a **Join meeting** button. The alert never closes by itself; any click or key dismisses it.
 
+![The alert](docs/screenshots/alert-countdown.png)
+
 - Product spec: [docs/PRD.md](docs/PRD.md)
 - Technical plan: [PLAN.md](PLAN.md)
 - Privacy policy: [PRIVACY.md](PRIVACY.md)
+- QA notes: [docs/QA.md](docs/QA.md) · App Store checklist: [docs/APP_STORE.md](docs/APP_STORE.md)
 
 ## Requirements
 
@@ -19,7 +22,8 @@ A macOS menu-bar app that reads your Google Calendar and, one minute before ever
 ./scripts/bootstrap.sh      # installs tools, creates Config/Secrets.xcconfig, generates HeyYou.xcodeproj
 ./scripts/test.sh           # runs the HeyYouKit test suite (swift test)
 ./scripts/build.sh          # builds the app (Debug) into build/DerivedData
-open HeyYou.xcodeproj       # or run from Xcode
+./scripts/lint.sh           # swiftformat + swiftlint --strict
+open HeyYou.xcodeproj       # or run from Xcode (click "Trust & Enable" for the package macros once)
 ```
 
 All logic lives in the local Swift package `HeyYouKit/` (a folder with its own `Package.swift`), so you can build and test it from the terminal without opening Xcode. `App/` is only the thin app target that wires it together. `HeyYou.xcodeproj` is generated from `project.yml` and is not committed.
@@ -60,3 +64,24 @@ Config/              xcconfigs (Secrets.xcconfig is gitignored)
 scripts/             bootstrap / build / test / icon generation
 docs/                PRD, QA notes, App Store checklist, screenshots
 ```
+
+## FAQ
+
+**Why does it ask for my Google account?** To read when your meetings are. The scope is read-only (`calendar.readonly`); the app never writes to your calendar and never reads mail or contacts.
+
+**What does it store?** Settings, your consent choices, whether you own Pro and your weekly punctuality count, in the app's preferences. Google tokens are kept in the macOS Keychain by Google's Sign-In SDK. Calendar data is only held in memory.
+
+**Does anything leave my Mac?** Calendar data only travels between your Mac and Google. If you allow it, anonymous usage events (never titles, links, attendees or calendar names) go to PostHog in the EU. See [PRIVACY.md](PRIVACY.md).
+
+**Can I close the alert?** Yes: any click or key closes it, Enter joins the call. ⌘Q while an alert is visible only closes the alert; from the menu, Quit closes the app.
+
+**Free vs Pro?** Free alerts 60 s before every timed meeting. Pro (one-time purchase) adds lead time 10–60 s, filters (declined, no link, just you), calendar choice, working hours, sound, menu-bar countdown and weekly punctuality.
+
+## Development notes
+
+- Architecture: TCA. `AppFeature` owns sync, scheduling and alert presentation; `AlertScheduler` is a pure function; settings always go through `EffectiveSettings` so Pro gating lives in one place.
+- Debug launch arguments: `--mock-calendar` (fake account and meetings), `--print-changes` (logs every action).
+- Screens can be re-rendered to PNG: `cd HeyYouKit && HEYYOU_SNAPSHOTS=$PWD/../docs/screenshots swift test --filter SnapshotRenderTests`.
+- Strings: `HeyYouKit/Sources/HeyYouKit/Resources/Localizable.xcstrings` (en + es). After adding strings, build once and run
+  `python3 scripts/make-strings.py HeyYouKit/.build/out/Intermediates.noindex/HeyYouKit.build/Debug/HeyYouKit-t.build/Objects-normal/arm64 HeyYouKit/Sources/HeyYouKit/Resources/Localizable.xcstrings`
+  (it fails if a Spanish translation is missing).

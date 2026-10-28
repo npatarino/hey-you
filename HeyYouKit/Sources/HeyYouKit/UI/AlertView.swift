@@ -54,7 +54,7 @@ public struct AlertView: View {
             Text(topLabel)
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
                 .tracking(4)
-                .foregroundStyle(.white.opacity(0.85))
+                .foregroundStyle(.white)
                 .accessibilityAddTraits(.isHeader)
 
             CountdownRing(phase: store.phase, progress: store.progress, reduceMotion: reduceMotion)
@@ -69,18 +69,18 @@ public struct AlertView: View {
                 if store.additionalCount > 0 {
                     Text("+\(store.additionalCount) more", bundle: .module)
                         .font(.system(size: 20, weight: .medium, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(.white)
                 }
                 if let hook = store.proHook {
                     Label(hookText(hook), systemImage: "lock.fill")
                         .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(.white)
                 }
             }
 
             Label(metaText, systemImage: "video.fill")
                 .font(.system(size: 20, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.9))
+                .foregroundStyle(.white)
 
             Button {
                 store.send(.joinTapped)
@@ -98,7 +98,7 @@ public struct AlertView: View {
 
             Text("Click anywhere or press any key to dismiss", bundle: .module)
                 .font(.system(size: 16, weight: .regular, design: .rounded))
-                .foregroundStyle(.white.opacity(0.75))
+                .foregroundStyle(.white)
                 .padding(.top, 12)
         }
     }
