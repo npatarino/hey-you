@@ -13,7 +13,7 @@ Everything here needs your Apple Developer account. Items marked **(you)** can't
 
 ## 2. App Store Connect (you)
 
-- [ ] New macOS app: name **Hey You!**, primary language English, bundle ID `pro.chimi.heyyou`, SKU `heyyou-mac`.
+- [x] New macOS app: store name **Hey You! – Never Be Late** ("Hey You!" alone was taken; the app itself is still called "Hey You!"), primary language English, bundle ID `pro.chimi.heyyou`, SKU `heyyou-mac`. Optional Spanish store name: **Hey You! – Nunca llegues tarde** (30 chars).
 - [ ] In-app purchase: **Non-Consumable**, product ID `pro.chimi.heyyou.pro`, reference name "Hey You! Pro", price 5.99 € tier, **Family Sharing on**, display name and description in en/es (texts below), review screenshot of the paywall. Submit it **together with the first build**.
 - [ ] Pricing: Free. Availability: all territories.
 - [ ] Category: Productivity (secondary: Business).
@@ -31,13 +31,15 @@ xcodebuild -exportArchive -archivePath build/HeyYou.xcarchive \
   -exportOptionsPlist Config/ExportOptions.plist -exportPath build/export
 ```
 
-Then upload `build/export/HeyYou.pkg` with Transporter, or use Xcode → Organizer → Distribute App → App Store Connect. Bump `CURRENT_PROJECT_VERSION` in `Config/Base.xcconfig` for every upload, `MARKETING_VERSION` for every release.
+**Keep local distribution certificates.** The signing name contains "á" (Nicolás). With Xcode's cloud-managed signing, the designated requirement gets that name in decomposed Unicode while the certificate has it precomposed, so nested code (`libswiftCompatibilitySpan.dylib`) fails validation and App Store Connect rejects the upload with ITMS-90296 "App sandbox not enabled". Fix: create **Apple Distribution** and **Mac Installer Distribution** in Xcode → Settings → Accounts → Manage Certificates so the export signs locally. Check before uploading: `xcrun swinfo -f "build/export/Hey You!.pkg" -o /tmp/swinfo.plist --plat macos && ! grep -q 67021 /tmp/swinfo.plist`.
+
+To upload directly, use a copy of `Config/ExportOptions.plist` with `destination` = `upload`. Or upload `build/export/Hey You!.pkg` with Transporter, or use Xcode → Organizer → Distribute App → App Store Connect. Bump `CURRENT_PROJECT_VERSION` in `Config/Base.xcconfig` for every upload, `MARKETING_VERSION` for every release.
 
 Size: the archived app (universal Intel + Apple Silicon, symbols stripped) is 13 MB, within the PRD's 15 MB.
 
 ## 4. Metadata
 
-**Subtitle** (30 chars): Never be late to a meeting again · ES: Que no llegues tarde nunca más
+**Subtitle** (30 chars max, must not repeat the name): Full-screen meeting alerts · ES: Alerta a pantalla completa
 
 **Keywords** (100 chars): meeting,reminder,calendar,google calendar,alert,zoom,meet,teams,focus,punctual,notification,menu bar
 
