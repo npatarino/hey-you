@@ -41,7 +41,7 @@ The app talks directly to Google from your Mac. You need your own OAuth client:
 2. **APIs & Services → Library** → enable **Google Calendar API**.
 3. **APIs & Services → OAuth consent screen** → User type **External** → fill app name, support email.
    Add scope `https://www.googleapis.com/auth/calendar.readonly`. While the app is in *Testing*, add your own Google address under **Test users**.
-4. **APIs & Services → Credentials → Create credentials → OAuth client ID** → Application type **iOS** (this is the type Google uses for native macOS apps too) → Bundle ID `com.patarino.heyyou` (or yours, see `project.yml`).
+4. **APIs & Services → Credentials → Create credentials → OAuth client ID** → Application type **iOS** (this is the type Google uses for native macOS apps too) → Bundle ID `pro.chimi.heyyou` (or yours, see `project.yml`).
 5. Copy the **Client ID** (`1234-abc.apps.googleusercontent.com`) and the **iOS URL scheme** (`com.googleusercontent.apps.1234-abc`).
 6. Edit `Config/Secrets.xcconfig` (gitignored, created from `Config/Secrets.example.xcconfig`):
 

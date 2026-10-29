@@ -371,7 +371,7 @@ Ideas Pro para v2 (no en v1): tema de color de la alerta, atajo global para unir
 **Por qué:** el fundador quiere saber cómo se usa la app y poder segmentar y contactar usuarios. PostHog da eventos, cohortes, flags y encuestas en un solo sitio, con alojamiento en la UE y plan gratuito suficiente para los primeros miles de usuarios. El consentimiento explícito y la separación contenido/comportamiento mantienen la promesa de B5. El toggle de uso viene activado por defecto porque sin datos no hay fase 3; el de email, desactivado, porque el marketing por correo en la UE lo exige.
 
 ### 5.6.2 Compra
-**Decisión:** StoreKit 2, un producto no consumible `com.patarino.heyyou.pro`, 5,99 € (tier equivalente en cada país), Family Sharing activado. Estado Pro derivado exclusivamente de `Transaction.currentEntitlements`, cacheado en `@Shared` para arrancar sin red, y re-verificado en cada arranque y en `Transaction.updates`. Botón "Restaurar compra" en el paywall y en Ajustes. Paywall accesible desde el menú ("Hey You! Pro…"), desde cada ajuste bloqueado (candado) y desde Ajustes. En la alerta, solo la línea de gancho, sin botón.
+**Decisión:** StoreKit 2, un producto no consumible `pro.chimi.heyyou.pro`, 5,99 € (tier equivalente en cada país), Family Sharing activado. Estado Pro derivado exclusivamente de `Transaction.currentEntitlements`, cacheado en `@Shared` para arrancar sin red, y re-verificado en cada arranque y en `Transaction.updates`. Botón "Restaurar compra" en el paywall y en Ajustes. Paywall accesible desde el menú ("Hey You! Pro…"), desde cada ajuste bloqueado (candado) y desde Ajustes. En la alerta, solo la línea de gancho, sin botón.
 **Por qué:** compra única (ver FAQ interna). Sin servidor no hay validación de recibo; StoreKit 2 verifica la firma localmente y es lo que Apple recomienda. Un botón de compra dentro de la alerta roja sería de mal gusto y Apple podría considerarlo manipulador.
 
 ### 5.7 Sincronización
@@ -647,7 +647,7 @@ Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given 
 
 **B.17 Compra y entitlement**
 - Given: usuario gratis, fichero `.storekit` local, paywall abierto desde el menú.
-- When: compra `com.patarino.heyyou.pro` en sandbox.
+- When: compra `pro.chimi.heyyou.pro` en sandbox.
 - Then: `purchase_completed`, el paywall se cierra, en Ajustes desaparecen los candados, `ignoreDeclined` e `ignoreSolo` quedan activados por defecto, el menú deja de mostrar "Hey You! Pro…", el icono muestra "Xm" cuando toca. Tras reiniciar la app sin red, sigue siendo Pro (caché).
 
 **B.18 Restaurar compra**

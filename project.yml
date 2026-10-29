@@ -10,7 +10,7 @@ configFiles:
 settings:
   base:
     # The only place the bundle identifier is defined.
-    BUNDLE_ID: com.patarino.heyyou
+    BUNDLE_ID: pro.chimi.heyyou
 packages:
   HeyYouKit:
     path: HeyYouKit

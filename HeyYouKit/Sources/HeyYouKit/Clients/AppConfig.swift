@@ -3,7 +3,7 @@ import Foundation
 
 /// Values injected into Info.plist from `Config/Secrets.xcconfig`.
 public enum AppConfig {
-    public static let proProductID = "com.patarino.heyyou.pro"
+    public static let proProductID = "pro.chimi.heyyou.pro"
     public static let calendarScope = "https://www.googleapis.com/auth/calendar.readonly"
     public static let projectURL = URL(string: "https://github.com/npatarino/hey-you") ?? URL(fileURLWithPath: "/")
     public static let privacyURL = URL(string: "https://github.com/npatarino/hey-you/blob/main/PRIVACY.md")

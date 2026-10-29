@@ -5,7 +5,7 @@ Everything here needs your Apple Developer account. Items marked **(you)** can't
 ## 1. Accounts and identifiers (you)
 
 - [ ] Apple Developer Program membership (paid).
-- [ ] App ID `com.patarino.heyyou` (Certificates, Identifiers & Profiles → Identifiers). If you use another bundle ID, change `BUNDLE_ID` in `project.yml` (the only place) and the product ID below.
+- [ ] App ID `pro.chimi.heyyou` (Certificates, Identifiers & Profiles → Identifiers). If you use another bundle ID, change `BUNDLE_ID` in `project.yml` (the only place) and the product ID below.
 - [ ] Put your Team ID in `Config/Secrets.xcconfig`: `TEAM_ID = ABCDE12345` and `HEYYOU_SIGN_IDENTITY = Apple Development`. Xcode automatic signing then creates the *Apple Development* / *Apple Distribution* certificates and the Mac App Store provisioning profile.
 - [ ] Google OAuth client (type iOS) for the same bundle ID, values in `Config/Secrets.xcconfig` (see README).
 - [ ] **Google OAuth verification** for the sensitive `calendar.readonly` scope: home page, published privacy policy (PRIVACY.md at a public URL), demo video of the sign-in and of the scope in use. Until approved only 100 test users can sign in. Start this as soon as there is a TestFlight build.
@@ -13,8 +13,8 @@ Everything here needs your Apple Developer account. Items marked **(you)** can't
 
 ## 2. App Store Connect (you)
 
-- [ ] New macOS app: name **Hey You!**, primary language English, bundle ID `com.patarino.heyyou`, SKU `heyyou-mac`.
-- [ ] In-app purchase: **Non-Consumable**, product ID `com.patarino.heyyou.pro`, reference name "Hey You! Pro", price 5.99 € tier, **Family Sharing on**, display name and description in en/es (texts below), review screenshot of the paywall. Submit it **together with the first build**.
+- [ ] New macOS app: name **Hey You!**, primary language English, bundle ID `pro.chimi.heyyou`, SKU `heyyou-mac`.
+- [ ] In-app purchase: **Non-Consumable**, product ID `pro.chimi.heyyou.pro`, reference name "Hey You! Pro", price 5.99 € tier, **Family Sharing on**, display name and description in en/es (texts below), review screenshot of the paywall. Submit it **together with the first build**.
 - [ ] Pricing: Free. Availability: all territories.
 - [ ] Category: Productivity (secondary: Business).
 - [ ] Age rating: 4+.
