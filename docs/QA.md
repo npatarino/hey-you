@@ -43,7 +43,7 @@ The agent that built the app has no Screen Recording or Accessibility permission
 | Sound plays | ⏳ | `NSSound(named: "Funk")` call is tested via the mock; audio not heard. |
 | Status item countdown "Xm" | 🧪 | `MenuBarFeatureTests`. |
 | Onboarding "Sign in with Google" branding | ✅ render | `onboarding.png`: white, grey border, official G from the SDK. |
-| Real Google OAuth | ⏳ | Needs `Config/Secrets.xcconfig` (client ID) and a signed build (Team ID). Without a client ID the onboarding shows a clear "not set up" message. |
+| Real Google OAuth | ✅ | 2026-10-29, by the user: Debug build signed with Apple Development (bundle `pro.chimi.heyyou`), sign-in with a test user works and the menu shows real meetings. Without a client ID the onboarding shows a clear "not set up" message. |
 | Launch at login | ⏳ | `SMAppService` needs a signed app in /Applications to be meaningful. |
 | StoreKit purchase / restore with `HeyYou.storekit` | 🧪 | Reducer flows tested with the mock store. ⏳ in Xcode with the StoreKit configuration (Run from Xcode; the scheme already points at it). |
 | PostHog traffic has no titles/links (B.19) | 🧪 | Typed taxonomy makes it impossible to send free text; consent-off sends nothing. ⏳ traffic inspection needs a PostHog key. |
