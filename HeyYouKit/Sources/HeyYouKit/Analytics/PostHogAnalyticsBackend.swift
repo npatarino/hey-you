@@ -4,7 +4,7 @@ import PostHog
 
 /// PostHog Cloud EU. Autocapture, screen views and session replay are off: only the typed events are sent.
 public final class PostHogAnalyticsBackend: AnalyticsBackend {
-    private static let logger = Logger(subsystem: "com.patarino.heyyou", category: "analytics")
+    private static let logger = Logger(subsystem: "pro.chimi.heyyou", category: "analytics")
     private let isConfigured: Bool
 
     /// - Parameter apiKey: nil or a placeholder makes this backend a no-op.

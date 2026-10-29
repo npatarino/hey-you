@@ -30,7 +30,7 @@
           "locale" : "es_ES"
         }
       ],
-      "productID" : "com.patarino.heyyou.pro",
+      "productID" : "pro.chimi.heyyou.pro",
       "referenceName" : "Hey You! Pro",
       "type" : "NonConsumable"
     }
