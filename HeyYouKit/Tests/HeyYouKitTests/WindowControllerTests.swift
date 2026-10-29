@@ -61,6 +61,28 @@ struct WindowControllerTests {
         #expect(controller.visiblePanels.isEmpty)
     }
 
+    /// Regression (2026-10-29): during a full-screen call, every screen-parameters notification rebuilt
+    /// the panels and re-activated the app, which made the alert flicker on and off.
+    @Test func screenParameterNoiseKeepsPanels() async {
+        let env = TestEnvironment(now: "2026-11-03 10:59")
+        let store = makeStore(env)
+        let controller = AlertWindowController(store: store)
+        showAlert(store, env: env)
+        #expect(await eventually { controller.isShowing })
+        let before = controller.visiblePanels.map { ObjectIdentifier($0) }
+
+        for _ in 0 ..< 5 {
+            NotificationCenter.default.post(name: NSApplication.didChangeScreenParametersNotification, object: nil)
+            controller.screensChanged()
+        }
+
+        let after = controller.visiblePanels.map { ObjectIdentifier($0) }
+        let allVisible = controller.visiblePanels.allSatisfy { $0.isVisible }
+        #expect(controller.isShowing)
+        #expect(after == before)
+        #expect(allVisible)
+    }
+
     @Test func onlyDeliberateKeysDismiss() async {
         let env = TestEnvironment(now: "2026-11-03 10:59")
         let store = makeStore(env)
