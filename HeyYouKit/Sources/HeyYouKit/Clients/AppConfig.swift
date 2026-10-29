@@ -6,7 +6,7 @@ public enum AppConfig {
     public static let proProductID = "pro.chimi.heyyou.pro"
     public static let calendarScope = "https://www.googleapis.com/auth/calendar.readonly"
     public static let projectURL = URL(string: "https://github.com/npatarino/hey-you") ?? URL(fileURLWithPath: "/")
-    public static let privacyURL = URL(string: "https://github.com/npatarino/hey-you/blob/main/PRIVACY.md")
+    public static let privacyURL = URL(string: "https://chimi.pro/legal/hey-you/privacy")
         ?? URL(fileURLWithPath: "/")
     public static let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
         ?? URL(fileURLWithPath: "/")

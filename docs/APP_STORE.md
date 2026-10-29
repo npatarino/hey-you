@@ -8,7 +8,7 @@ Everything here needs your Apple Developer account. Items marked **(you)** can't
 - [ ] App ID `pro.chimi.heyyou` (Certificates, Identifiers & Profiles → Identifiers). If you use another bundle ID, change `BUNDLE_ID` in `project.yml` (the only place) and the product ID below.
 - [ ] Put your Team ID in `Config/Secrets.xcconfig`: `TEAM_ID = ABCDE12345` and `HEYYOU_SIGN_IDENTITY = Apple Development`. Xcode automatic signing then creates the *Apple Development* / *Apple Distribution* certificates and the Mac App Store provisioning profile.
 - [ ] Google OAuth client (type iOS) for the same bundle ID, values in `Config/Secrets.xcconfig` (see README).
-- [ ] **Google OAuth verification** for the sensitive `calendar.readonly` scope: home page, published privacy policy (PRIVACY.md at a public URL), demo video of the sign-in and of the scope in use. Until approved only 100 test users can sign in. Start this as soon as there is a TestFlight build.
+- [ ] **Google OAuth verification** for the sensitive `calendar.readonly` scope: home page, privacy policy (published: https://chimi.pro/legal/hey-you/privacy), demo video of the sign-in and of the scope in use. Until approved only 100 test users can sign in. Start this as soon as there is a TestFlight build.
 - [ ] PostHog EU project; API key in `POSTHOG_API_KEY`.
 
 ## 2. App Store Connect (you)
@@ -76,7 +76,7 @@ Size: the archived app (universal Intel + Apple Silicon, symbols stripped) is 13
 
 **Screenshots** (1280×800 or 2560×1600): the alert (`docs/screenshots/alert-countdown.png` is 2880×1800, resize or retake on a 1440×900 display), the alert with the Pro hook, the menu, Settings with padlocks, **the paywall**. Real screenshots from a running build are better than the off-screen renders in `docs/screenshots`.
 
-**URLs**: Support URL (GitHub repo or a page), Privacy Policy URL (PRIVACY.md published, e.g. GitHub Pages).
+**URLs**: Support URL (GitHub repo or a page), Privacy Policy URL `https://chimi.pro/legal/hey-you/privacy` (Spanish: `https://chimi.pro/legal/hey-you/privacidad`).
 
 ## 5. App Privacy ("nutrition labels")
 
