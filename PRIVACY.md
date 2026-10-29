@@ -2,7 +2,9 @@
 
 *Last updated: 29 October 2026* · [Español más abajo](#política-de-privacidad--hey-you)
 
-Hey You! is a macOS menu-bar app that shows a full-screen alert one minute before your Google Calendar meetings. It is built by Nico Patarino ("we"). Contact: npatarino@gmail.com.
+Published at <https://chimi.pro/legal/hey-you/privacy> (English) and <https://chimi.pro/legal/hey-you/privacidad> (español). Keep this file and those pages (repo `cv-blog`, `src/pages/legal/hey-you/`) in sync.
+
+Hey You! is a macOS menu-bar app that shows a full-screen alert one minute before your Google Calendar meetings. It is built by Nicolás Patarino ("we"). Contact: hola@chimi.pro.
 
 ## What the app reads from Google
 
@@ -48,7 +50,7 @@ Hey You! is not directed at children under 16.
 
 ## Your rights
 
-You can ask us to delete the usage data linked to your ID or email hash by writing to npatarino@gmail.com. Turning the toggle off stops all future collection.
+You can ask us to delete the usage data linked to your ID or email hash by writing to hola@chimi.pro. Turning the toggle off stops all future collection.
 
 ## Changes
 
@@ -60,7 +62,7 @@ If this policy changes, the new version will be published at this address with a
 
 *Última actualización: 29 de octubre de 2026*
 
-Hey You! es una app de barra de menús para macOS que muestra una alerta a pantalla completa un minuto antes de tus reuniones de Google Calendar. La desarrolla Nico Patarino. Contacto: npatarino@gmail.com.
+Hey You! es una app de barra de menús para macOS que muestra una alerta a pantalla completa un minuto antes de tus reuniones de Google Calendar. La desarrolla Nicolás Patarino. Contacto: hola@chimi.pro.
 
 ## Qué lee de Google
 
@@ -97,4 +99,4 @@ Hey You! no está dirigida a menores de 16 años.
 
 ## Tus derechos
 
-Puedes pedirnos que borremos los datos de uso asociados a tu ID o al hash de tu email escribiendo a npatarino@gmail.com. Apagar el interruptor detiene toda recogida futura.
+Puedes pedirnos que borremos los datos de uso asociados a tu ID o al hash de tu email escribiendo a hola@chimi.pro. Apagar el interruptor detiene toda recogida futura.

@@ -54,7 +54,7 @@ The app talks directly to Google from your Mac. You need your own OAuth client:
 
 7. `./scripts/build.sh` again.
 
-To let other people sign in, Google must verify the app (the calendar scope is *sensitive*): you need a home page, the privacy policy ([PRIVACY.md](PRIVACY.md)) published at a URL, and a demo video. Until then only test users can sign in.
+To let other people sign in, Google must verify the app (the calendar scope is *sensitive*): you need a home page, the privacy policy (published at <https://chimi.pro/legal/hey-you/privacy>, source [PRIVACY.md](PRIVACY.md)), and a demo video. Until then only test users can sign in.
 
 ## Project layout
 
