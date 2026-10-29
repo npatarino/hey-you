@@ -1,5 +1,6 @@
 import AppKit
 import ComposableArchitecture
+import OSLog
 import SwiftUI
 
 /// Shows `AlertView` on every screen while `AppFeature.State.alert` is set.
@@ -9,6 +10,10 @@ import SwiftUI
 /// so keys reach the alert even when another app is frontmost. While visible, a local event monitor
 /// swallows every key: Return joins, Esc and ⌘Q / ⌘W / ⌘. dismiss, other keys do nothing.
 /// Secondary clicks dismiss. The first second after appearing ignores all input (see `AlertFeature`).
+///
+/// Panels are rebuilt only when the displays really change (added, removed, resized). macOS also posts
+/// a screen-parameters change when the menu bar or Dock shows or hides, for example while another app
+/// is full screen; rebuilding (and re-activating) then fed back into itself and made the alert flicker.
 @MainActor
 public final class AlertWindowController: NSObject {
     private let store: StoreOf<AppFeature>
@@ -16,6 +21,9 @@ public final class AlertWindowController: NSObject {
     private var monitor: Any?
     private var tokens: [ObserveToken] = []
     private var screenObserver: (any NSObjectProtocol)?
+    /// Display frames the current panels were built for.
+    private var panelScreenFrames: [NSRect] = []
+    private static let logger = Logger(subsystem: "pro.chimi.heyyou", category: "alert-window")
 
     public private(set) var isShowing = false
 
@@ -38,10 +46,11 @@ public final class AlertWindowController: NSObject {
         }
     }
 
-    private func show(animated: Bool) {
+    private func show(animated: Bool, activate: Bool = true) {
         guard let alertStore = store.scope(state: \.alert, action: \.alert.presented) else { return }
         closePanels()
         isShowing = true
+        panelScreenFrames = Self.currentScreenFrames()
         let mouseScreen = NSScreen.screens.first { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) }
         for screen in NSScreen.screens {
             let panel = AlertPanel(screen: screen)
@@ -54,7 +63,11 @@ public final class AlertWindowController: NSObject {
                 panel.orderFrontRegardless()
             }
         }
-        NSApplication.shared.activate()
+        if activate {
+            NSApplication.shared.activate()
+        }
+        let screensCount = panels.count
+        Self.logger.notice("Alert panels shown on \(screensCount) screen(s)")
         if animated {
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.2
@@ -68,6 +81,8 @@ public final class AlertWindowController: NSObject {
 
     private func hide() {
         isShowing = false
+        panelScreenFrames = []
+        Self.logger.notice("Alert panels hidden")
         removeMonitor()
         let closing = panels
         panels = []
@@ -94,10 +109,16 @@ public final class AlertWindowController: NSObject {
         panels = []
     }
 
-    private func screensChanged() {
-        guard isShowing else { return }
+    /// Rebuilds the panels only if the set of displays or their frames changed.
+    func screensChanged() {
+        guard isShowing, Self.currentScreenFrames() != panelScreenFrames else { return }
+        Self.logger.notice("Displays changed while the alert is visible: rebuilding panels")
         removeMonitor()
-        show(animated: false)
+        show(animated: false, activate: false)
+    }
+
+    private static func currentScreenFrames() -> [NSRect] {
+        NSScreen.screens.map(\.frame)
     }
 
     // MARK: - Input
