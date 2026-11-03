@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: HeyYouKit tests
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+          swift --version
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: HeyYouKit/.build
+          key: spm-${{ runner.os }}-${{ hashFiles('HeyYouKit/Package.resolved') }}
+          restore-keys: spm-${{ runner.os }}-
+      - name: Build
+        working-directory: HeyYouKit
+        run: swift build
+      - name: Test
+        working-directory: HeyYouKit
+        run: swift test
