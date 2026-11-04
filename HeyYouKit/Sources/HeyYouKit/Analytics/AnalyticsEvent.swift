@@ -49,6 +49,8 @@ public enum DismissReason: String, Sendable, Equatable {
     case escape
     case quitShortcut = "quit_shortcut"
     case replaced
+    /// Nobody dismissed it: it closed by itself when the meeting ended.
+    case expired
 }
 
 /// Where "Test alert" was pressed.

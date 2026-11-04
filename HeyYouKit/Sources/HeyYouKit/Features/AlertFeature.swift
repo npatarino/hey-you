@@ -1,7 +1,8 @@
 import ComposableArchitecture
 import Foundation
 
-/// The full-screen red alert. It never closes by itself; any interaction dismisses it.
+/// The full-screen red alert. A deliberate interaction dismisses it; if nobody is there it closes by itself
+/// when the meeting ends (at most `AlertScheduler.maxAlertTimeAfterStart` after the start).
 @Reducer
 public struct AlertFeature: Sendable {
     @ObservableState
@@ -49,6 +50,11 @@ public struct AlertFeature: Sendable {
         /// The meeting link, or the event in Google Calendar when there is none.
         public var joinURL: URL? {
             event.meetingLink?.url ?? event.htmlLink
+        }
+
+        /// When the alert closes by itself (reason `expired`).
+        public var expiresAt: Date {
+            AlertScheduler.alertExpiry(for: event)
         }
 
         public var hasMeetingLink: Bool {
@@ -101,7 +107,8 @@ public struct AlertFeature: Sendable {
 
             case .tick:
                 state.now = now
-                return .none
+                guard now >= state.expiresAt else { return .none }
+                return .merge(.cancel(id: CancelID.timer), .send(.delegate(.finished(.expired))))
 
             case .joinTapped:
                 guard !state.isInGracePeriod(at: now) else { return .none }

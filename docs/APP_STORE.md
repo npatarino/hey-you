@@ -47,7 +47,7 @@ Size: the archived app (universal Intel + Apple Silicon, symbols stripped) is 13
 
 **Description (en)**
 
-> Hey You! lives in your menu bar and watches your Google Calendar. One minute before each meeting it turns every screen red with the meeting name, a countdown and a Join button. It never closes by itself, and it never locks you out: a click or Esc dismisses it, Enter joins the call.
+> Hey You! lives in your menu bar and watches your Google Calendar. One minute before each meeting it turns every screen red with the meeting name, a countdown and a Join button. It stays up until you react or the meeting ends, and it never locks you out: a click or Esc dismisses it, Enter joins the call.
 >
 > • Works over full-screen apps and on every display
 > • Detects Google Meet, Zoom, Microsoft Teams and Webex links
@@ -64,7 +64,7 @@ Size: the archived app (universal Intel + Apple Silicon, symbols stripped) is 13
 
 **Descripción (es)**
 
-> Hey You! vive en tu barra de menús y vigila tu Google Calendar. Un minuto antes de cada reunión pinta todas tus pantallas de rojo con el nombre de la reunión, una cuenta atrás y un botón para unirte. No se cierra sola y nunca te bloquea: un clic o Esc la quitan y Enter te une a la llamada.
+> Hey You! vive en tu barra de menús y vigila tu Google Calendar. Un minuto antes de cada reunión pinta todas tus pantallas de rojo con el nombre de la reunión, una cuenta atrás y un botón para unirte. Se queda hasta que reaccionas o termina la reunión, y nunca te bloquea: un clic o Esc la quitan y Enter te une a la llamada.
 >
 > • Funciona sobre apps a pantalla completa y en todas las pantallas
 > • Detecta enlaces de Google Meet, Zoom, Microsoft Teams y Webex

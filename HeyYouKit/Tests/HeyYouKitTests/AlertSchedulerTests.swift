@@ -50,6 +50,16 @@ struct AlertSchedulerTests {
         )
     }
 
+    /// After a long sleep, a meeting that started more than 2 h ago is not alerted even if it has not ended.
+    @Test func longMeetingNotAlertedAfterTwoHours() {
+        let workshop = CalendarEvent.fixture(title: "Workshop", start: "2026-11-03 09:00", end: "2026-11-03 17:00")
+        let wake = { (now: String) in
+            AlertScheduler.next(events: [workshop], now: date(now), settings: free, fired: [], includeInProgress: true)
+        }
+        #expect(wake("2026-11-03 10:59")?.event == workshop)
+        #expect(wake("2026-11-03 11:00") == nil)
+    }
+
     /// PRD B.8 fixtures.
     var b8Events: [CalendarEvent] {
         [

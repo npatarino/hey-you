@@ -65,6 +65,32 @@ struct AlertFeatureTests {
         await task.cancel()
     }
 
+    /// PRD B.4: unattended, the alert closes by itself when the meeting ends (11:30).
+    @Test func expiresWhenMeetingEnds() async {
+        let env = TestEnvironment(now: "2026-11-03 11:29:58")
+        let initial = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59:00"))
+        #expect(initial.expiresAt == date("2026-11-03 11:30:00"))
+        let store = TestStore(initialState: initial) {
+            AlertFeature()
+        } withDependencies: { env.apply(&$0) }
+
+        await store.send(.task)
+        await env.clock.advance(by: .seconds(1))
+        await store.receive(\.tick) { $0.now = date("2026-11-03 11:29:59") }
+        await env.clock.advance(by: .seconds(1))
+        await store.receive(\.tick) { $0.now = date("2026-11-03 11:30:00") }
+        await store.receive(.delegate(.finished(.expired)))
+        await store.finish()
+    }
+
+    /// The alert stays the meeting's length, clamped to 5 min–2 h after the start.
+    @Test func expiryIsClamped() {
+        let allDayWorkshop = CalendarEvent.fixture(title: "Workshop", start: "2026-11-03 09:00", end: "2026-11-03 17:00")
+        #expect(AlertScheduler.alertExpiry(for: allDayWorkshop) == date("2026-11-03 11:00"))
+        let reminder = CalendarEvent.fixture(title: "Ping", start: "2026-11-03 09:00", end: "2026-11-03 09:00")
+        #expect(AlertScheduler.alertExpiry(for: reminder) == date("2026-11-03 09:05"))
+    }
+
     /// PRD B.2: Enter / Join opens the link and finishes.
     @Test func joinOpensLink() async {
         let env = TestEnvironment(now: "2026-11-03 10:59:12")

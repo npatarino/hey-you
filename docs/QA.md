@@ -31,7 +31,7 @@ The agent that built the app has no Screen Recording or Accessibility permission
 | B.1 alert content ("MEETING IN", "60s", title, time · provider, Join) | 🧪 + render | `alert-countdown.png`; `AppFeatureTests.launchToAlert`. |
 | B.2 Enter / Join opens the link and closes | 🧪 | Key mapping (`AlertInputTests`) and reducer tested. ⏳ real key press. |
 | B.3 click, Esc, ⌘Q, ⌘W, right-click dismiss; `j`/space ignored; first second ignored; app keeps running | 🧪 | ⏳ Real input not sent (no Accessibility permission). |
-| B.4 no auto-close; NOW; STARTED 3 MIN AGO | 🧪 + render | `alert-started-hook.png`. |
+| B.4 no auto-close during the meeting; NOW; STARTED 3 MIN AGO; closes at the end (max 2 h) | 🧪 + render | `alert-started-hook.png`; `expiresWhenMeetingEnds`, `expiryIsClamped`, `longMeetingNotAlertedAfterTwoHours`, `expiredAlertIsTracked`. |
 | B.5–B.9, B.16–B.19 | 🧪 | All in `AppFeatureTests` / `AppFeatureProTests`. |
 | B.10 above full-screen Safari, two monitors | ⏳ | Level and collection behaviour are correct (`.screenSaver`, `.fullScreenAuxiliary`, `.canJoinAllSpaces`); needs a person with two monitors. |
 | B.11 Zoom screen sharing | ⏳ | Expected to show (documented behaviour). |
@@ -79,3 +79,7 @@ The agent that built the app has no Screen Recording or Accessibility permission
 ## Change 2026-10-29: deliberate dismissal
 
 In the first real run the alert appeared while the user was typing and a keystroke already in flight dismissed it unseen. Now only Esc, ⌘Q, ⌘W, ⌘. and clicks dismiss; other keys are swallowed; and all input is ignored for 1 s after the alert appears (`AlertFeature.inputGracePeriod`). PRD §5.4 and B.3 updated. Tests: key mapping table, `gracePeriodIgnoresInput`, `onlyDeliberateKeysDismiss`.
+
+## Change 2026-11-04: the alert closes when the meeting ends
+
+The user came back the next day to an alert still saying "STARTED 1236 MIN AGO". An unattended alert now closes by itself at the meeting's end, clamped to 5 min–2 h after the start, and is tracked as `alert_dismissed` with `reason: expired`. On wake, meetings past that point are not alerted. PRD §5.4 and B.4 updated.

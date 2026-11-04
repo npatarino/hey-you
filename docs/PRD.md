@@ -332,7 +332,7 @@ Con **Pro**, además: ignorar rechazados, solo con enlace de videollamada, ignor
 ### 5.2.1 Qué es Pro y qué es gratis
 | | Gratis | Pro (5,99 €, compra única) |
 |---|---|---|
-| Alerta a pantalla completa, todas las pantallas, sin auto-cierre | ✓ | ✓ |
+| Alerta a pantalla completa, todas las pantallas, no se cierra sola mientras dura la reunión | ✓ | ✓ |
 | Sign in with Google, todos los calendarios | ✓ | ✓ |
 | Unirse con Enter (Meet, Zoom, Teams, Webex) | ✓ | ✓ |
 | Abrir al iniciar sesión, menú con próximos eventos | ✓ | ✓ |
@@ -355,7 +355,7 @@ Ideas Pro para v2 (no en v1): tema de color de la alerta, atajo global para unir
 **Por qué:** dos alertas simultáneas se pisan. El usuario ya sabe que tiene solape; nuestro trabajo es que mire la pantalla.
 
 ### 5.4 Comportamiento de la alerta
-**Decisión:** una ventana sin borde por pantalla, nivel screenSaver, sobre todos los Spaces y apps a pantalla completa, sin auto-cierre. Descarta: clic en cualquier punto (también clic derecho), Esc, Cmd+Q, Cmd+W, Cmd+punto. Enter o clic en "Unirse" abre el enlace y descarta. El resto de teclas (letras, espacio, flechas, otros atajos) no hacen nada. Durante el primer segundo tras aparecer se ignora cualquier clic o tecla. Mientras hay alerta, Cmd+Q no cierra la app. Si llega otra alerta mientras hay una visible, la reemplaza. Al pasar la hora de inicio, "AHORA" durante 60 s y luego "EMPEZÓ HACE X MIN".
+**Decisión:** una ventana sin borde por pantalla, nivel screenSaver, sobre todos los Spaces y apps a pantalla completa. No se cierra sola mientras dura la reunión: si nadie la descarta, se cierra al terminar la reunión (como mínimo 5 min y como máximo 2 h después del inicio; cambio del 2026-11-04, tras encontrar una alerta con "STARTED 1236 MIN AGO" al volver al día siguiente). Descarta: clic en cualquier punto (también clic derecho), Esc, Cmd+Q, Cmd+W, Cmd+punto. Enter o clic en "Unirse" abre el enlace y descarta. El resto de teclas (letras, espacio, flechas, otros atajos) no hacen nada. Durante el primer segundo tras aparecer se ignora cualquier clic o tecla. Mientras hay alerta, Cmd+Q no cierra la app. Si llega otra alerta mientras hay una visible, la reemplaza. Al pasar la hora de inicio, "AHORA" durante 60 s y luego "EMPEZÓ HACE X MIN".
 **Por qué:** la intrusión está en la *aparición*, no en la *permanencia obligada*. Cualquier fricción para descartar sería castigo, y el castigo hace que se desinstale (decisión 2 de la página 0). Interceptamos Cmd+Q porque es el reflejo de "quítame esto" y queremos que ese reflejo funcione sin matar al vigilante. *Revisado el 2026-10-29:* en la primera prueba real la alerta apareció mientras el fundador escribía y una pulsación que ya estaba en marcha la quitó sin que la viera. Por eso solo descartan las teclas que se pulsan a propósito para cerrar (Esc y los atajos de cerrar/salir), y el primer segundo ignora toda entrada.
 
 ### 5.5 Sonido
@@ -416,7 +416,7 @@ Reglas: nombres en `snake_case`, pasado; nunca títulos, enlaces, asistentes, de
 | `calendar_synced` | `calendars_count`, `events_24h_count`, `events_with_link_count`, `duration_ms`, `error_type?` | Salud |
 | `alert_scheduled` | `seconds_until_fire` | Sanidad del scheduler |
 | `alert_shown` | `lead_time`, `provider: meet\|zoom\|teams\|webex\|other\|none`, `screens_count`, `is_declined`, `has_other_attendees`, `overlapping_count`, `trigger: scheduled\|wake\|test`, `pro_hook_shown: declined\|no_link\|solo\|none` | North Star, ganchos |
-| `alert_dismissed` | `reason: join\|click\|escape\|quit_shortcut\|replaced`, `seconds_shown`, `seconds_to_start` (negativo si ya empezó), `provider` | North Star, guardarraíles |
+| `alert_dismissed` | `reason: join\|click\|escape\|quit_shortcut\|replaced\|expired`, `seconds_shown`, `seconds_to_start` (negativo si ya empezó), `provider` | North Star, guardarraíles |
 | `test_alert_triggered` | `source: menu\|onboarding\|settings` | Onboarding |
 | `setting_changed` | `key`, `value` (solo claves no sensibles: lead_time, filtros, sonido, launch_at_login, horario) | Uso de Pro |
 | `paywall_viewed` | `source: menu\|settings_lock\|alert_hook\|stats`, `price_variant` | Conversión |
@@ -505,7 +505,7 @@ Reach: usuarios afectados de cada 100 activos al mes. Impact: 3 masivo, 2 alto, 
 
 | # | Feature | R | I | C | E | Score | v1 |
 |---|---|---|---|---|---|---|---|
-| 1 | Alerta a pantalla completa en todas las pantallas, sin auto-cierre, descarte con clic, Esc o Cmd+Q | 100 | 3 | 80 % | 3 | 80 | ✅ núcleo |
+| 1 | Alerta a pantalla completa en todas las pantallas, sin auto-cierre mientras dura la reunión, descarte con clic, Esc o Cmd+Q | 100 | 3 | 80 % | 3 | 80 | ✅ núcleo |
 | 2 | Scheduler: polling, cálculo del siguiente disparo, dedupe, wake | 100 | 3 | 100 % | 2 | 150 | ✅ núcleo |
 | 3 | Sign in with Google + lectura de calendarios | 100 | 3 | 80 % | 3 | 80 | ✅ núcleo |
 | 4 | Botón Unirse con detección de Meet/Zoom/Teams/Webex | 85 | 2 | 100 % | 1 | 170 | ✅ núcleo |
@@ -583,10 +583,10 @@ Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given 
 - When: tecla `j`, espacio o una flecha. Then: no pasa nada; la alerta sigue visible.
 - When: cualquier clic o tecla (también Enter) en el primer segundo tras aparecer. Then: se ignora; la alerta sigue visible.
 
-**B.4 Sin interacción, no se cierra**
-- Given: alerta de B.1 visible, nadie toca nada.
-- When: el reloj llega a 11:00:00; luego a 11:00:59; luego a 11:03:00.
-- Then: a las 11:00:00 el número pasa a "NOW" con animación; a las 11:00:59 sigue "NOW"; a las 11:03:00 la etiqueta es "STARTED 3 MIN AGO" y el número "3". La alerta sigue visible.
+**B.4 Sin interacción, no se cierra hasta que acaba la reunión**
+- Given: alerta de B.1 visible (Weekly sync, 11:00–11:30), nadie toca nada.
+- When: el reloj llega a 11:00:00; luego a 11:00:59; luego a 11:03:00; luego a 11:30:00.
+- Then: a las 11:00:00 el número pasa a "NOW" con animación; a las 11:00:59 sigue "NOW"; a las 11:03:00 la etiqueta es "STARTED 3 MIN AGO" y el número "3" y la alerta sigue visible. A las 11:30:00 se cierra sola y se envía `alert_dismissed` con `reason: expired`. Una reunión de más de 2 h cierra la alerta a las 2 h del inicio; una de menos de 5 min, a los 5 min. Al despertar el Mac pasado ese punto, no se muestra.
 
 **B.5 Dedupe tras refresco**
 - Given: B.1 disparada y descartada a las 10:59:20.

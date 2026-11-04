@@ -153,6 +153,20 @@ struct AppFeatureTests: AppFeatureTesting {
         #expect(store.state.firedAlerts.keys.contains(weeklySync.dedupeKey))
     }
 
+    /// PRD B.4: an unattended alert that expires is tracked with reason `expired`.
+    @Test func expiredAlertIsTracked() async {
+        let env = TestEnvironment(now: "2026-11-03 11:30:00", events: [weeklySync])
+        var state = signedIn(env, events: [weeklySync])
+        state.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59:00"))
+        let store = makeStore(env, state: state)
+        await store.send(.alert(.presented(.delegate(.finished(.expired))))) { $0.alert = nil }
+        await store.finish()
+        let dismissed = env.tracked("alert_dismissed").first?.properties
+        #expect(dismissed?["reason"] == "expired")
+        #expect(dismissed?["seconds_to_start"] == -1800)
+        #expect(!env.terminated.value)
+    }
+
     @Test(arguments: [DismissReason.click, .escape, .quitShortcut])
     func anyInteractionDismissesAndAppKeepsRunning(reason: DismissReason) async {
         let env = TestEnvironment(now: "2026-11-03 10:59:12")

@@ -7,7 +7,7 @@ public enum AlertScheduler {
     ///   - now: current time.
     ///   - settings: settings with Pro gating applied.
     ///   - fired: dedupe keys of alerts already shown.
-    ///   - includeInProgress: also return events that already started and have not ended
+    ///   - includeInProgress: also return events that already started and whose alert has not expired
     ///     (used after the Mac wakes up, PRD B.7). Otherwise started events are skipped.
     ///   - calendar: used for working hours.
     /// - Returns: the alert with the earliest start; ties are grouped (first by title, "+N more").
@@ -44,7 +44,7 @@ public enum AlertScheduler {
         includeInProgress: Bool = false,
         calendar: Calendar = .current
     ) -> Bool {
-        if event.isAllDay || event.end <= now {
+        if event.isAllDay || alertExpiry(for: event) <= now {
             return false
         }
         if event.start <= now, !includeInProgress {
@@ -66,6 +66,19 @@ public enum AlertScheduler {
             return false
         }
         return true
+    }
+
+    /// An unattended alert stays up for the meeting's duration, but never more than this after the start.
+    public static let maxAlertTimeAfterStart: TimeInterval = 2 * 60 * 60
+    /// Zero-length or very short events still keep the alert this long after the start.
+    public static let minAlertTimeAfterStart: TimeInterval = 5 * 60
+
+    /// When an unattended alert for `event` closes by itself: the end of the meeting, clamped to
+    /// 5 min–2 h after the start. Events past this point are not alerted any more (e.g. after wake).
+    public static func alertExpiry(for event: CalendarEvent) -> Date {
+        let duration = event.end.timeIntervalSince(event.start)
+        let clamped = min(max(duration, minAlertTimeAfterStart), maxAlertTimeAfterStart)
+        return event.start.addingTimeInterval(clamped)
     }
 
     /// The Pro hint for a free user: what a Pro filter would have done with this event.

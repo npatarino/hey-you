@@ -11,7 +11,7 @@ It doesn't lock you out. It just can't be ignored.</p>
   macOS 14+ · Swift 6 · SwiftUI + AppKit · The Composable Architecture · Google Calendar
 </p>
 
-You know the meeting is at 11. You look at the clock at 10:55, and the next time you look it's 11:07. Calendar notifications are a grey box in the corner, exactly the thing your brain has learned to ignore. **Hey You!** is a tiny macOS menu-bar app that reads your Google Calendar and, one minute before every meeting, takes over **every screen** with a red alert: the meeting name, a countdown and a **Join meeting** button. It never closes by itself, and it never traps you: a click, Esc or ⌘Q makes it go away, Enter joins the call.
+You know the meeting is at 11. You look at the clock at 10:55, and the next time you look it's 11:07. Calendar notifications are a grey box in the corner, exactly the thing your brain has learned to ignore. **Hey You!** is a tiny macOS menu-bar app that reads your Google Calendar and, one minute before every meeting, takes over **every screen** with a red alert: the meeting name, a countdown and a **Join meeting** button. It stays up until you react or the meeting ends, and it never traps you: a click, Esc or ⌘Q makes it go away, Enter joins the call.
 
 ![The Hey You! alert: full red screen with "MEETING IN", a 47-second countdown ring, the meeting "Weekly sync", "11:00 – 11:30 · Google Meet" and a white "Join meeting" button](docs/images/alert-countdown.jpg)
 
@@ -187,7 +187,7 @@ Later, if the app works for people: more calendar sources through the system cal
 
 **What does it store?** Settings, your consent choices, whether you own Pro and your weekly punctuality count, in the app's preferences. Google tokens are in the Keychain. Calendar data is only held in memory.
 
-**Can I close the alert?** Yes: a click anywhere, Esc, ⌘W or ⌘Q closes it, Enter joins the call. ⌘Q while an alert is visible only closes the alert; from the menu, Quit closes the app.
+**Can I close the alert?** Yes: a click anywhere, Esc, ⌘W or ⌘Q closes it, Enter joins the call. If you are away, it closes by itself when the meeting ends (at most 2 hours after the start). ⌘Q while an alert is visible only closes the alert; from the menu, Quit closes the app.
 
 **Does it work with Outlook, iCloud or the Mac Calendar?** Not yet. v1 is Google Calendar only.
 
