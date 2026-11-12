@@ -1,6 +1,6 @@
 # Hey You! — agent instructions
 
-macOS menu-bar app (Swift 6, SwiftUI + AppKit, **TCA**) that takes over every screen with a red alert one minute before a Google Calendar meeting. Target: Mac App Store.
+macOS menu-bar app (Swift 6, SwiftUI + AppKit, **TCA**) that takes over every screen with a red alert 20 seconds before a Google Calendar meeting. Target: Mac App Store.
 
 **Product spec (what and why): [docs/PRD.md](docs/PRD.md). Technical plan and milestones (how): [PLAN.md](PLAN.md). Read both entirely before doing anything, then execute the milestones in order, autonomously.** Do not reopen architecture decisions from PLAN.md §1.
 

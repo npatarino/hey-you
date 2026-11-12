@@ -26,7 +26,10 @@ public struct PaywallView: View {
                 .foregroundStyle(.secondary)
 
             VStack(alignment: .leading, spacing: 10) {
-                benefit(String(localized: "Alert from 10 to 60 seconds before", bundle: .module))
+                benefit(String(
+                    localized: "Alert from \(LeadTime.range.lowerBound) to \(LeadTime.range.upperBound) seconds before",
+                    bundle: .module
+                ))
                 benefit(String(localized: "Skip meetings you declined", bundle: .module))
                 benefit(String(localized: "Only meetings with a video link", bundle: .module))
                 benefit(String(localized: "Skip focus blocks (just you)", bundle: .module))

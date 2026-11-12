@@ -22,7 +22,7 @@ public struct OnboardingView: View {
             Text(verbatim: "Hey You!").font(.system(size: 34, weight: .bold, design: .rounded))
 
             VStack(spacing: 6) {
-                Text("One minute before every meeting, your whole screen turns red.", bundle: .module)
+                Text("\(LeadTime.free) seconds before every meeting, your whole screen turns red.", bundle: .module)
                 Text("It doesn't lock you out. It just can't be ignored.", bundle: .module)
                     .foregroundStyle(.secondary)
             }

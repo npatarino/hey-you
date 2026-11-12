@@ -2,7 +2,7 @@
 
 *Versión 1.0 · 2026-10-28 · Autor: Nico Patarino con Claude · Estado: borrador para decisión*
 
-Documento de producto de **Hey You!**, una app de macOS que vive en la barra de menús, lee tu Google Calendar y, un minuto antes de cada reunión, toma toda la pantalla en rojo hasta que la descartas. Complementa a [PLAN.md](../PLAN.md), que es el plan técnico de ejecución. Donde este documento y PLAN.md discrepen, manda este documento en el *qué* y PLAN.md en el *cómo*.
+Documento de producto de **Hey You!**, una app de macOS que vive en la barra de menús, lee tu Google Calendar y, 20 segundos antes de cada reunión, toma toda la pantalla en rojo hasta que la descartas. Complementa a [PLAN.md](../PLAN.md), que es el plan técnico de ejecución. Donde este documento y PLAN.md discrepen, manda este documento en el *qué* y PLAN.md en el *cómo*.
 
 ---
 
@@ -12,10 +12,10 @@ Si solo lees esto, ya sabes qué es Hey You!.
 
 1. **Un solo trabajo**: que no llegues tarde a una reunión por haber perdido la noción del tiempo. Nada más. Ni agenda, ni notas, ni "hub de reuniones".
 2. **Intrusiva pero no coercitiva**: la alerta ocupa todas las pantallas y no se va sola, pero un clic, Esc o Cmd+Q la quitan. Nunca bloqueamos al usuario; solo hacemos imposible no verla.
-3. **Un minuto antes**: el momento en que ya no hay nada que terminar y solo queda unirse. Con Pro se puede acortar hasta 10 s; nunca más de un minuto. El aviso temprano se pospone; el tardío no.
+3. **20 segundos antes**: el momento en que ya no hay nada que terminar y solo queda unirse. Con Pro se puede elegir cualquier valor entre 1 y 120 s; nunca más de dos minutos. El aviso temprano se pospone; el tardío no. *(Revisado el 2026-11-12 por decisión del fundador: el aviso base pasa de 60 s a 20 s y el rango de Pro, de 10–60 s a 1–120 s.)*
 4. **Google Calendar primero y solo** en v1, con el botón "Sign in with Google" de siempre. Sin cuenta propia, sin backend, sin servidores nuestros.
 5. **Sin backend propio, con analítica de producto**: el calendario se lee en el Mac y los tokens viven en el llavero; los datos de uso (nunca el contenido del calendario) van a PostHog con consentimiento, para saber cómo se usa la app y poder hablar con los usuarios más adelante.
-6. **Freemium con compra única**: gratis para el trabajo esencial (alerta a 60 s, unirse con una tecla). **Hey You! Pro** desbloquea el control fino: tiempo de aviso, filtros (rechazados, sin enlace, sin asistentes), calendarios, sonido, horario, estadísticas de puntualidad.
+6. **Freemium con compra única**: gratis para el trabajo esencial (alerta a 20 s, unirse con una tecla). **Hey You! Pro** desbloquea el control fino: tiempo de aviso, filtros (rechazados, sin enlace, sin asistentes), calendarios, sonido, horario, estadísticas de puntualidad.
 7. **Nativo y pequeño**: Swift 6, SwiftUI, TCA, menos de 15 MB, sin Electron. Terceros: TCA, Google Sign-In, PostHog. StoreKit 2 para la compra.
 8. **Construida de forma autónoma por un agente** siguiendo PLAN.md, con tests, en un apetito fijo de tres semanas. Si no cabe, se recorta alcance, no se amplía el plazo.
 
@@ -27,11 +27,11 @@ Si solo lees esto, ya sabes qué es Hey You!.
 
 **Hey You! llega a la Mac App Store: la app que no te deja llegar tarde a una reunión**
 
-*Madrid, 2 de diciembre de 2026.* Hoy se publica Hey You!, una pequeña app para Mac con una única función: un minuto antes de cada reunión de tu Google Calendar, pinta todas tus pantallas de rojo con el nombre de la reunión, una cuenta atrás y un botón para unirte. La alerta no desaparece sola. Un clic, Esc o Cmd+Q y se va, pero nadie puede decir que no la vio.
+*Madrid, 2 de diciembre de 2026.* Hoy se publica Hey You!, una pequeña app para Mac con una única función: 20 segundos antes de cada reunión de tu Google Calendar, pinta todas tus pantallas de rojo con el nombre de la reunión, una cuenta atrás y un botón para unirte. La alerta no desaparece sola. Un clic, Esc o Cmd+Q y se va, pero nadie puede decir que no la vio.
 
 "Sabía que tenía reunión a las once. Miré el reloj a las 10:55 y, cuando volví a mirar, eran las 11:07", cuenta Nico Patarino, su creador. "No es un problema de organización. Es que cuando estás concentrado el tiempo se diluye. Las notificaciones normales son un rectángulo gris en la esquina, exactamente lo que tu cerebro ha aprendido a ignorar. Quería algo que no se pudiera ignorar sin que me tratara como a un niño".
 
-Hey You! vive en la barra de menús, sin icono en el Dock ni ventanas. Se conecta a Google Calendar con el inicio de sesión habitual de Google, en modo solo lectura, y no tiene servidores propios: el calendario nunca sale de tu Mac. Detecta el enlace de Google Meet, Zoom, Teams o Webex del evento y lo abre con una tecla. La versión gratuita avisa siempre un minuto antes de cualquier reunión con hora. **Hey You! Pro**, una compra única, añade el control fino: avisar desde diez segundos antes, no avisar de las reuniones que has rechazado o que no tienen enlace, elegir qué calendarios vigilar, sonido, horario laboral y una estadística semanal de puntualidad.
+Hey You! vive en la barra de menús, sin icono en el Dock ni ventanas. Se conecta a Google Calendar con el inicio de sesión habitual de Google, en modo solo lectura, y no tiene servidores propios: el calendario nunca sale de tu Mac. Detecta el enlace de Google Meet, Zoom, Teams o Webex del evento y lo abre con una tecla. La versión gratuita avisa siempre 20 segundos antes de cualquier reunión con hora. **Hey You! Pro**, una compra única, añade el control fino: elegir el aviso entre un segundo y dos minutos antes, no avisar de las reuniones que has rechazado o que no tienen enlace, elegir qué calendarios vigilar, sonido, horario laboral y una estadística semanal de puntualidad.
 
 "La mayoría de apps de reuniones quieren ser tu nueva agenda. Hey You! quiere ser el compañero que te toca el hombro y te dice: eh, tú, que es ahora", añade Patarino.
 
@@ -46,7 +46,7 @@ Calendario y Google envían una notificación en la esquina superior derecha. Es
 No. Un clic en cualquier punto de la pantalla, Esc o Cmd+Q descartan la alerta al instante. Puedes seguir trabajando en cuanto quieras. Lo único que no puedes hacer es no enterarte.
 
 **¿Qué pasa si estoy compartiendo pantalla o presentando?**
-La alerta aparece igual, y si compartes la pantalla completa, la verán. Es deliberado: si estás presentando y tienes otra reunión en un minuto, tienes un problema de verdad y es mejor que lo sepas. No hay modo "no molestar" ni silencio durante reuniones: la alerta se descarta en un clic.
+La alerta aparece igual, y si compartes la pantalla completa, la verán. Es deliberado: si estás presentando y tienes otra reunión en 20 segundos, tienes un problema de verdad y es mejor que lo sepas. No hay modo "no molestar" ni silencio durante reuniones: la alerta se descarta en un clic.
 
 **¿Qué datos lee?**
 Solo lectura de tus calendarios de Google: título, hora, enlace de videollamada y tu respuesta (aceptado, rechazado, pendiente). La respuesta se lee para que, con Pro, las reuniones que has rechazado no te salten. No escribe nada, no lee correos ni contactos. Los permisos de Google se los concedes tú en la pantalla de Google y los puedes revocar en myaccount.google.com.
@@ -55,7 +55,7 @@ Solo lectura de tus calendarios de Google: título, hora, enlace de videollamada
 El contenido de tu calendario, a ningún sitio: la app habla directamente con Google desde tu Mac y guarda los tokens en el llavero de macOS. No tenemos servidores propios. Sí recogemos datos de uso (cuándo aparece una alerta, cómo la descartas, qué ajustes usas, versión de macOS) a través de PostHog, alojado en la UE, para mejorar la app. Nunca enviamos títulos de reuniones, enlaces, asistentes ni nombres de calendarios. Puedes desactivarlo en Ajustes en cualquier momento.
 
 **¿Qué incluye Pro?**
-Tiempo de aviso de 10 a 60 segundos, no avisar de reuniones rechazadas, sin enlace o sin otros asistentes, elegir calendarios, sonido, horario laboral y tu estadística de puntualidad. Es una compra única, sin suscripción, y vale en todos tus Macs con el mismo Apple ID.
+Tiempo de aviso de 1 a 120 segundos, no avisar de reuniones rechazadas, sin enlace o sin otros asistentes, elegir calendarios, sonido, horario laboral y tu estadística de puntualidad. Es una compra única, sin suscripción, y vale en todos tus Macs con el mismo Apple ID.
 
 **¿Y si tengo varios monitores?**
 La alerta sale en todos a la vez. Da igual dónde estés mirando.
@@ -90,7 +90,7 @@ Riesgos de revisión: (1) app sin ventana principal (`LSUIElement`): aceptado si
 Es el modo de fallo más probable (ver pre-mortem). La app no tiene "silenciar"; tiene "salir". Y si sale, lo hace a sabiendas. No hay modo "no molestar" ni silencio durante reuniones, ni lo habrá: es una salida fácil a la que no se vuelve.
 
 **¿Por qué freemium y no de pago desde el primer día?**
-Un precio de entrada reduce la muestra a casi cero y la app necesita usuarios para aprender. Gratis sin más deja dinero en la mesa y no da señal de valor. Freemium con compra única: la versión gratuita resuelve el problema (alerta a 60 s, unirse con una tecla), así que nadie se siente estafado; Pro vende *control*, que es lo que pide quien ya la usa cada día. Los dos ganchos principales son que te salten las reuniones rechazadas y no poder acortar el aviso: molestias pequeñas, visibles al segundo día y resueltas por 5,99 €.
+Un precio de entrada reduce la muestra a casi cero y la app necesita usuarios para aprender. Gratis sin más deja dinero en la mesa y no da señal de valor. Freemium con compra única: la versión gratuita resuelve el problema (alerta a 20 s, unirse con una tecla), así que nadie se siente estafado; Pro vende *control*, que es lo que pide quien ya la usa cada día. Los dos ganchos principales son que te salten las reuniones rechazadas y no poder cambiar el tiempo de aviso: molestias pequeñas, visibles al segundo día y resueltas por 5,99 €.
 
 **¿Por qué compra única y no suscripción?**
 Es una utilidad sin coste de servidor (la analítica cuesta céntimos). Una suscripción en una app de este tamaño genera rechazo y reseñas de una estrella. Si en la fase 3 el mantenimiento o nuevas fuentes de calendario lo justifican, se puede añadir un nivel de suscripción para funciones futuras sin quitar nada a quien compró Pro.
@@ -141,8 +141,8 @@ RESULTADO: llegar a tiempo sin vigilar el reloj
 │   └── S1.5 Parpadeo del icono del Dock                                 ✗ descartada (es otro aviso ignorable)
 │
 ├── O2. "Me entero pero sigo 'solo un minuto más'" (el aviso llega demasiado pronto y lo pospongo)
-│   ├── S2.1 Avisar a 1 minuto, cuando ya no hay nada que terminar       ← v1 (decisión central)
-│   ├── S2.2 Tiempo configurable 10–60 s                                 ← v1 Pro
+│   ├── S2.1 Avisar a 20 segundos, cuando ya no hay nada que terminar    ← v1 (decisión central)
+│   ├── S2.2 Tiempo configurable 1–120 s                                 ← v1 Pro
 │   ├── S2.3 Botón "Unirse" que abre la llamada con una tecla            ← v1
 │   └── S2.4 Segundo aviso a 5 min como "pre-aviso" suave                ✗ v2 (riesgo de convertirse en ruido)
 │
@@ -200,7 +200,7 @@ Formato: *Cuando [situación], quiero [motivación], para [resultado].*
 | | Data | Insight | Belief | Bet |
 |---|---|---|---|---|
 | **B1** | El fundador llega tarde 3–7 min a varias reuniones por semana pese a tener notificaciones activas. Las notificaciones de macOS se ocultan solas a los ~5 s por defecto. | El fallo no es de recuerdo sino de *saliencia*: el aviso existe pero no compite con la tarea en curso. | Un aviso que ocupe el 100 % del campo visual y no desaparezca por sí solo cambia el comportamiento donde las notificaciones no lo hacen. | Alerta a pantalla completa, persistente hasta interacción. **Métrica:** ≥ 80 % de alertas descartadas con "Unirse" o en los 30 s siguientes al inicio (ver §6). |
-| **B2** | Los avisos a 10 o 15 min (los defaults de Google) se posponen mentalmente: "aún tengo tiempo". | A 1 minuto no hay nada que terminar, así que la única acción razonable es unirse. El aviso corto elimina la negociación interna. | 60 s es el máximo útil; algunos querrán apurar más (10–30 s), nadie necesita más de un minuto. | Gratis fijo en 60 s; Pro de 10 a 60 s; nunca más de 60. **Métrica:** ≥ 60 % de usuarios Pro cambian el tiempo en la primera semana (si no, la feature no vende). |
+| **B2** | Los avisos a 10 o 15 min (los defaults de Google) se posponen mentalmente: "aún tengo tiempo". | A 20 segundos no hay nada que terminar, así que la única acción razonable es unirse. El aviso corto elimina la negociación interna. | 20 s basta para guardar y entrar; algunos querrán apurar más (hasta 1 s) y otros algo de margen (hasta 2 min), nadie necesita más de dos minutos. | Gratis fijo en 20 s; Pro de 1 a 120 s; nunca más de 120. **Métrica:** ≥ 60 % de usuarios Pro cambian el tiempo en la primera semana (si no, la feature no vende). |
 | **B3** | In Your Face y MeetingBar existen y tienen usuarios; MeetingBar supera las 4.000 estrellas en GitHub. | Hay demanda demostrada y el mercado tolera apps mono-función. Pero ninguna combina Google directo + capa gratuita + descarte con cualquier interacción. | Hay espacio para una variante más simple y agresiva, sobre todo entre usuarios de Google Workspace que no configuran el Calendario del Mac. | Lanzar freemium, solo Google, en App Store. **Métrica:** 500 instalaciones en 60 días sin inversión en marketing; retención a 4 semanas ≥ 40 %. |
 | **B4** | Una parte de usuarios de Google Workspace no tiene su cuenta en Calendario de Mac (política IT, pereza, no saber que se puede). | Pedir "configura tu cuenta Google en el Mac" como paso previo mata el onboarding. | "Sign in with Google" dentro de la app convierte más que cualquier instrucción. | OAuth directo con el SDK oficial pese al coste de verificación. **Métrica:** ≥ 60 % de los que abren la app completan el sign-in. |
 | **B5** | Apps que piden calendario generan desconfianza (comentarios típicos en Reddit/HN: "¿a dónde van mis datos?"). | "Tu calendario no sale de tu Mac" es un mensaje de confianza fuerte, y es compatible con medir uso si se separa con claridad contenido de comportamiento. | Se puede tener analítica sin perder la confianza si el consentimiento es explícito y la lista de lo que NO se envía es concreta. | Sin backend propio; PostHog UE con consentimiento; política que enumera lo que no se envía. **Métrica:** cero reseñas de 1–2 estrellas por privacidad; ≥ 75 % aceptan compartir uso en el onboarding. |
@@ -239,7 +239,7 @@ Onboarding (una ventana, una vez):
   ┌────────────────────────────────────────────┐
   │   🔔                                        │
   │   Hey You!                                  │
-  │   Un minuto antes de cada reunión,          │
+  │   20 segundos antes de cada reunión,        │
   │   toda tu pantalla se pone roja.            │
   │   No te bloquea. Solo no te deja ignorarlo. │
   │                                             │
@@ -256,7 +256,7 @@ Paywall (hoja desde Ajustes, el menú o la alerta):
   ┌────────────────────────────────────────────┐
   │   Hey You! Pro                              │
   │   Tú decides cuándo y de qué te avisamos.   │
-  │   ✓ Aviso de 10 a 60 segundos               │
+  │   ✓ Aviso de 1 a 120 segundos               │
   │   ✓ Sin reuniones rechazadas                │
   │   ✓ Solo reuniones con enlace               │
   │   ✓ Sin bloques de foco (solo tú)           │
@@ -271,7 +271,7 @@ Alerta (todas las pantallas, rojo, sin ventana):
   │                                                 │
   │                  MEETING IN                     │
   │                 ╭──────────╮                    │
-  │                 │   47s    │   (anillo)         │
+  │                 │   17s    │   (anillo)         │
   │                 ╰──────────╯                    │
   │                Weekly sync                      │
   │          11:00 – 11:30 · Google Meet            │
@@ -310,7 +310,7 @@ Gancho Pro en la alerta: si el evento está rechazado (o sin enlace, o sin asist
 - No backend propio, ni cuentas propias, ni sincronización.
 - No suscripción en v1. Un producto no consumible.
 - No crash reporting de terceros en v1 (App Store Connect basta).
-- No lead time por encima de 60 s, ni gratis ni Pro.
+- No lead time por encima de 120 s, ni gratis ni Pro.
 - No bloquear Cmd+Tab, el ratón, ni nada que impida al usuario hacer lo que quiera.
 - No localizar más allá de inglés y español.
 
@@ -321,8 +321,8 @@ Gancho Pro en la alerta: si el evento está rechazado (o sin enlace, o sin asist
 Cada subsección dice qué se decide y por qué. Lo que no está aquí, no se ha decidido y el agente usa PLAN.md o su criterio.
 
 ### 5.1 Momento del aviso
-**Decisión:** un único aviso. Gratis: fijo a 60 s. Pro: deslizador de 10 a 60 s en pasos de 5 s (default 60). Nunca más de 60 s. Sin segundo aviso.
-**Por qué:** un aviso temprano se pospone; dos avisos convierten el primero en ruido y el segundo en rutina. A un minuto, la única acción sensata es unirse (B2). El tope de 60 s es identidad de producto: Hey You! avisa cuando ya no hay nada que hacer salvo entrar.
+**Decisión:** un único aviso. Gratis: fijo a 20 s. Pro: deslizador de 1 a 120 s, segundo a segundo (default 20). Nunca más de 120 s. Sin segundo aviso. *(Revisado el 2026-11-12: antes el aviso base era de 60 s y el rango de Pro, 10–60 s en pasos de 5.)*
+**Por qué:** un aviso temprano se pospone; dos avisos convierten el primero en ruido y el segundo en rutina. A 20 segundos, la única acción sensata es unirse (B2). El tope de 120 s es identidad de producto: Hey You! avisa cuando ya no hay nada que hacer salvo entrar.
 
 ### 5.2 Qué eventos disparan
 **Decisión:** eventos con hora de inicio dentro de las próximas 24 h, en todos los calendarios de la cuenta. Los de día completo nunca disparan (no tienen hora; es comportamiento base, no un filtro). Los marcados "libre" (transparencia) sí disparan.
@@ -338,7 +338,7 @@ Con **Pro**, además: ignorar rechazados, solo con enlace de videollamada, ignor
 | Abrir al iniciar sesión, menú con próximos eventos | ✓ | ✓ |
 | "Empezó hace X min", recálculo al despertar | ✓ | ✓ |
 | Probar alerta | ✓ | ✓ |
-| Tiempo de aviso 10–60 s | 60 s fijo | ✓ |
+| Tiempo de aviso 1–120 s | 20 s fijo | ✓ |
 | Ignorar reuniones rechazadas | ✗ | ✓ |
 | Solo reuniones con enlace | ✗ | ✓ |
 | Ignorar bloques sin otros asistentes | ✗ | ✓ |
@@ -482,18 +482,18 @@ Si a las 8 semanas del lanzamiento la retención a 4 semanas es < 15 % **y** la 
 
 ### 7.2 Hipótesis más arriesgada
 
-> **Si una alerta ocupa toda la pantalla un minuto antes y no se va sola, la persona concentrada se une a tiempo y, además, no desinstala la app por molesta.**
+> **Si una alerta ocupa toda la pantalla 20 segundos antes y no se va sola, la persona concentrada se une a tiempo y, además, no desinstala la app por molesta.**
 
 Si esto es falso, da igual lo bien hecho que esté todo lo demás. Tiene dos mitades que pueden fallar por separado: (a) eficacia, (b) tolerancia.
 
 ### 7.3 Tests baratos antes de construir (fase 0, una semana)
 
-1. **Wizard of Oz con 50 líneas.** Un script Swift (o incluso un AppleScript lanzado por un atajo de Automator) que, al ejecutarse, muestra una ventana roja a pantalla completa con un texto y se cierra con cualquier tecla. Se programa con `at`/`launchd` o se lanza a mano un minuto antes de cada reunión del fundador durante 5 días laborables. Mide: ¿cuántas veces llegó a tiempo? ¿Cuántas veces le molestó? ¿Cambió algo frente a la semana anterior? Coste: 2 horas.
+1. **Wizard of Oz con 50 líneas.** Un script Swift (o incluso un AppleScript lanzado por un atajo de Automator) que, al ejecutarse, muestra una ventana roja a pantalla completa con un texto y se cierra con cualquier tecla. Se programa con `at`/`launchd` o se lanza a mano 20 segundos antes de cada reunión del fundador durante 5 días laborables. Mide: ¿cuántas veces llegó a tiempo? ¿Cuántas veces le molestó? ¿Cambió algo frente a la semana anterior? Coste: 2 horas.
 2. **Probar In Your Face una semana** (competidor existente, de pago, pequeño). Si resuelve el problema al 100 % y no molesta, la pregunta pasa a ser "¿por qué construir otra?". Si molesta o falla en algo concreto, eso es la hoja de ruta. Coste: el precio de la app.
-3. **Cinco conversaciones de diez minutos** con personas del perfil (JS1) preguntando solo dos cosas: "¿cuándo fue la última vez que llegaste tarde a una reunión que sabías que tenías?" y "si tu pantalla entera se pusiera roja un minuto antes, ¿la dejarías puesta una semana?". Buscamos repulsión o entusiasmo, no cortesía.
+3. **Cinco conversaciones de diez minutos** con personas del perfil (JS1) preguntando solo dos cosas: "¿cuándo fue la última vez que llegaste tarde a una reunión que sabías que tenías?" y "si tu pantalla entera se pusiera roja 20 segundos antes, ¿la dejarías puesta una semana?". Buscamos repulsión o entusiasmo, no cortesía.
 4. **Prueba del guardarraíl de tolerancia**: en la semana del Wizard of Oz, contar cuántas veces el fundador sintió el impulso de desactivarlo. Si > 2, la hipótesis (b) está en peligro y hay que suavizar (sonido, animación) antes de construir.
 
-5. **Test de precio de pasillo.** En las cinco conversaciones, al final: "¿pagarías 5,99 € una vez para que no te avise de las reuniones que has rechazado y para poder acortar el aviso a 20 segundos?". Buscamos un "sí, claro" inmediato o un "¿por eso? no". Si tres de cinco dicen "no, por eso no", el paquete Pro está mal elegido antes de escribirlo.
+5. **Test de precio de pasillo.** En las cinco conversaciones, al final: "¿pagarías 5,99 € una vez para que no te avise de las reuniones que has rechazado y para poder elegir cuántos segundos antes te avisa?". Buscamos un "sí, claro" inmediato o un "¿por eso? no". Si tres de cinco dicen "no, por eso no", el paquete Pro está mal elegido antes de escribirlo.
 
 Criterio: si en la fase 0 el fundador llega a tiempo a ≥ 90 % de las reuniones con la alerta de mentira y no la desactiva, se construye. Si no, se revisa el pitch antes de gastar el apetito.
 
@@ -519,7 +519,7 @@ Reach: usuarios afectados de cada 100 activos al mes. Impact: 3 masivo, 2 alto, 
 | 12 | Estado de error visible (desconectado, sin red) | 30 | 2 | 80 % | 0,5 | 96 | ✅ |
 | 13 | Localización inglés + español | 100 | 0,5 | 100 % | 0,5 | 100 | ✅ |
 | 14 | Pro: ignorar rechazados + gancho en la alerta | 70 | 2 | 80 % | 0,5 | 224 | ✅ Pro |
-| 15 | Pro: lead time 10–60 s | 40 | 1 | 80 % | 0,25 | 128 | ✅ Pro |
+| 15 | Pro: lead time 1–120 s | 40 | 1 | 80 % | 0,25 | 128 | ✅ Pro |
 | 16 | Pro: solo con enlace + gancho | 50 | 1 | 80 % | 0,25 | 160 | ✅ Pro |
 | 17 | Pro: ignorar sin otros asistentes + gancho | 40 | 1 | 80 % | 0,25 | 128 | ✅ Pro |
 | 18 | Pro: selección de calendarios | 50 | 1 | 80 % | 1 | 40 | ✅ Pro |
@@ -555,7 +555,7 @@ Las fases 0 y 1 pueden solaparse parcialmente (el agente puede empezar el hito 1
 ## Anexo A — Glosario
 
 - **Alerta**: la toma de pantalla roja. No confundir con notificación de macOS.
-- **Lead time**: segundos antes del inicio del evento en que se dispara la alerta. 60 en gratis; 10–60 en Pro.
+- **Lead time**: segundos antes del inicio del evento en que se dispara la alerta. 20 en gratis; 1–120 en Pro.
 - **Pro**: compra única no consumible que desbloquea los ajustes de §5.2.1.
 - **Gancho (hook)**: línea de texto en la alerta que explica qué habría hecho Pro con ese evento.
 - **Disparo (fire)**: momento `inicio − lead time`.
@@ -567,12 +567,12 @@ Las fases 0 y 1 pueden solaparse parcialmente (el agente puede empezar el hito 1
 Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given / When / Then. Los casos B.1–B.9 y B.16–B.19 son automatizables con `TestClock`, el calendario mock y la tienda mock; B.10–B.15 y B.20 son manuales en el hito 7.
 
 **B.1 Disparo básico**
-- Given: ahora es 2026-11-03 10:58:30; evento "Weekly sync" 11:00–11:30 con `hangoutLink = https://meet.google.com/abc-defg-hij`, estado `accepted`; lead time 60 s.
-- When: el reloj llega a 10:59:00.
-- Then: la alerta aparece en todas las pantallas con "MEETING IN", "60s", "Weekly sync", "11:00 – 11:30 · Google Meet" y botón "Join meeting"; suena una vez.
+- Given: ahora es 2026-11-03 10:58:30; evento "Weekly sync" 11:00–11:30 con `hangoutLink = https://meet.google.com/abc-defg-hij`, estado `accepted`; lead time 20 s.
+- When: el reloj llega a 10:59:40.
+- Then: la alerta aparece en todas las pantallas con "MEETING IN", "20s", "Weekly sync", "11:00 – 11:30 · Google Meet" y botón "Join meeting"; suena una vez.
 
 **B.2 Enter abre el enlace**
-- Given: alerta de B.1 visible a las 10:59:12.
+- Given: alerta de B.1 visible a las 10:59:52.
 - When: el usuario pulsa Enter.
 - Then: se abre `https://meet.google.com/abc-defg-hij` en el navegador por defecto, la alerta desaparece con fade de 0,25 s, el evento queda marcado como disparado.
 
@@ -589,14 +589,14 @@ Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given 
 - Then: a las 11:00:00 el número pasa a "NOW" con animación; a las 11:00:59 sigue "NOW"; a las 11:03:00 la etiqueta es "STARTED 3 MIN AGO" y el número "3" y la alerta sigue visible. A las 11:30:00 se cierra sola y se envía `alert_dismissed` con `reason: expired`. Una reunión de más de 2 h cierra la alerta a las 2 h del inicio; una de menos de 5 min, a los 5 min. Al despertar el Mac pasado ese punto, no se muestra.
 
 **B.5 Dedupe tras refresco**
-- Given: B.1 disparada y descartada a las 10:59:20.
-- When: a las 10:59:30 llega un refresco con el mismo evento.
+- Given: B.1 disparada y descartada a las 10:59:45.
+- When: a las 10:59:50 llega un refresco con el mismo evento.
 - Then: no se reprograma ni se vuelve a mostrar "Weekly sync". El siguiente disparo programado es el del siguiente evento.
 
 **B.6 Despertar del Mac con disparo atrasado**
-- Given: evento "1:1 con Ana" 12:30–13:00, lead time 60 s; el Mac se durmió a las 12:10 y despierta a las 12:29:40.
+- Given: evento "1:1 con Ana" 12:30–13:00, lead time 20 s; el Mac se durmió a las 12:10 y despierta a las 12:29:50.
 - When: llega `didWakeNotification`.
-- Then: la alerta aparece inmediatamente (el `fireAt` 12:29:00 quedó atrás pero el evento no ha empezado) mostrando "20s".
+- Then: la alerta aparece inmediatamente (el `fireAt` 12:29:40 quedó atrás pero el evento no ha empezado) mostrando "10s".
 
 **B.7 Despertar con evento ya empezado**
 - Given: mismo evento; el Mac despierta a las 12:34:10.
@@ -606,16 +606,16 @@ Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given 
 **B.8 Filtros: gratis frente a Pro**
 - Given: ahora 2026-11-03 08:00; eventos: "Cumpleaños de Marta" (día completo, 2026-11-03), "Retro" 09:00 con estado `declined` y enlace Meet, "Foco" 09:30–11:00 sin asistentes ni enlace, "Demo cliente" 10:00 con `location = "https://zoom.us/j/91234567890?pwd=abc"` y 4 asistentes.
 - When (usuario **gratis**): se calcula el siguiente disparo.
-- Then: el siguiente es "Retro" a las 08:59:00 (rechazada, pero en gratis dispara) con gancho `pro_hook_shown = declined`; después "Foco" a las 09:29:00 con gancho `solo`; después "Demo cliente" a las 09:59:00 sin gancho. "Cumpleaños" nunca dispara.
-- When (usuario **Pro** con `ignoreDeclined`, `ignoreSolo` activados, `onlyWithLink` desactivado): el siguiente es "Demo cliente" a las 09:59:00, proveedor Zoom. Con `onlyWithLink = true` el resultado es el mismo. Con `leadTime = 20`, el disparo es a las 09:59:40.
+- Then: el siguiente es "Retro" a las 08:59:40 (rechazada, pero en gratis dispara) con gancho `pro_hook_shown = declined`; después "Foco" a las 09:29:40 con gancho `solo`; después "Demo cliente" a las 09:59:40 sin gancho. "Cumpleaños" nunca dispara.
+- When (usuario **Pro** con `ignoreDeclined`, `ignoreSolo` activados, `onlyWithLink` desactivado): el siguiente es "Demo cliente" a las 09:59:40, proveedor Zoom. Con `onlyWithLink = true` el resultado es el mismo. Con `leadTime = 10`, el disparo es a las 09:59:50.
 
 **B.9 Solape de dos eventos**
 - Given: "Weekly sync" y "Alinear roadmap" ambos a 11:00.
-- When: dispara a 10:59:00.
+- When: dispara a 10:59:40.
 - Then: una única alerta, título "Alinear roadmap" (alfabético), subtítulo "+1 more"; ambos quedan marcados como disparados.
 
 **B.10 Sobre app a pantalla completa (manual)**
-- Given: Safari en modo pantalla completa en el monitor 1; VS Code en el monitor 2; evento en 60 s (vía "Probar alerta").
+- Given: Safari en modo pantalla completa en el monitor 1; VS Code en el monitor 2; evento en 20 s (vía "Probar alerta").
 - Then: la alerta cubre ambos monitores, por encima de Safari a pantalla completa; Esc la quita y Safari sigue a pantalla completa.
 
 **B.11 Compartiendo pantalla en Zoom (manual)**
@@ -633,7 +633,7 @@ Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given 
 
 **B.14 Sin conexión (manual)**
 - Given: Wi-Fi apagada a las 10:50 con eventos ya cargados.
-- When: 10:59:00.
+- When: 10:59:40.
 - Then: la alerta de "Weekly sync" aparece igual; el menú muestra "Sin conexión desde 10:50".
 
 **B.15 Probar alerta (manual)**
@@ -643,7 +643,7 @@ Zona horaria del Mac: Europe/Madrid (CET, UTC+1 en estas fechas). Formato Given 
 
 **B.16 Lead time limitado**
 - Given: usuario Pro; en Ajustes mueve el deslizador.
-- Then: los valores posibles son 10, 15, 20 … 60; no existe 5 ni 65. Usuario gratis: el deslizador aparece bloqueado en 60 con candado; clic en el candado → `paywall_viewed` con `source = settings_lock`.
+- Then: los valores posibles son todos los segundos de 1 a 120; no existe 0 ni 121. Usuario gratis: el deslizador aparece bloqueado en 20 con candado; clic en el candado → `paywall_viewed` con `source = settings_lock`.
 
 **B.17 Compra y entitlement**
 - Given: usuario gratis, fichero `.storekit` local, paywall abierto desde el menú.

@@ -92,29 +92,8 @@ public struct SettingsView: View {
 
     private var alertSection: some View {
         Section {
-            VStack(alignment: .leading) {
-                LabeledContent {
-                    Text(verbatim: "\(store.effective.leadTimeSeconds) s").monospacedDigit()
-                } label: {
-                    Text("Alert before the meeting", bundle: .module)
-                }
-                Slider(
-                    value: Binding(
-                        get: { Double(store.effective.leadTimeSeconds) },
-                        set: { store.send(.setLeadTime(Int($0))) }
-                    ),
-                    in: Double(LeadTime.range.lowerBound) ... Double(LeadTime.range.upperBound),
-                    step: Double(LeadTime.step)
-                ) {
-                    Text("Alert before the meeting", bundle: .module)
-                } minimumValueLabel: {
-                    Text(verbatim: "10 s")
-                } maximumValueLabel: {
-                    Text(verbatim: "60 s")
-                }
-                .labelsHidden()
-            }
-            .proGated(isPro: isPro, onLockTap: lock)
+            LeadTimeSlider(seconds: store.effective.leadTimeSeconds) { store.send(.setLeadTime($0)) }
+                .proGated(isPro: isPro, onLockTap: lock)
 
             Picker(selection: Binding(get: { store.effective.sound }, set: { store.send(.setSound($0)) })) {
                 ForEach(AlertSound.allCases, id: \.self) { sound in
@@ -246,6 +225,39 @@ public struct SettingsView: View {
                     .background(Capsule().fill(Color.alertCrimson))
                     .foregroundStyle(.white)
             }
+        }
+    }
+}
+
+/// Lead time from 1 to 120 s. The value follows the thumb while dragging and is saved once, on release,
+/// so a drag across the range is one change (and one analytics event), not one per second.
+private struct LeadTimeSlider: View {
+    let seconds: Int
+    let commit: (Int) -> Void
+    @State private var draft: Double?
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            LabeledContent {
+                Text(verbatim: "\(Int((draft ?? Double(seconds)).rounded())) s").monospacedDigit()
+            } label: {
+                Text("Alert before the meeting", bundle: .module)
+            }
+            Slider(
+                value: Binding(get: { draft ?? Double(seconds) }, set: { draft = $0 }),
+                in: Double(LeadTime.range.lowerBound) ... Double(LeadTime.range.upperBound)
+            ) {
+                Text("Alert before the meeting", bundle: .module)
+            } minimumValueLabel: {
+                Text(verbatim: "\(LeadTime.range.lowerBound) s")
+            } maximumValueLabel: {
+                Text(verbatim: "\(LeadTime.range.upperBound) s")
+            } onEditingChanged: { isEditing in
+                guard !isEditing, let value = draft else { return }
+                commit(Int(value.rounded()))
+                draft = nil
+            }
+            .labelsHidden()
         }
     }
 }

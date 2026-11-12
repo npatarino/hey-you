@@ -9,7 +9,7 @@ struct AlertSchedulerTests {
     @Test func basicFire() {
         let alert = AlertScheduler.next(events: [weekly], now: date("2026-11-03 10:58:30"), settings: free, fired: [])
         #expect(alert?.event == weekly)
-        #expect(alert?.fireAt == date("2026-11-03 10:59:00"))
+        #expect(alert?.fireAt == date("2026-11-03 10:59:40"))
         #expect(alert?.additionalCount == 0)
         #expect(alert?.proHook == nil)
     }
@@ -21,15 +21,15 @@ struct AlertSchedulerTests {
             events: [weekly, next], now: date("2026-11-03 10:59:30"), settings: free, fired: [weekly.dedupeKey]
         )
         #expect(alert?.event == next)
-        #expect(alert?.fireAt == date("2026-11-03 12:29:00"))
+        #expect(alert?.fireAt == date("2026-11-03 12:29:40"))
     }
 
     /// Fire time already passed but the event has not started: fire now (fireAt in the past).
     @Test func lateFireStillReturned() {
         let ana = CalendarEvent.fixture(title: "1:1 con Ana", start: "2026-11-03 12:30", end: "2026-11-03 13:00")
-        let alert = AlertScheduler.next(events: [ana], now: date("2026-11-03 12:29:40"), settings: free, fired: [])
+        let alert = AlertScheduler.next(events: [ana], now: date("2026-11-03 12:29:50"), settings: free, fired: [])
         #expect(alert?.event == ana)
-        #expect(alert?.fireAt == date("2026-11-03 12:29:00"))
+        #expect(alert?.fireAt == date("2026-11-03 12:29:40"))
     }
 
     /// PRD B.7: after wake an event in progress still alerts; a finished one does not.
@@ -83,7 +83,7 @@ struct AlertSchedulerTests {
             now = alert.fireAt
         }
         #expect(sequence.map(\.0) == ["Retro", "Foco", "Demo cliente"])
-        #expect(sequence.map(\.1) == [date("2026-11-03 08:59"), date("2026-11-03 09:29"), date("2026-11-03 09:59")])
+        #expect(sequence.map(\.1) == [date("2026-11-03 08:59:40"), date("2026-11-03 09:29:40"), date("2026-11-03 09:59:40")])
         #expect(sequence.map(\.2) == [.declined, .solo, nil])
     }
 
@@ -91,7 +91,7 @@ struct AlertSchedulerTests {
         let now = date("2026-11-03 08:00")
         let alert = AlertScheduler.next(events: b8Events, now: now, settings: pro(), fired: [])
         #expect(alert?.event.title == "Demo cliente")
-        #expect(alert?.fireAt == date("2026-11-03 09:59"))
+        #expect(alert?.fireAt == date("2026-11-03 09:59:40"))
         #expect(alert?.event.meetingLink?.provider == .zoom)
         #expect(alert?.proHook == nil)
 
@@ -100,8 +100,8 @@ struct AlertSchedulerTests {
         )
         #expect(onlyLink?.event.title == "Demo cliente")
 
-        let short = AlertScheduler.next(events: b8Events, now: now, settings: pro { $0.leadTimeSeconds = 20 }, fired: [])
-        #expect(short?.fireAt == date("2026-11-03 09:59:40"))
+        let short = AlertScheduler.next(events: b8Events, now: now, settings: pro { $0.leadTimeSeconds = 10 }, fired: [])
+        #expect(short?.fireAt == date("2026-11-03 09:59:50"))
     }
 
     /// PRD B.9: same start → one alert, alphabetical first, "+1 more", both fired.
@@ -112,7 +112,7 @@ struct AlertSchedulerTests {
         #expect(alert?.overlapping == [weekly])
         #expect(alert?.additionalCount == 1)
         #expect(alert?.dedupeKeys == [roadmap.dedupeKey, weekly.dedupeKey])
-        #expect(alert?.fireAt == date("2026-11-03 10:59"))
+        #expect(alert?.fireAt == date("2026-11-03 10:59:40"))
     }
 
     @Test func overlapSameTitleOrdersByID() {
@@ -141,10 +141,10 @@ struct AlertSchedulerTests {
         let now = date("2026-11-03 10:00")
         let at60 = AlertScheduler.next(events: [weekly], now: now, settings: pro { $0.leadTimeSeconds = 60 }, fired: [])
         let at10 = AlertScheduler.next(events: [weekly], now: now, settings: pro { $0.leadTimeSeconds = 10 }, fired: [])
-        let at65 = AlertScheduler.next(events: [weekly], now: now, settings: pro { $0.leadTimeSeconds = 65 }, fired: [])
+        let at500 = AlertScheduler.next(events: [weekly], now: now, settings: pro { $0.leadTimeSeconds = 500 }, fired: [])
         #expect(at60?.fireAt == date("2026-11-03 10:59:00"))
         #expect(at10?.fireAt == date("2026-11-03 10:59:50"))
-        #expect(at65?.fireAt == date("2026-11-03 10:59:00"))
+        #expect(at500?.fireAt == date("2026-11-03 10:58:00"))
     }
 
     @Test func calendarSelection() {

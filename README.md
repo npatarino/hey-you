@@ -4,16 +4,16 @@
 
 <h1 align="center">Hey You!</h1>
 
-<p align="center"><strong>One minute before every meeting, your whole screen turns red.</strong><br>
+<p align="center"><strong>20 seconds before every meeting, your whole screen turns red.</strong><br>
 It doesn't lock you out. It just can't be ignored.</p>
 
 <p align="center">
   macOS 14+ · Swift 6 · SwiftUI + AppKit · The Composable Architecture · Google Calendar
 </p>
 
-You know the meeting is at 11. You look at the clock at 10:55, and the next time you look it's 11:07. Calendar notifications are a grey box in the corner, exactly the thing your brain has learned to ignore. **Hey You!** is a tiny macOS menu-bar app that reads your Google Calendar and, one minute before every meeting, takes over **every screen** with a red alert: the meeting name, a countdown and a **Join meeting** button. It stays up until you react or the meeting ends, and it never traps you: a click, Esc or ⌘Q makes it go away, Enter joins the call.
+You know the meeting is at 11. You look at the clock at 10:55, and the next time you look it's 11:07. Calendar notifications are a grey box in the corner, exactly the thing your brain has learned to ignore. **Hey You!** is a tiny macOS menu-bar app that reads your Google Calendar and, 20 seconds before every meeting, takes over **every screen** with a red alert: the meeting name, a countdown and a **Join meeting** button. It stays up until you react or the meeting ends, and it never traps you: a click, Esc or ⌘Q makes it go away, Enter joins the call.
 
-![The Hey You! alert: full red screen with "MEETING IN", a 47-second countdown ring, the meeting "Weekly sync", "11:00 – 11:30 · Google Meet" and a white "Join meeting" button](docs/images/alert-countdown.jpg)
+![The Hey You! alert: full red screen with "MEETING IN", a 17-second countdown ring, the meeting "Weekly sync", "11:00 – 11:30 · Google Meet" and a white "Join meeting" button](docs/images/alert-countdown.jpg)
 
 <sub>Off-screen render of the real `AlertView` from the snapshot tests (`SnapshotRenderTests`), not a photo of a running Mac.</sub>
 
@@ -27,7 +27,7 @@ You know the meeting is at 11. You look at the clock at 10:55, and the next time
 
 **Free**
 
-- Full-screen red alert **60 s before every timed meeting**, on **every display**, above full-screen apps.
+- Full-screen red alert **20 s before every timed meeting**, on **every display**, above full-screen apps.
 - Detects **Google Meet, Zoom, Microsoft Teams and Webex** links; **Enter** or **Join meeting** opens the call.
 - Never auto-closes. If you were away, it keeps going: *NOW*, then *STARTED 3 MIN AGO*.
 - Deliberate dismissal only: click, Esc, ⌘W or ⌘Q. Other keys are swallowed and input in the first second is ignored, so a keystroke you were already typing can't dismiss it unseen.
@@ -37,14 +37,14 @@ You know the meeting is at 11. You look at the clock at 10:55, and the next time
 
 **Hey You! Pro** (one-time in-app purchase)
 
-- Lead time from 10 to 60 seconds.
+- Lead time from 1 to 120 seconds.
 - Skip meetings you declined, focus blocks with just you, or meetings without a video link.
 - Choose calendars and working hours.
 - Sound, countdown in the menu bar and weekly punctuality stats.
 
 | If you were away | First launch |
 |---|---|
-| ![Alert for a meeting that started 3 minutes ago: "STARTED 3 MIN AGO", the meeting "Retro" with "+1 more", a padlock hint "Declined · With Pro we wouldn't have alerted you", "11:00 – 12:00 · Zoom" and a Join button](docs/images/alert-started.jpg) | ![Onboarding window: red bell icon, "Hey You!", "One minute before every meeting, your whole screen turns red. It doesn't lock you out. It just can't be ignored.", a "Sign in with Google" button and "Read-only · your calendar never leaves your Mac"](docs/images/onboarding.png) |
+| ![Alert for a meeting that started 3 minutes ago: "STARTED 3 MIN AGO", the meeting "Retro" with "+1 more", a padlock hint "Declined · With Pro we wouldn't have alerted you", "11:00 – 12:00 · Zoom" and a Join button](docs/images/alert-started.jpg) | ![Onboarding window: red bell icon, "Hey You!", "20 seconds before every meeting, your whole screen turns red. It doesn't lock you out. It just can't be ignored.", a "Sign in with Google" button and "Read-only · your calendar never leaves your Mac"](docs/images/onboarding.png) |
 
 <sub>Both are off-screen renders from `SnapshotRenderTests`; the onboarding image is cropped above the consent checkboxes, which the renderer can't draw.</sub>
 
@@ -89,7 +89,7 @@ open HeyYou.xcodeproj       # or run from Xcode (click "Trust & Enable" for the 
 
 ### Try it without a Google account
 
-Run the Debug build with the `--mock-calendar` launch argument (already in the generated scheme, unchecked by default: *Edit Scheme → Run → Arguments*). The app then uses a fake account with a meeting 90 seconds after launch, so the red alert appears about 30 seconds after starting. The **Test alert** menu item (alert in 5 s) works in every build.
+Run the Debug build with the `--mock-calendar` launch argument (already in the generated scheme, unchecked by default: *Edit Scheme → Run → Arguments*). The app then uses a fake account with a meeting 50 seconds after launch, so the red alert appears about 30 seconds after starting. The **Test alert** menu item (alert in 5 s) works in every build.
 
 ## Configuration
 
@@ -191,7 +191,7 @@ Later, if the app works for people: more calendar sources through the system cal
 
 **Does it work with Outlook, iCloud or the Mac Calendar?** Not yet. v1 is Google Calendar only.
 
-**Free vs Pro?** Free alerts 60 s before every timed meeting. Pro is a one-time purchase, no subscription; see [Features](#features).
+**Free vs Pro?** Free alerts 20 s before every timed meeting. Pro is a one-time purchase, no subscription; see [Features](#features).
 
 ## Development notes
 

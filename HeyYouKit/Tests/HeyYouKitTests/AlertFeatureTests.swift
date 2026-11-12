@@ -11,22 +11,22 @@ struct AlertFeatureTests {
         AlertFeature.State(event: weeklySync, now: date(now))
     }
 
-    /// PRD B.1: 60 s at 10:59:00.
+    /// PRD B.1: 20 s at 10:59:40.
     @Test func countdownAtFire() {
-        let alert = state(now: "2026-11-03 10:59:00")
-        #expect(alert.secondsRemaining == 60)
-        #expect(alert.phase == .countingDown(seconds: 60))
+        let alert = state(now: "2026-11-03 10:59:40")
+        #expect(alert.secondsRemaining == 20)
+        #expect(alert.phase == .countingDown(seconds: 20))
         #expect(alert.progress == 1)
         #expect(alert.hasMeetingLink)
         #expect(alert.joinURL == meetLink.url)
-        #expect(alert.shownAt == date("2026-11-03 10:59:00"))
+        #expect(alert.shownAt == date("2026-11-03 10:59:40"))
     }
 
     /// PRD B.4: NOW at 11:00:00 and 11:00:59, then STARTED 3 MIN AGO at 11:03:00.
     @Test func phasesWithoutInteraction() {
-        var alert = state(now: "2026-11-03 10:59:00")
-        alert.now = date("2026-11-03 10:59:30")
-        #expect(alert.secondsRemaining == 30)
+        var alert = state(now: "2026-11-03 10:59:40")
+        alert.now = date("2026-11-03 10:59:50")
+        #expect(alert.secondsRemaining == 10)
         #expect(alert.progress == 0.5)
         alert.now = date("2026-11-03 11:00:00")
         #expect(alert.phase == .startingNow)
@@ -38,9 +38,9 @@ struct AlertFeatureTests {
     }
 
     @Test func fractionalSecondsRoundUp() {
-        var alert = state(now: "2026-11-03 10:59:00")
-        alert.now = date("2026-11-03 10:59:00").addingTimeInterval(0.4)
-        #expect(alert.secondsRemaining == 60)
+        var alert = state(now: "2026-11-03 10:59:40")
+        alert.now = date("2026-11-03 10:59:40").addingTimeInterval(0.4)
+        #expect(alert.secondsRemaining == 20)
     }
 
     @Test func noLinkOpensCalendar() {

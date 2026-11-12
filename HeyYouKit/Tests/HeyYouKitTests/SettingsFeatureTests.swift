@@ -27,7 +27,7 @@ struct SettingsFeatureTests {
         let env = TestEnvironment(now: "2026-11-03 10:00")
         let store = store(env: env, isPro: false)
         let proActions: [SettingsFeature.Action] = [
-            .setLeadTime(20), .setSound(.horn), .setShowCountdown(false), .setIgnoreDeclined(true),
+            .setLeadTime(45), .setSound(.horn), .setShowCountdown(false), .setIgnoreDeclined(true),
             .setIgnoreWithoutOtherAttendees(true), .setOnlyWithLink(true), .setWorkingHoursEnabled(true),
             .toggleWorkday(1), .setWorkingHoursStart(minute: 600), .setWorkingHoursEnd(minute: 700), .toggleCalendar("primary"),
         ]
@@ -40,19 +40,19 @@ struct SettingsFeatureTests {
         await store.send(.unlockProTapped)
         await store.receive(.delegate(.openPaywall(.settingsLock)))
         #expect(store.state.settings == AppSettings())
-        #expect(store.state.effective.leadTimeSeconds == 60)
+        #expect(store.state.effective.leadTimeSeconds == 20)
     }
 
-    /// PRD B.16: values are 10…60 in steps of 5.
+    /// PRD B.16: values are 1…120.
     @Test func proLeadTime() async {
         let env = TestEnvironment(now: "2026-11-03 10:00")
         let store = store(env: env, isPro: true)
-        await store.send(.setLeadTime(22)) { $0.$settings.withLock { $0.leadTimeSeconds = 20 } }
-        await store.send(.setLeadTime(5)) { $0.$settings.withLock { $0.leadTimeSeconds = 10 } }
-        await store.send(.setLeadTime(65)) { $0.$settings.withLock { $0.leadTimeSeconds = 60 } }
-        await store.send(.setLeadTime(61))
+        await store.send(.setLeadTime(32)) { $0.$settings.withLock { $0.leadTimeSeconds = 32 } }
+        await store.send(.setLeadTime(0)) { $0.$settings.withLock { $0.leadTimeSeconds = 1 } }
+        await store.send(.setLeadTime(500)) { $0.$settings.withLock { $0.leadTimeSeconds = 120 } }
+        await store.send(.setLeadTime(121))
         let values = env.tracked("setting_changed").map { $0.properties["value"] }
-        #expect(values == [20, 10, 60])
+        #expect(values == [32, 1, 120])
     }
 
     @Test func proToggles() async {

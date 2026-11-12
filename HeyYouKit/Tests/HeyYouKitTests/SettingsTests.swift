@@ -3,36 +3,37 @@ import Foundation
 import Testing
 
 struct SettingsTests {
-    @Test(arguments: [(5, 10), (0, 10), (10, 10), (12, 10), (13, 15), (20, 20), (58, 60), (60, 60), (65, 60), (600, 60)])
+    @Test(arguments: [(-5, 1), (0, 1), (1, 1), (12, 12), (20, 20), (60, 60), (120, 120), (121, 120), (600, 120)])
     func leadTimeClamp(input: Int, expected: Int) {
         #expect(LeadTime.clamp(input) == expected)
     }
 
-    /// PRD B.16: possible values are 10, 15 … 60.
+    /// PRD B.16: any whole second from 1 to 120; 20 without Pro.
     @Test func leadTimeValues() {
-        #expect(LeadTime.allValues == [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60])
+        #expect(LeadTime.range == 1 ... 120)
+        #expect(LeadTime.free == 20)
     }
 
     @Test func freeIgnoresProSettings() {
         let stored = AppSettings(
-            leadTimeSeconds: 20, ignoreDeclined: true, ignoreWithoutOtherAttendees: true,
+            leadTimeSeconds: 45, ignoreDeclined: true, ignoreWithoutOtherAttendees: true,
             onlyEventsWithMeetingLink: true, selectedCalendarIDs: ["work"], sound: .horn,
             workingHours: .officeDefault, showCountdownInMenuBar: true
         )
         let effective = EffectiveSettings(stored, isPro: false)
         #expect(effective == EffectiveSettings(AppSettings(), isPro: false))
-        #expect(effective.leadTimeSeconds == 60)
+        #expect(effective.leadTimeSeconds == 20)
         #expect(effective.sound == .default)
         #expect(!effective.showCountdownInMenuBar)
     }
 
     @Test func proAppliesSettings() {
         let stored = AppSettings(
-            leadTimeSeconds: 22, ignoreDeclined: true, selectedCalendarIDs: ["work"], sound: .none, workingHours: .officeDefault
+            leadTimeSeconds: 500, ignoreDeclined: true, selectedCalendarIDs: ["work"], sound: .none, workingHours: .officeDefault
         )
         let effective = EffectiveSettings(stored, isPro: true)
         #expect(effective.isPro)
-        #expect(effective.leadTimeSeconds == 20)
+        #expect(effective.leadTimeSeconds == 120)
         #expect(effective.ignoreDeclined)
         #expect(!effective.ignoreWithoutOtherAttendees)
         #expect(effective.selectedCalendarIDs == ["work"])

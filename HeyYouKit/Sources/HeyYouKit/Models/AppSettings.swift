@@ -1,19 +1,13 @@
 import Foundation
 
-/// Allowed alert lead times (PRD §5.1): 10…60 s in steps of 5. Never more than 60.
+/// Allowed alert lead times (PRD §5.1): 20 s for everyone, any whole second from 1 to 120 with Pro.
 public enum LeadTime {
-    public static let range = 10 ... 60
-    public static let step = 5
-    public static let free = 60
+    public static let range = 1 ... 120
+    public static let free = 20
 
-    /// Rounds to the nearest step and clamps into `range`.
+    /// Clamps into `range`.
     public static func clamp(_ seconds: Int) -> Int {
-        let rounded = Int((Double(seconds) / Double(step)).rounded()) * step
-        return min(max(rounded, range.lowerBound), range.upperBound)
-    }
-
-    public static var allValues: [Int] {
-        Array(stride(from: range.lowerBound, through: range.upperBound, by: step))
+        min(max(seconds, range.lowerBound), range.upperBound)
     }
 }
 

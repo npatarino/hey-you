@@ -11,14 +11,14 @@ struct AppFeatureTests: AppFeatureTesting {
     // MARK: - B.1 launch → sync → schedule → alert
 
     @Test func launchToAlert() async {
-        let env = TestEnvironment(now: "2026-11-03 10:58:30", events: [weeklySync])
+        let env = TestEnvironment(now: "2026-11-03 10:59:10", events: [weeklySync])
         let state = AppFeature.State()
         state.$onboardingCompleted.withLock { $0 = true }
         let store = makeStore(env, state: state)
 
         let task = await store.send(.task) {
-            $0.now = date("2026-11-03 10:58:30")
-            $0.$installDate.withLock { $0 = date("2026-11-03 10:58:30") }
+            $0.now = date("2026-11-03 10:59:10")
+            $0.$installDate.withLock { $0 = date("2026-11-03 10:59:10") }
         }
         await store.receive(\.entitlementsUpdated)
         await store.receive(\.accountRestored) {
@@ -32,8 +32,8 @@ struct AppFeatureTests: AppFeatureTesting {
         await store.receive(\.refresh)
         await store.receive(\.eventsResponse) {
             $0.events = [weeklySync]
-            $0.lastSyncAt = date("2026-11-03 10:58:30")
-            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59:00"))
+            $0.lastSyncAt = date("2026-11-03 10:59:10")
+            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59:40"))
         }
         await env.clock.advance(by: .seconds(29))
         #expect(store.state.alert == nil)
@@ -41,21 +41,21 @@ struct AppFeatureTests: AppFeatureTesting {
         await store.receive(\.alertDue) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [weeklySync.dedupeKey: weeklySync.end]
-            $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59:00"))
+            $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59:40"))
             $0.nextAlert = nil
         }
-        #expect(store.state.alert?.secondsRemaining == 60)
+        #expect(store.state.alert?.secondsRemaining == 20)
         #expect(store.state.isAlertVisible)
 
         // The menu-bar clock ticks every 15 s on its own clock.
         await env.uiClock.advance(by: .seconds(15))
-        await store.receive(\.clockTick) { $0.now = date("2026-11-03 10:59:00") }
+        await store.receive(\.clockTick) { $0.now = date("2026-11-03 10:59:40") }
 
         // The 60 s refresh loop keeps running.
         await env.clock.advance(by: .seconds(30))
         await store.receive(\.refreshTick)
         await store.receive(\.refresh)
-        await store.receive(\.eventsResponse) { $0.lastSyncAt = date("2026-11-03 10:59:30") }
+        await store.receive(\.eventsResponse) { $0.lastSyncAt = date("2026-11-03 11:00:10") }
 
         await task.cancel()
         await store.finish()
@@ -67,7 +67,7 @@ struct AppFeatureTests: AppFeatureTesting {
         #expect(shown?["provider"] == "meet")
         #expect(shown?["screens_count"] == 2)
         #expect(shown?["trigger"] == "scheduled")
-        #expect(shown?["lead_time"] == 60)
+        #expect(shown?["lead_time"] == 20)
         #expect(env.tracked("calendar_synced").first?.properties["calendars_count"] == 2)
         #expect(env.analytics.people.first?["email_hash"] != nil)
     }
@@ -193,7 +193,7 @@ struct AppFeatureTests: AppFeatureTesting {
         await store.send(.refresh)
         await store.receive(\.eventsResponse) {
             $0.lastSyncAt = date("2026-11-03 10:59:30")
-            $0.nextAlert = ScheduledAlert(event: ana, fireAt: date("2026-11-03 12:29:00"))
+            $0.nextAlert = ScheduledAlert(event: ana, fireAt: date("2026-11-03 12:29:40"))
         }
         #expect(store.state.alert == nil)
         await store.skipInFlightEffects(strict: false)
@@ -216,21 +216,21 @@ struct AppFeatureTests: AppFeatureTesting {
     static let ana = CalendarEvent.fixture(id: "ana", title: "1:1 con Ana", start: "2026-11-03 12:30", end: "2026-11-03 13:00")
 
     @Test func wakeWithLateFire() async {
-        let env = TestEnvironment(now: "2026-11-03 12:29:40", events: [Self.ana])
+        let env = TestEnvironment(now: "2026-11-03 12:29:50", events: [Self.ana])
         let store = makeStore(env, state: signedIn(env, events: [Self.ana]))
 
         await store.send(.systemWoke) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
-            $0.nextAlert = ScheduledAlert(event: Self.ana, fireAt: date("2026-11-03 12:29:00"))
+            $0.nextAlert = ScheduledAlert(event: Self.ana, fireAt: date("2026-11-03 12:29:40"))
         }
         await store.receive(\.alertDue) {
             $0.firedAlerts = [Self.ana.dedupeKey: Self.ana.end]
-            $0.alert = AlertFeature.State(event: Self.ana, trigger: .wake, now: date("2026-11-03 12:29:40"))
+            $0.alert = AlertFeature.State(event: Self.ana, trigger: .wake, now: date("2026-11-03 12:29:50"))
             $0.nextAlert = nil
         }
-        #expect(store.state.alert?.secondsRemaining == 20)
+        #expect(store.state.alert?.secondsRemaining == 10)
         await store.receive(\.refresh)
-        await store.receive(\.eventsResponse) { $0.lastSyncAt = date("2026-11-03 12:29:40") }
+        await store.receive(\.eventsResponse) { $0.lastSyncAt = date("2026-11-03 12:29:50") }
         await store.finish()
         #expect(env.tracked("alert_shown").first?.properties["trigger"] == "wake")
     }
@@ -240,7 +240,7 @@ struct AppFeatureTests: AppFeatureTesting {
         let store = makeStore(env, state: signedIn(env, events: [Self.ana]))
         await store.send(.systemWoke) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
-            $0.nextAlert = ScheduledAlert(event: Self.ana, fireAt: date("2026-11-03 12:29:00"))
+            $0.nextAlert = ScheduledAlert(event: Self.ana, fireAt: date("2026-11-03 12:29:40"))
         }
         await store.receive(\.alertDue) {
             $0.firedAlerts = [Self.ana.dedupeKey: Self.ana.end]
@@ -281,14 +281,14 @@ struct AppFeatureTests: AppFeatureTesting {
         await store.send(.eventsResponse(.success(Self.b8Events), startedAt: env.now)) {
             $0.events = IdentifiedArray(uniqueElements: Self.b8Events)
             $0.lastSyncAt = date("2026-11-03 08:00")
-            $0.nextAlert = ScheduledAlert(event: Self.b8Events[1], fireAt: date("2026-11-03 08:59"), proHook: .declined)
+            $0.nextAlert = ScheduledAlert(event: Self.b8Events[1], fireAt: date("2026-11-03 08:59:40"), proHook: .declined)
         }
-        await env.clock.advance(by: .seconds(59 * 60))
+        await env.clock.advance(by: .seconds(59 * 60 + 40))
         await store.receive(\.alertDue) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [Self.b8Events[1].dedupeKey: Self.b8Events[1].end]
-            $0.alert = AlertFeature.State(event: Self.b8Events[1], proHook: .declined, now: date("2026-11-03 08:59"))
-            $0.nextAlert = ScheduledAlert(event: Self.b8Events[2], fireAt: date("2026-11-03 09:29"), proHook: .solo)
+            $0.alert = AlertFeature.State(event: Self.b8Events[1], proHook: .declined, now: date("2026-11-03 08:59:40"))
+            $0.nextAlert = ScheduledAlert(event: Self.b8Events[2], fireAt: date("2026-11-03 09:29:40"), proHook: .solo)
         }
         await store.skipInFlightEffects(strict: false)
         #expect(env.tracked("alert_shown").first?.properties["pro_hook_shown"] == "declined")
@@ -302,12 +302,12 @@ struct AppFeatureTests: AppFeatureTesting {
         await store.send(.eventsResponse(.success(Self.b8Events), startedAt: env.now)) {
             $0.events = IdentifiedArray(uniqueElements: Self.b8Events)
             $0.lastSyncAt = date("2026-11-03 08:00")
-            $0.nextAlert = ScheduledAlert(event: demo, fireAt: date("2026-11-03 09:59"))
+            $0.nextAlert = ScheduledAlert(event: demo, fireAt: date("2026-11-03 09:59:40"))
         }
         // Changing the lead time reschedules.
-        await store.send(.settingsScreen(.setLeadTime(20))) {
-            $0.$settings.withLock { $0.leadTimeSeconds = 20 }
-            $0.nextAlert = ScheduledAlert(event: demo, fireAt: date("2026-11-03 09:59:40"))
+        await store.send(.settingsScreen(.setLeadTime(10))) {
+            $0.$settings.withLock { $0.leadTimeSeconds = 10 }
+            $0.nextAlert = ScheduledAlert(event: demo, fireAt: date("2026-11-03 09:59:50"))
         }
         await store.send(.settingsScreen(.setOnlyWithLink(true))) {
             $0.$settings.withLock { $0.onlyEventsWithMeetingLink = true }
@@ -315,14 +315,14 @@ struct AppFeatureTests: AppFeatureTesting {
         // Turning the declined filter off brings Retro back.
         await store.send(.settingsScreen(.setIgnoreDeclined(false))) {
             $0.$settings.withLock { $0.ignoreDeclined = false }
-            $0.nextAlert = ScheduledAlert(event: Self.b8Events[1], fireAt: date("2026-11-03 08:59:40"))
+            $0.nextAlert = ScheduledAlert(event: Self.b8Events[1], fireAt: date("2026-11-03 08:59:50"))
         }
-        await env.clock.advance(by: .seconds(59 * 60 + 40))
+        await env.clock.advance(by: .seconds(59 * 60 + 50))
         await store.receive(\.alertDue) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [Self.b8Events[1].dedupeKey: Self.b8Events[1].end]
-            $0.alert = AlertFeature.State(event: Self.b8Events[1], leadTimeSeconds: 20, now: date("2026-11-03 08:59:40"))
-            $0.nextAlert = ScheduledAlert(event: demo, fireAt: date("2026-11-03 09:59:40"))
+            $0.alert = AlertFeature.State(event: Self.b8Events[1], leadTimeSeconds: 10, now: date("2026-11-03 08:59:50"))
+            $0.nextAlert = ScheduledAlert(event: demo, fireAt: date("2026-11-03 09:59:50"))
         }
         await store.skipInFlightEffects(strict: false)
     }
@@ -349,13 +349,13 @@ struct AppFeatureTests: AppFeatureTesting {
         await store.send(.eventsResponse(.success([weeklySync, roadmap]), startedAt: env.now)) {
             $0.events = [weeklySync, roadmap]
             $0.lastSyncAt = date("2026-11-03 10:58:30")
-            $0.nextAlert = ScheduledAlert(event: roadmap, overlapping: [weeklySync], fireAt: date("2026-11-03 10:59"))
+            $0.nextAlert = ScheduledAlert(event: roadmap, overlapping: [weeklySync], fireAt: date("2026-11-03 10:59:40"))
         }
-        await env.clock.advance(by: .seconds(30))
+        await env.clock.advance(by: .seconds(70))
         await store.receive(\.alertDue) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 2) }
             $0.firedAlerts = [roadmap.dedupeKey: roadmap.end, weeklySync.dedupeKey: weeklySync.end]
-            $0.alert = AlertFeature.State(event: roadmap, additionalCount: 1, now: date("2026-11-03 10:59"))
+            $0.alert = AlertFeature.State(event: roadmap, additionalCount: 1, now: date("2026-11-03 10:59:40"))
             $0.nextAlert = nil
         }
         await store.finish()
@@ -385,7 +385,8 @@ struct AppFeatureTests: AppFeatureTesting {
     static func testEvent(firedAt: Date) -> CalendarEvent {
         CalendarEvent(
             id: "hey-you-test", calendarID: "hey-you", title: "Hey You! test",
-            start: firedAt.addingTimeInterval(60), end: firedAt.addingTimeInterval(60 + 30 * 60),
+            start: firedAt.addingTimeInterval(TimeInterval(LeadTime.free)),
+            end: firedAt.addingTimeInterval(TimeInterval(LeadTime.free) + 30 * 60),
             meetingLink: MeetingLink(provider: .other, url: AppConfig.projectURL), hasOtherAttendees: true,
             htmlLink: AppConfig.projectURL
         )
@@ -402,7 +403,7 @@ struct AppFeatureTests: AppFeatureTesting {
         await store.receive(\.alertDue) {
             $0.alert = AlertFeature.State(event: event, trigger: .test, now: date("2026-11-03 10:00:05"))
         }
-        #expect(store.state.alert?.secondsRemaining == 60)
+        #expect(store.state.alert?.secondsRemaining == 20)
         // Within the first second the Join button is ignored.
         await store.send(.alert(.presented(.joinTapped)))
         await env.clock.advance(by: .seconds(1))

@@ -14,13 +14,13 @@ struct PresentationTests {
 
     /// PRD B.1 / B.4 texts.
     @Test func alertTexts() {
-        let counting = alert(now: "2026-11-03 10:59:00")
+        let counting = alert(now: "2026-11-03 10:59:40")
         #expect(counting.headline == "MEETING IN")
         #expect(counting.metaLine(locale: posix, timeZone: madrid) == "11:00 – 11:30 · Google Meet")
         #expect(counting.actionTitle == "Join meeting")
         #expect(counting.additionalText == nil)
         #expect(counting.hookText == nil)
-        #expect(counting.countdownAccessibilityLabel == "Meeting in 60 seconds")
+        #expect(counting.countdownAccessibilityLabel == "Meeting in 20 seconds")
 
         #expect(alert(now: "2026-11-03 11:00:30").countdownAccessibilityLabel == "Meeting starting now")
         let started = alert(now: "2026-11-03 11:03:00")

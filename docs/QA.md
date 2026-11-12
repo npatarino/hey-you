@@ -28,7 +28,7 @@ The agent that built the app has no Screen Recording or Accessibility permission
 | App starts as menu-bar app (no Dock icon) | ✅ | `LSUIElement = YES`; process runs with no regular window. |
 | Mock meeting at +90 s fires the alert at +30 s | ✅ | Launched 00:02:00, alert window appeared 00:02:32. |
 | Alert covers the whole screen, above everything | ✅ | Window level 1000 (screen saver), bounds = full screen. Only one display available, so multi-display not checked. |
-| B.1 alert content ("MEETING IN", "60s", title, time · provider, Join) | 🧪 + render | `alert-countdown.png`; `AppFeatureTests.launchToAlert`. |
+| B.1 alert content ("MEETING IN", "20s", title, time · provider, Join) | 🧪 + render | `alert-countdown.png`; `AppFeatureTests.launchToAlert`. |
 | B.2 Enter / Join opens the link and closes | 🧪 | Key mapping (`AlertInputTests`) and reducer tested. ⏳ real key press. |
 | B.3 click, Esc, ⌘Q, ⌘W, right-click dismiss; `j`/space ignored; first second ignored; app keeps running | 🧪 | ⏳ Real input not sent (no Accessibility permission). |
 | B.4 no auto-close during the meeting; NOW; STARTED 3 MIN AGO; closes at the end (max 2 h) | 🧪 + render | `alert-started-hook.png`; `expiresWhenMeetingEnds`, `expiryIsClamped`, `longMeetingNotAlertedAfterTwoHours`, `expiredAlertIsTracked`. |
@@ -63,7 +63,7 @@ The agent that built the app has no Screen Recording or Accessibility permission
 - SwiftLint `--strict`: 0 violations. SwiftFormat applied. No compiler warnings in `App/` or `HeyYouKit/Sources` (Swift 6, strict concurrency complete).
 - No hard-coded UI strings: every visible string goes through the `en`/`es` catalog (106 keys); data (titles, emails) uses `Text(verbatim:)`.
 - Contrast: white on the gradient centre `#E0263A` is 4.66:1 and on `#B5121F` 6.84:1, but white at 75–85 % opacity on the centre was only 3.2–3.4:1, so all alert text is now fully opaque white. The Join button text (`#B5121F` on white) is 6.84:1.
-- Reduce Motion disables the pulse, the "NOW" scaling, the ring animation and the entrance animation. Buttons have accessibility labels; the countdown reads as "Meeting in 47 seconds".
+- Reduce Motion disables the pulse, the "NOW" scaling, the ring animation and the entrance animation. Buttons have accessibility labels; the countdown reads as "Meeting in 17 seconds".
 - Pro gating: the scheduler only accepts `EffectiveSettings`; raw `AppSettings` is read only for launch at login (free) and inside the Settings editor after the Pro guard.
 - Size: a plain Release build is 42 MB (with symbols), but the **archived app is 13 MB** (universal, stripped), within the PRD's 15 MB.
 

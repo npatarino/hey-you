@@ -31,7 +31,7 @@ struct SnapshotRenderTests {
             meetingLink: MeetingLink(provider: .googleMeet, url: AppConfig.projectURL)
         )
         try write(
-            AlertView(store: Store(initialState: AlertFeature.State(event: weekly, now: Self.start.addingTimeInterval(-47))) {
+            AlertView(store: Store(initialState: AlertFeature.State(event: weekly, now: Self.start.addingTimeInterval(-17))) {
                 AlertFeature()
             } withDependencies: { $0.context = .preview }, animateEntrance: false),
             size: CGSize(width: 1440, height: 900), name: "alert-countdown"

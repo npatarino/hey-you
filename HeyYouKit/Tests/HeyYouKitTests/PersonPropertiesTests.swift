@@ -24,15 +24,15 @@ struct PersonPropertiesTests: AppFeatureTesting {
         let env = TestEnvironment(now: "2026-11-03 10:00")
         var state = signedIn(env, isPro: true)
         state.calendars = MockCalendar.calendars
-        state.$settings.withLock { $0.leadTimeSeconds = 20 }
+        state.$settings.withLock { $0.leadTimeSeconds = 45 }
         #expect(state.personProperties == [
-            "is_pro": true, "lead_time": 20, "launch_at_login": false,
+            "is_pro": true, "lead_time": 45, "launch_at_login": false,
             "weekly_meetings_bucket": "0-2", "calendars_count": 2,
         ])
         state.$settings.withLock { $0.selectedCalendarIDs = ["primary"] }
         #expect(state.personProperties["calendars_count"] == 1)
         state.$entitlements.withLock { $0.isPro = false }
-        #expect(state.personProperties["lead_time"] == 60)
+        #expect(state.personProperties["lead_time"] == 20)
         #expect(state.personProperties["calendars_count"] == 2)
     }
 

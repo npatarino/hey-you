@@ -260,7 +260,7 @@ struct GoogleCalendarAPITests {
         let client = CalendarClient.mock(now: { now })
         let events = try await client.upcomingEvents(now, now.addingTimeInterval(86400), nil)
         #expect(events.map(\.title) == ["Weekly sync", "Demo cliente", "Cumpleaños de Marta", "Retro"])
-        #expect(events.first?.start == now.addingTimeInterval(90))
+        #expect(events.first?.start == now.addingTimeInterval(50))
         let personal = try await client.upcomingEvents(now, now.addingTimeInterval(86400), ["personal"])
         #expect(personal.map(\.title) == ["Cumpleaños de Marta"])
         #expect(try await client.calendars().count == 2)

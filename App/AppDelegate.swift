@@ -16,7 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let arguments = ProcessInfo.processInfo.arguments
             // `--print-changes`: log every action and state diff to stdout.
             let printChanges = arguments.contains("--print-changes")
-            // `--mock-calendar`: fake Google account and calendar (a meeting 90 s after launch).
+            // `--mock-calendar`: fake Google account and calendar (a meeting 50 s after launch).
             if arguments.contains("--mock-calendar") || printChanges {
                 return Store(initialState: AppFeature.State()) {
                     AppFeature()._printChanges(printChanges ? .actionLabels : nil)

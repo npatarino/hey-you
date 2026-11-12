@@ -61,12 +61,12 @@
         }
       }
     },
-    "Alert from 10 to 60 seconds before": {
+    "Alert from %lld to %lld seconds before": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aviso de 10 a 60 segundos antes"
+            "value": "Aviso de %lld a %lld segundos antes"
           }
         }
       }
@@ -691,12 +691,12 @@
         }
       }
     },
-    "One minute before every meeting, your whole screen turns red.": {
+    "%lld seconds before every meeting, your whole screen turns red.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un minuto antes de cada reunión, toda tu pantalla se pone roja."
+            "value": "%lld segundos antes de cada reunión, toda tu pantalla se pone roja."
           }
         }
       }

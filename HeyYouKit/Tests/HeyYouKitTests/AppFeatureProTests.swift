@@ -41,7 +41,7 @@ struct AppFeatureProTests: AppFeatureTesting {
         await store.receive(\.eventsResponse) {
             $0.events = [weeklySync]
             $0.lastSyncAt = date("2026-11-03 10:50")
-            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59"))
+            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59:40"))
         }
         env.calendarResult.setValue(.failure(.offline))
         await store.send(.refresh)
@@ -51,18 +51,18 @@ struct AppFeatureProTests: AppFeatureTesting {
         await store.receive(\.eventsResponse)
         let menu = MenuBarFeature.state(from: store.state, now: env.now, calendar: madridCalendar)
         #expect(menu.status == .offline(since: date("2026-11-03 10:50")))
-        await env.clock.advance(by: .seconds(8 * 60))
+        await env.clock.advance(by: .seconds(8 * 60 + 40))
         await store.receive(\.alertDue) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [weeklySync.dedupeKey: weeklySync.end]
-            $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59"))
+            $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59:40"))
             $0.nextAlert = nil
         }
         // Back online clears the offline state.
         env.calendarResult.setValue(.success([weeklySync]))
         await store.send(.refresh)
         await store.receive(\.eventsResponse) {
-            $0.lastSyncAt = date("2026-11-03 10:59")
+            $0.lastSyncAt = date("2026-11-03 10:59:40")
             $0.offlineSince = nil
         }
         await store.finish()
@@ -86,14 +86,14 @@ struct AppFeatureProTests: AppFeatureTesting {
     @Test func lockedLeadTimeOpensPaywall() async {
         let env = TestEnvironment(now: "2026-11-03 10:00")
         let store = makeStore(env, state: signedIn(env))
-        await store.send(.settingsScreen(.setLeadTime(20)))
+        await store.send(.settingsScreen(.setLeadTime(45)))
         await store.receive(\.settingsScreen.delegate.openPaywall) { $0.paywall = PaywallFeature.State(source: .settingsLock) }
         await store.send(.paywall(.presented(.task)))
         await store.receive(\.paywall.presented.loaded) {
             $0.paywall?.isLoading = false
             $0.paywall?.products = [StoreProduct(id: AppConfig.proProductID, displayName: "Hey You! Pro", displayPrice: "5,99 €")]
         }
-        #expect(store.state.settings.leadTimeSeconds == 60)
+        #expect(store.state.settings.leadTimeSeconds == 20)
         #expect(env.tracked("paywall_viewed").first?.properties["source"] == "settings_lock")
     }
 
@@ -118,7 +118,7 @@ struct AppFeatureProTests: AppFeatureTesting {
         }
         await store.receive(\.paywall.presented.delegate.purchased)
         await store.receive(\.entitlementsUpdated) {
-            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59"))
+            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59:40"))
         }
         await store.receive(\.paywall.dismiss) { $0.paywall = nil }
         await store.skipInFlightEffects(strict: false)
@@ -228,13 +228,13 @@ struct AppFeatureProTests: AppFeatureTesting {
         await store.receive(\.eventsResponse) {
             $0.events = [weeklySync]
             $0.lastSyncAt = date("2026-11-03 10:58:30")
-            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59"))
+            $0.nextAlert = ScheduledAlert(event: weeklySync, fireAt: date("2026-11-03 10:59:40"))
         }
-        await env.clock.advance(by: .seconds(30))
+        await env.clock.advance(by: .seconds(70))
         await store.receive(\.alertDue) {
             $0.$weeklyMeetings.withLock { $0 = WeeklyMeetings(weekStart: date("2026-11-02 00:00"), count: 1) }
             $0.firedAlerts = [weeklySync.dedupeKey: weeklySync.end]
-            $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59"))
+            $0.alert = AlertFeature.State(event: weeklySync, now: date("2026-11-03 10:59:40"))
             $0.nextAlert = nil
         }
         await env.clock.advance(by: .seconds(1))

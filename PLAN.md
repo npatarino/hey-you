@@ -1,6 +1,6 @@
 # Hey You! — Plan de implementación
 
-App de macOS (menu bar, siempre en background) que se conecta a Google Calendar y, cuando falta **1 minuto** para una reunión, toma **toda la pantalla** (todas las pantallas) con una alerta roja, bonita e imposible de ignorar, con botón para unirse a la reunión. Se publicará en la **Mac App Store**.
+App de macOS (menu bar, siempre en background) que se conecta a Google Calendar y, cuando faltan **20 segundos** para una reunión, toma **toda la pantalla** (todas las pantallas) con una alerta roja, bonita e imposible de ignorar, con botón para unirse a la reunión. Se publicará en la **Mac App Store**.
 
 El *qué* y el *porqué* del producto están en [docs/PRD.md](docs/PRD.md) (nota de prensa, FAQ, decisiones, métricas, casos de prueba del anexo B). Léelo antes que esto. Este documento es el plan completo para que un agente lo ejecute **de forma autónoma y en orden**. Cada hito termina con criterios de aceptación verificables y un commit. No saltes hitos. Si algo del plan no compila con las versiones reales de las librerías, adapta la implementación pero mantén la arquitectura y los criterios de aceptación.
 
@@ -50,7 +50,7 @@ El agente desarrolla con un `GoogleOAuthConfig` de placeholder y con un `Calenda
 | Background | App de **menu bar** (`LSUIElement = YES`, sin Dock). Launch at login con `SMAppService.mainApp` (opt-in en Settings) | "Siempre corriendo" compatible con App Store |
 | Alerta | Una `NSWindow` **por pantalla** (`NSScreen.screens`), `level = .screenSaver`, `collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]`, `NSApp.activate(ignoringOtherApps: true)`, contenido SwiftUI | Cubre apps en pantalla completa y todos los Spaces |
 | Salida de la alerta | **Solo interacciones deliberadas la descartan**: clic en cualquier punto, Esc, Cmd+Q, Cmd+W, Cmd+.; el resto de teclas se ignoran y el primer segundo ignora toda entrada (revisado 2026-10-29, PRD §5.4) (mientras la alerta está visible, Cmd+Q **no** cierra la app: solo descarta la alerta). Botón **Unirse** (abre el enlace y descarta). **Sin auto-cierre**: permanece hasta que el usuario la descarte; cuando la reunión ya ha empezado muestra "Empezó hace X min" | No bloquear al usuario, pero que no pueda ignorar la notificación |
-| Tiempo de aviso | **60 s** fijo en gratis; con Pro, deslizador **10–60 s** en pasos de 5 s. Nunca más de 60 | Requisito del PRD §5.1 |
+| Tiempo de aviso | **20 s** fijo en gratis; con Pro, deslizador **1–120 s** segundo a segundo. Nunca más de 120 | Requisito del PRD §5.1 |
 | Monetización | **Freemium con compra única** (StoreKit 2, producto no consumible `pro.chimi.heyyou.pro`, 5,99 €). Estado Pro desde `Transaction.currentEntitlements`, cacheado en `@Shared`. Tabla gratis/Pro en PRD §5.2.1 | PRD §5.6.2 |
 | Analítica | **PostHog** (SDK `posthog-ios`, soporta macOS) alojado en la UE, encapsulado en `AnalyticsClient`, con consentimiento en onboarding. Taxonomía cerrada en PRD §6.1. **Nunca** títulos, enlaces, asistentes ni nombres de calendario | PRD §5.6.1 |
 | Scheduling | Efecto de larga duración en `AppFeature`: refresco de eventos cada 60 s (ventana próximas 24 h), cálculo del siguiente disparo, `clock.sleep` hasta `start - leadTime`, dedupe por `eventID+start`. Recalcular en `NSWorkspace.didWakeNotification` y al cambiar settings | Preciso y barato |
@@ -138,7 +138,7 @@ struct MeetingLink: Equatable, Sendable, Codable {
 }
 
 struct AppSettings: Equatable, Codable, Sendable {
-    var leadTimeSeconds: Int = 60             // 10...60 en pasos de 5; validar con LeadTime.clamp
+    var leadTimeSeconds: Int = 20             // 1...120; validar con LeadTime.clamp
     var launchAtLogin = false
     // --- Pro ---
     var ignoreDeclined = false                // se pone a true al comprar Pro
@@ -150,13 +150,13 @@ struct AppSettings: Equatable, Codable, Sendable {
     var showCountdownInMenuBar = true
 }
 
-enum LeadTime { static let range = 10...60; static let step = 5; static func clamp(_ s: Int) -> Int }
+enum LeadTime { static let range = 1...120; static let free = 20; static func clamp(_ s: Int) -> Int }
 
 struct Consent: Equatable, Codable, Sendable { var usageAnalytics = true; var emailContact = false }
 
 struct Entitlements: Equatable, Codable, Sendable { var isPro = false; var purchasedAt: Date? }
 
-/// Aplica los settings respetando Pro: si `!isPro`, devuelve los defaults gratuitos (60 s, sin filtros, todos los calendarios, sonido por defecto, sin horario).
+/// Aplica los settings respetando Pro: si `!isPro`, devuelve los defaults gratuitos (20 s, sin filtros, todos los calendarios, sonido por defecto, sin horario).
 struct EffectiveSettings { init(_ settings: AppSettings, isPro: Bool) }
 
 struct ScheduledAlert: Equatable, Sendable {
@@ -203,7 +203,7 @@ struct PunctualityStats: Equatable, Codable, Sendable { var weekStart: Date; var
 - Icono del status item: SF Symbol `bell` con el texto "Xm" cuando quedan <10 min; `bell.slash` cuando la sesión de Google se ha perdido. Menú muestra "Sin conexión desde hh:mm" si el último refresco falló por red (PRD §5.10; casos B.13, B.14).
 
 ### `SettingsFeature`
-- Form SwiftUI con secciones: **Cuenta** (email, Disconnect); **General**: Launch at login (Toggle → `launchAtLoginClient.set(_:)`; reflejar `SMAppService.status`), botón "Test alert"; **Alerta** (Pro): lead time (Slider 10–60 paso 5, con etiqueta "60 s" fija y candado si no Pro), sonido (Picker), countdown en barra; **Filtros** (Pro): ignorar rechazadas, ignorar sin otros asistentes, solo con enlace, horario laboral (días + hora inicio/fin); **Calendarios** (Pro): lista con toggles cargada de `calendarClient.calendars()`; **Privacidad**: toggle "Compartir estadísticas de uso", toggle "Avisarme de novedades por email", enlace a política; **Hey You! Pro**: estado (gratis/Pro), botón "Desbloquear Pro…" o "Restaurar compra"; versión.
+- Form SwiftUI con secciones: **Cuenta** (email, Disconnect); **General**: Launch at login (Toggle → `launchAtLoginClient.set(_:)`; reflejar `SMAppService.status`), botón "Test alert"; **Alerta** (Pro): lead time (Slider 1–120 s segundo a segundo, con candado si no Pro), sonido (Picker), countdown en barra; **Filtros** (Pro): ignorar rechazadas, ignorar sin otros asistentes, solo con enlace, horario laboral (días + hora inicio/fin); **Calendarios** (Pro): lista con toggles cargada de `calendarClient.calendars()`; **Privacidad**: toggle "Compartir estadísticas de uso", toggle "Avisarme de novedades por email", enlace a política; **Hey You! Pro**: estado (gratis/Pro), botón "Desbloquear Pro…" o "Restaurar compra"; versión.
 - Cada control Pro se envuelve en un `ProGated { }` view modifier: si no Pro, se muestra deshabilitado con un candado; clic en el candado → `delegate(.openPaywall(source: .settingsLock))`. Cambios de settings Pro se trackean con `setting_changed`.
 
 ### `PaywallFeature`
@@ -314,7 +314,7 @@ Formato de commit: `feat(scope): …` / `chore: …` / `test: …`. Antes de cad
 
 ### Hito 7 — Verificación manual end-to-end (requiere Xcode)
 - Ejecutar a mano los casos B.10–B.15 del PRD y anotar el resultado en `docs/QA.md`.
-- Lanzar la app con `--mock-calendar`: aparece en menu bar, el evento mock en 90 s dispara la alerta a los 30 s (leadTime 60 s) en **todas** las pantallas, sobre apps full-screen; Enter abre el link; Esc, clic en cualquier punto, Cmd+Q y Cmd+W descartan (otras teclas no) la alerta **sin cerrar la app**; sin interacción la alerta sigue visible pasados 5 min y muestra "Empezó hace 5 min"; sonido suena; el status item muestra el countdown. Cmd+Q sin alerta visible cierra la app.
+- Lanzar la app con `--mock-calendar`: aparece en menu bar, el evento mock en 50 s dispara la alerta a los 30 s (leadTime 20 s) en **todas** las pantallas, sobre apps full-screen; Enter abre el link; Esc, clic en cualquier punto, Cmd+Q y Cmd+W descartan (otras teclas no) la alerta **sin cerrar la app**; sin interacción la alerta sigue visible pasados 5 min y muestra "Empezó hace 5 min"; sonido suena; el status item muestra el countdown. Cmd+Q sin alerta visible cierra la app.
 - Onboarding: el botón "Sign in with Google" sigue el branding de Google y al pulsarlo (con `Secrets.xcconfig` configurado) abre la ventana de consentimiento de Google.
 - Probar Settings → Launch at login (ver estado en System Settings → General → Login Items).
 - Probar la compra con el fichero `.storekit` (B.17, B.18): candados desaparecen, settings Pro por defecto, countdown en la barra; "Restaurar compra" funciona.

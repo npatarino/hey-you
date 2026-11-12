@@ -24,7 +24,7 @@ extension CalendarClient: DependencyKey {
         .mock()
     }
 
-    /// Fake calendar relative to `now`: a meeting in 90 s, one in 2 h, an all-day one and a declined one.
+    /// Fake calendar relative to `now`: a meeting in 50 s, one in 2 h, an all-day one and a declined one.
     public static func mock(now: (@Sendable () -> Date)? = nil) -> Self {
         Self(
             calendars: { MockCalendar.calendars },
@@ -71,8 +71,8 @@ public enum MockCalendar {
         let startOfDay = Calendar.current.startOfDay(for: now)
         return [
             CalendarEvent(
-                id: "mock-weekly", title: "Weekly sync", start: now.addingTimeInterval(90),
-                end: now.addingTimeInterval(90 + 30 * 60), meetingLink: meet, organizer: "Ana"
+                id: "mock-weekly", title: "Weekly sync", start: now.addingTimeInterval(50),
+                end: now.addingTimeInterval(50 + 30 * 60), meetingLink: meet, organizer: "Ana"
             ),
             CalendarEvent(
                 id: "mock-demo", title: "Demo cliente", start: now.addingTimeInterval(2 * 3600),
