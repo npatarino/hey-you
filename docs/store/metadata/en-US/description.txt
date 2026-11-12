@@ -1,0 +1,39 @@
+You knew the meeting was at 11. You checked the clock at 10:55. The next time you looked, it was 11:07.
+
+Calendar notifications are a small grey box in the corner, and your brain learned to ignore those years ago. Hey You! is the reminder you can't ignore: 20 seconds before every meeting on your Google Calendar, every screen you own turns red, with the meeting name, a countdown and one big Join button.
+
+Press Enter and you're in the call. Click anywhere or press Esc and the alert is gone. It never locks your Mac.
+
+WHY 20 SECONDS
+A 10-minute reminder gets a "yeah, in a bit", and then you forget again. At 20 seconds there is nothing left to finish, so you join.
+
+WHAT IT DOES
+• Takes over every display, and shows above full-screen apps too
+• Finds the Google Meet, Zoom, Microsoft Teams or Webex link and opens it when you press Enter
+• Stays on screen until you react or the meeting ends, instead of sliding away after five seconds
+• Tells you how late you are if your Mac was asleep: "Started 3 min ago"
+• Ignores the keys you were already typing, so you can't dismiss it by accident
+• Lives in the menu bar with today's meetings. It has no Dock icon and no windows to manage
+• Has a Test alert in the menu, so the first real one doesn't catch you by surprise
+
+YOUR CALENDAR STAYS ON YOUR MAC
+• Read-only Google sign-in. Hey You! can't change or delete anything
+• Events go straight from Google to your Mac. There are no Hey You! servers and no Hey You! account
+• Usage statistics are optional and never include meeting titles, links or attendees
+
+FREE FOR THE JOB THAT MATTERS
+The free version alerts you 20 seconds before every timed meeting, with no time limit and no trial.
+
+HEY YOU! PRO
+A one-time purchase, with no subscription, for people who want to tune it:
+• Set the alert anywhere from 1 second to 2 minutes before
+• Skip meetings you declined
+• Skip focus blocks where you are the only attendee
+• Only alert for meetings that have a video link
+• Choose which calendars count, and your working hours
+• Pick the sound and see a countdown in the menu bar
+• See your week: "On time 11 of 12 this week"
+
+Requires a Google Calendar account and macOS 14 or later. English and Spanish.
+
+Questions or ideas: hola@chimi.pro

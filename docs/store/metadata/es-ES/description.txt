@@ -1,0 +1,39 @@
+Sabías que la reunión era a las 11. Miraste el reloj a las 10:55. Cuando volviste a mirar, eran las 11:07.
+
+Las notificaciones del calendario son un rectángulo gris en una esquina, y tu cerebro aprendió a ignorarlas hace años. Hey You! es el aviso que no puedes pasar por alto: 20 segundos antes de cada reunión de tu Google Calendar, todas tus pantallas se ponen rojas, con el nombre de la reunión, una cuenta atrás y un botón grande para unirte.
+
+Pulsa Enter y estás en la llamada. Haz clic donde quieras o pulsa Esc y la alerta desaparece. Nunca bloquea tu Mac.
+
+POR QUÉ 20 SEGUNDOS
+Un aviso diez minutos antes se contesta con un "ahora voy", y luego se te vuelve a pasar. A 20 segundos ya no queda nada que terminar, así que entras.
+
+QUÉ HACE
+• Ocupa todas tus pantallas y aparece también sobre las apps a pantalla completa
+• Detecta el enlace de Google Meet, Zoom, Microsoft Teams o Webex y lo abre al pulsar Enter
+• Se queda en pantalla hasta que reaccionas o termina la reunión, en vez de irse sola a los cinco segundos
+• Te dice cuánto llevas de retraso si el Mac estaba en reposo: "Empezó hace 3 min"
+• Ignora las teclas que ya estabas pulsando, para que no la quites sin verla
+• Vive en la barra de menús con las reuniones de hoy. No tiene icono en el Dock ni ventanas que gestionar
+• Incluye "Probar alerta" en el menú, para que la primera de verdad no te pille por sorpresa
+
+TU CALENDARIO SE QUEDA EN TU MAC
+• Inicio de sesión de Google en solo lectura. Hey You! no puede cambiar ni borrar nada
+• Los eventos van directos de Google a tu Mac. No hay servidores de Hey You! ni cuenta de Hey You!
+• Las estadísticas de uso son opcionales y nunca incluyen títulos, enlaces ni asistentes
+
+GRATIS PARA LO IMPORTANTE
+La versión gratuita te avisa 20 segundos antes de cada reunión con hora, sin límite de tiempo y sin periodo de prueba.
+
+HEY YOU! PRO
+Una compra única, sin suscripción, para quien quiere afinarla:
+• Elige el aviso entre 1 segundo y 2 minutos antes
+• Sin avisos de reuniones que has rechazado
+• Sin avisos de bloques de foco en los que solo estás tú
+• Avisos solo de reuniones con enlace de videollamada
+• Elige qué calendarios cuentan y tu horario laboral
+• Elige el sonido y ve una cuenta atrás en la barra de menús
+• Mira tu semana: "Esta semana: a tiempo 11 de 12"
+
+Requiere una cuenta de Google Calendar y macOS 14 o posterior. En español e inglés.
+
+Dudas o ideas: hola@chimi.pro

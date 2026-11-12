@@ -14,7 +14,7 @@ Everything here needs your Apple Developer account. Items marked **(you)** can't
 ## 2. App Store Connect (you)
 
 - [x] New macOS app: store name **Hey You! – Never Be Late** ("Hey You!" alone was taken; the app itself is still called "Hey You!"), primary language English, bundle ID `pro.chimi.heyyou`, SKU `heyyou-mac`. Optional Spanish store name: **Hey You! – Nunca llegues tarde** (30 chars).
-- [ ] In-app purchase: **Non-Consumable**, product ID `pro.chimi.heyyou.pro`, reference name "Hey You! Pro", price 5.99 € tier, **Family Sharing on**, display name and description in en/es (texts below), review screenshot of the paywall. Submit it **together with the first build**.
+- [ ] In-app purchase: **Non-Consumable**, product ID `pro.chimi.heyyou.pro`, reference name "Hey You! Pro", price 5.99 € tier, **Family Sharing on**, display name and description in en/es (`iap_name.txt` and `iap_description.txt` in `docs/store/metadata`), review screenshot of the paywall. Submit it **together with the first build**.
 - [ ] Pricing: Free. Availability: all territories.
 - [ ] Category: Productivity (secondary: Business).
 - [ ] Age rating: 4+.
@@ -39,44 +39,11 @@ Size: the archived app (universal Intel + Apple Silicon, symbols stripped) is 13
 
 ## 4. Metadata
 
-**Subtitle** (30 chars max, must not repeat the name): Full-screen meeting alerts · ES: Alerta a pantalla completa
+All listing texts and images live in [docs/store](store/README.md):
 
-**Keywords** (100 chars): meeting,reminder,calendar,google calendar,alert,zoom,meet,teams,focus,punctual,notification,menu bar
-
-**Promotional text**: One minute before every meeting, your whole screen turns red. One click and it's gone — but you can't miss it.
-
-**Description (en)**
-
-> Hey You! lives in your menu bar and watches your Google Calendar. One minute before each meeting it turns every screen red with the meeting name, a countdown and a Join button. It stays up until you react or the meeting ends, and it never locks you out: a click or Esc dismisses it, Enter joins the call.
->
-> • Works over full-screen apps and on every display
-> • Detects Google Meet, Zoom, Microsoft Teams and Webex links
-> • Read-only Google sign-in. Your calendar never leaves your Mac
-> • Shows "Started 3 min ago" if you were away
-> • Test alert from the menu
->
-> Hey You! Pro — one-time purchase:
-> • Alert 10 to 60 seconds before
-> • Skip meetings you declined, focus blocks with just you, or meetings without a video link
-> • Choose calendars and working hours
-> • Pick the sound, show a countdown in the menu bar
-> • Weekly punctuality stats
-
-**Descripción (es)**
-
-> Hey You! vive en tu barra de menús y vigila tu Google Calendar. Un minuto antes de cada reunión pinta todas tus pantallas de rojo con el nombre de la reunión, una cuenta atrás y un botón para unirte. Se queda hasta que reaccionas o termina la reunión, y nunca te bloquea: un clic o Esc la quitan y Enter te une a la llamada.
->
-> • Funciona sobre apps a pantalla completa y en todas las pantallas
-> • Detecta enlaces de Google Meet, Zoom, Microsoft Teams y Webex
-> • Inicio de sesión de Google en solo lectura. Tu calendario no sale de tu Mac
-> • Muestra "Empezó hace 3 min" si no estabas
-> • Prueba la alerta desde el menú
->
-> Hey You! Pro, compra única: aviso de 10 a 60 segundos, sin reuniones rechazadas, sin bloques de foco, solo reuniones con enlace, elige calendarios y horario laboral, sonido, cuenta atrás en la barra y estadística semanal de puntualidad.
-
-**IAP display name / description**: Hey You! Pro — "Lead time 10–60 s, filters, calendars, working hours, sound and punctuality stats." / "Aviso de 10 a 60 s, filtros, calendarios, horario, sonido y puntualidad."
-
-**Screenshots** (1280×800 or 2560×1600): the alert (`docs/screenshots/alert-countdown.png` is 2880×1800, resize or retake on a 1440×900 display), the alert with the Pro hook, the menu, Settings with padlocks, **the paywall**. Real screenshots from a running build are better than the off-screen renders in `docs/screenshots`.
+- Texts, one file per App Store Connect field: `docs/store/metadata/en-US` and `docs/store/metadata/es-ES` (name, subtitle, keywords, promotional text, description, What's New, and the display name and description of the Pro purchase). `python3 scripts/check-store-metadata.py` checks the length limits.
+- Screenshots: `docs/store/screenshots/en` and `docs/store/screenshots/es`, seven per language at 2880×1800 without alpha. Regenerate with `./scripts/make-store-screenshots.sh`. `07-pro.png` is also the review screenshot for the in-app purchase.
+- Product Hunt launch texts and gallery: `docs/store/PRODUCT_HUNT.md`.
 
 **URLs**: Support URL (GitHub repo or a page), Privacy Policy URL `https://chimi.pro/legal/hey-you/privacy` (Spanish: `https://chimi.pro/legal/hey-you/privacidad`).
 
