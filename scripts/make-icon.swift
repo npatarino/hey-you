@@ -1,12 +1,21 @@
 #!/usr/bin/env swift
 // Generates the app icon (a spotlight falling on an exclamation mark: amber at the lamp, red on
-// the floor, over deep indigo) as PNGs for AppIcon.appiconset.
+// the floor, over neutral charcoal) as PNGs for AppIcon.appiconset.
 // Usage: swift scripts/make-icon.swift App/Assets.xcassets/AppIcon.appiconset
 import AppKit
 import CoreImage
 
 let output = URL(fileURLWithPath: CommandLine.arguments.dropFirst().first ?? "App/Assets.xcassets/AppIcon.appiconset")
 try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+
+/// Background gradient, top and bottom. `HEYYOU_ICON_BG=2C2C30,0A0A0C` overrides it (for trying other colors).
+let background: (top: UInt32, bottom: UInt32) = {
+    let parts = (ProcessInfo.processInfo.environment["HEYYOU_ICON_BG"] ?? "").split(separator: ",").compactMap { UInt32($0, radix: 16) }
+    return parts.count == 2 ? (parts[0], parts[1]) : (0x2C2C30, 0x0A0A0C)
+}()
+
+/// Color of the exclamation mark. `HEYYOU_ICON_MARK=1E1A1C` overrides it.
+let markColor = UInt32(ProcessInfo.processInfo.environment["HEYYOU_ICON_MARK"] ?? "", radix: 16) ?? 0xFFFFFF
 
 guard let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) else { fatalError("no sRGB color space") }
 let ciContext = CIContext(options: [.workingColorSpace: colorSpace, .outputColorSpace: colorSpace])
@@ -92,7 +101,7 @@ func render(pixels: Int) -> Data? {
         offset: CGSize(width: 0, height: -grid.size * 0.01), blur: grid.size * 0.02, color: rgb(0x000000, 0.3)
     )
     context.addPath(grid.bodyPath)
-    context.setFillColor(rgb(0x0C0918))
+    context.setFillColor(rgb(background.bottom))
     context.fillPath()
     context.restoreGState()
 
@@ -100,11 +109,11 @@ func render(pixels: Int) -> Data? {
     context.addPath(grid.bodyPath)
     context.clip()
 
-    // Indigo background and the ambient glow the floor light throws back.
+    // Charcoal background and the ambient glow the floor light throws back.
     context.saveGState()
     grid.apply(to: context)
     context.drawLinearGradient(
-        gradient([rgb(0x322A52), rgb(0x0C0918)]), start: CGPoint(x: 0, y: 0), end: CGPoint(x: 0, y: 100), options: []
+        gradient([rgb(background.top), rgb(background.bottom)]), start: CGPoint(x: 0, y: 0), end: CGPoint(x: 0, y: 100), options: []
     )
     context.drawRadialGradient(
         gradient([rgb(pool, 0.5), rgb(pool, 0)]), startCenter: CGPoint(x: 50, y: 80), startRadius: 0,
@@ -159,7 +168,7 @@ func render(pixels: Int) -> Data? {
     context.translateBy(x: -50, y: -78)
     context.setFillColor(rgb(0x000000, 0.22))
     context.fillEllipse(in: CGRect(x: 40, y: 76.2, width: 20, height: 5.2))
-    context.setFillColor(rgb(0xFFFFFF))
+    context.setFillColor(rgb(markColor))
     context.addPath(CGPath(
         roundedRect: CGRect(x: 45.5, y: 30, width: 9, height: 31), cornerWidth: 4.5, cornerHeight: 4.5, transform: nil
     ))
