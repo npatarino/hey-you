@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/app-icon.png" width="96" height="96" alt="Hey You! app icon: a white bell on a red rounded square">
+  <img src="docs/images/app-icon.png" width="96" height="96" alt="Hey You! app icon: a spotlight falling on an exclamation mark">
 </p>
 
 <h1 align="center">Hey You!</h1>
