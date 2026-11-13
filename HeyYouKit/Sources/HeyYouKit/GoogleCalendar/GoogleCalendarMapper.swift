@@ -46,6 +46,7 @@ enum GoogleCalendarMapper {
 
         return CalendarEvent(
             id: dto.id,
+            externalID: dto.iCalUID,
             calendarID: calendarID,
             title: dto.summary ?? String(localized: "(No title)", bundle: .module),
             start: start,

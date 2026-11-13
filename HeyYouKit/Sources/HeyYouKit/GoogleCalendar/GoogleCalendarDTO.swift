@@ -26,6 +26,7 @@ enum GoogleCalendarDTO {
 
     struct Event: Decodable {
         let id: String
+        let iCalUID: String?
         let status: String?
         let summary: String?
         let description: String?

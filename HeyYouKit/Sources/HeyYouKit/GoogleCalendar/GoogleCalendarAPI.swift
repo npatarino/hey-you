@@ -80,7 +80,7 @@ public struct GoogleCalendarAPI: Sendable {
     }
 
     func events(calendarID: String, from: Date, to: Date) async throws -> [CalendarEvent] {
-        let fields = "items(id,status,summary,description,location,htmlLink,hangoutLink,eventType,"
+        let fields = "items(id,iCalUID,status,summary,description,location,htmlLink,hangoutLink,eventType,"
             + "start,end,organizer(email,displayName),attendees(email,self,resource,responseStatus),"
             + "conferenceData(entryPoints(entryPointType,uri))),nextPageToken,timeZone"
         var events: [CalendarEvent] = []
